@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оголошення | Kurahivka RP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,900;1,900&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <style>
+        /* Стилі копіюємо з головної, щоб було гармонійно */
+        :root { --neon-gold: #ffb703; --neon-red: #d90429; --neon-green: #00f5d4; --discord-color: #5865F2; --dark-bg: #0b0c10; --glass-bg: rgba(31, 33, 40, 0.8); }
+        body { background-color: var(--dark-bg); color: white; font-family: 'Montserrat', sans-serif; padding: 20px; display: flex; justify-content: center; }
+        .car-detail { background: var(--glass-bg); padding: 30px; border-radius: 20px; border: 1px solid var(--neon-gold); max-width: 800px; width: 100%; }
+        img { width: 100%; border-radius: 15px; margin-bottom: 20px; }
+        .price { color: var(--neon-green); font-size: 2em; font-weight: 900; margin: 10px 0; }
+        .btn-back { background: transparent; color: white; border: 1px solid #555; padding: 10px 20px; border-radius: 10px; cursor: pointer; margin-bottom: 20px; }
+        .btn-contact { background: var(--discord-color); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1.2em; }
+        .btn-contact:hover { background: #4752C4; }
+    </style>
+</head>
+<body>
+
+    <div class="car-detail" id="carDetails">
+        <button class="btn-back" onclick="history.back()">← Назад</button>
+        <div id="content">Завантаження...</div>
+    </div>
+
+    <script>
+        const firebaseConfig = { /* Твій конфіг з index.html */ };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const carId = new URLSearchParams(window.location.search).get('id');
+
+        database.ref('cars/' + carId).once('value').then((snapshot) => {
+            const data = snapshot.val();
+            if (!data) { document.getElementById('content').innerHTML = "Машину не знайдено!"; return; }
+            
+            document.getElementById('content').innerHTML = `
+                <img src="${data.image}" alt="${data.name}">
+                <h1>${data.name}</h1>
+                <p class="price">$${Number(data.price).toLocaleString()}</p>
+                <div style="margin: 20px 0; background: #222; padding: 15px; border-radius: 10px;">
+                    <p><b>Марка:</b> ${data.brand}</p>
+                    <p><b>Швидкість:</b> ${data.speed} км/год</p>
+                    <p><b>Багажник:</b> ${data.trunk} кг</p>
+                    <p><b>Продавець:</b> ${data.ownerName}</p>
+                </div>
+                <button class="btn-contact" onclick="contactSeller('${data.ownerId}', '${data.name}')">💬 Написати продавцю</button>
+            `;
+        });
+
+        function contactSeller(ownerId, carName) {
+            // Тут буде магія для бота
+            alert("Запит надіслано продавцю в Discord!");
+            console.log("Відправка запиту боту для власника:", ownerId);
+        }
+    </script>
+</body>
+</html>
