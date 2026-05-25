@@ -32,7 +32,30 @@
             background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border);
             border-radius: 20px; padding: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px;
         }
-        .car-img img { width: 100%; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        /* ГАЛЕРЕЯ ФОТОГРАФІЙ */
+        .car-img { display: flex; flex-direction: column; gap: 15px; }
+        .main-photo-container { 
+            width: 100%; height: 350px; border-radius: 15px; overflow: hidden; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); background: #111;
+        }
+        .main-photo-container img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s ease; }
+        
+        .thumbnails { 
+            display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; 
+        }
+        .thumbnails img { 
+            width: 80px; height: 60px; object-fit: cover; border-radius: 8px; cursor: pointer; 
+            border: 2px solid transparent; transition: 0.3s; opacity: 0.6;
+        }
+        .thumbnails img:hover { opacity: 1; }
+        .thumbnails img.active { border-color: var(--neon-gold); opacity: 1; transform: scale(1.05); }
+        
+        /* Стиль скроллбару для мініатюр */
+        .thumbnails::-webkit-scrollbar { height: 6px; }
+        .thumbnails::-webkit-scrollbar-thumb { background: var(--neon-gold); border-radius: 10px; }
+        .thumbnails::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+
         .car-info h1 { margin-top: 0; font-size: 2.5em; color: var(--neon-gold); text-transform: uppercase; }
         .price { font-size: 2em; color: var(--neon-green); font-weight: 900; margin: 20px 0; }
         .specs { background: rgba(0,0,0,0.4); padding: 20px; border-radius: 15px; margin-bottom: 30px; }
@@ -49,6 +72,7 @@
 
         @media (max-width: 768px) {
             .car-details { grid-template-columns: 1fr; }
+            .main-photo-container { height: 250px; }
         }
     </style>
 </head>
@@ -60,7 +84,6 @@
     </div>
 
     <script>
-        // ТІ САМІ НАЛАШТУВАННЯ FIREBASE, ЩО Й В index.html
         const firebaseConfig = {
             apiKey: "AIzaSyCbNGyrjT1rf-2UHeRj2LCCdqIrsaZ0TG0",
             authDomain: "kurahivka-rp-avtobazar.firebaseapp.com",
@@ -74,7 +97,6 @@
         const database = firebase.database();
         const auth = firebase.auth();
 
-        // Отримуємо ID авто з посилання (наприклад: ?id=car_12345)
         const urlParams = new URLSearchParams(window.location.search);
         const carId = urlParams.get('id');
         let currentCarData = null;
@@ -95,16 +117,41 @@
             });
         }
 
+        // Функція зміни головного фото
+        window.changeMainImage = function(thumbElement, srcUrl) {
+            document.getElementById('mainDetailImage').src = srcUrl;
+            document.querySelectorAll('.thumbnails img').forEach(img => img.classList.remove('active'));
+            thumbElement.classList.add('active');
+        }
+
         function renderPage(car) {
             const content = document.getElementById('content');
             content.classList.remove('loading');
             
             const conditionText = car.condition === 'new' ? 'З салону' : 'Вживана (Б/У)';
             
+            // Отримуємо масив картинок або перестраховуємось (якщо авто додано старим кодом)
+            const images = (car.images && car.images.length > 0) ? car.images : [car.image || 'https://via.placeholder.com/800x600?text=Немає+фото'];
+            const mainImageUrl = images[0];
+
+            // Формуємо HTML для мініатюр (тільки якщо їх більше однієї)
+            let thumbnailsHtml = '';
+            if (images.length > 1) {
+                thumbnailsHtml = '<div class="thumbnails">';
+                images.forEach((imgUrl, index) => {
+                    const activeClass = index === 0 ? 'active' : '';
+                    thumbnailsHtml += `<img src="${imgUrl}" class="${activeClass}" onclick="changeMainImage(this, '${imgUrl}')" onerror="this.src='https://via.placeholder.com/150x100?text=Помилка'">`;
+                });
+                thumbnailsHtml += '</div>';
+            }
+            
             content.innerHTML = `
                 <div class="car-details">
                     <div class="car-img">
-                        <img src="${car.image}" alt="${car.name}" onerror="this.src='https://via.placeholder.com/800x600?text=Немає+фото'">
+                        <div class="main-photo-container">
+                            <img id="mainDetailImage" src="${mainImageUrl}" alt="${car.name}" onerror="this.src='https://via.placeholder.com/800x600?text=Немає+фото'">
+                        </div>
+                        ${thumbnailsHtml}
                     </div>
                     <div class="car-info">
                         <h1>${car.name}</h1>
@@ -143,7 +190,6 @@
             btn.innerText = "Відправка...";
             btn.disabled = true;
 
-            // URL ТВОГО API БОТА (його треба буде розгорнути на хостингу)
             const botApiUrl = "https://your-bot-domain.com/api/contact"; 
             
             try {
