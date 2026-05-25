@@ -36,66 +36,31 @@
             overflow-x: hidden;
         }
 
-        /* === СТАРТОВИЙ ЕКРАН (LOGIN SCREEN) === */
-        #loginScreen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 90vh;
-            text-align: center;
-            animation: fadeIn 0.8s ease;
-        }
-        #loginScreen h1 {
-            font-size: 4em;
-            margin-bottom: 10px;
-        }
-        #loginScreen p {
-            color: #888;
-            font-size: 1.2em;
-            letter-spacing: 2px;
-            margin-bottom: 40px;
-            text-transform: uppercase;
-        }
-        #loginScreen .auth-btn {
-            font-size: 1.2em;
-            padding: 15px 30px;
-            border-radius: 30px;
-        }
+        #loginScreen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 90vh; text-align: center; animation: fadeIn 0.8s ease; }
+        #loginScreen h1 { font-size: 4em; margin-bottom: 10px; }
+        #loginScreen p { color: #888; font-size: 1.2em; letter-spacing: 2px; margin-bottom: 40px; text-transform: uppercase; }
+        #loginScreen .auth-btn { font-size: 1.2em; padding: 15px 30px; border-radius: 30px; }
 
-        /* === ГОЛОВНИЙ КОНТЕНТ (ПРИХОВАНИЙ ЗА ЗМОВЧУВАННЯМ) === */
-        #mainContent {
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
+        #mainContent { display: none; animation: fadeIn 0.5s ease; }
         
-        .auth-container {
-            display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-bottom: 20px;
-        }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        
+        /* Кнопка додавання авто */
+        .add-car-btn { background: linear-gradient(45deg, var(--neon-green), #00b4d8); color: black; border: none; padding: 10px 20px; border-radius: 20px; font-weight: 900; font-family: 'Montserrat'; cursor: pointer; transition: 0.3s; text-transform: uppercase; display: flex; align-items: center; gap: 8px;}
+        .add-car-btn:hover { box-shadow: 0 0 20px rgba(0, 245, 212, 0.4); transform: translateY(-2px); }
+
         .user-info { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 20px; border: 1px solid var(--discord-color); }
         .user-info img { width: 30px; height: 30px; border-radius: 50%; }
         .user-info span { font-weight: bold; font-size: 14px; color: var(--discord-color); }
         
-        .auth-btn { 
-            background: var(--discord-color); 
-            color: white; border: none; padding: 10px 20px; border-radius: 20px; 
-            cursor: pointer; font-weight: bold; font-family: 'Montserrat'; 
-            display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; 
-        }
+        .auth-btn { background: var(--discord-color); color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; font-family: 'Montserrat'; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
         .auth-btn:hover { background: #4752C4; box-shadow: 0 0 15px rgba(88, 101, 242, 0.4); transform: translateY(-2px); }
         .auth-btn svg { width: 20px; fill: white; }
-        
         .auth-btn.logout { background: transparent; color: var(--neon-red); border: 1px solid var(--neon-red); padding: 8px 15px; font-size: 12px; }
         .auth-btn.logout:hover { background: var(--neon-red); color: white; box-shadow: 0 0 15px rgba(217, 4, 41, 0.4); }
 
         header { text-align: center; margin-bottom: 40px; position: relative; }
-        
-        h1 { 
-            font-weight: 900; font-size: 3.5em; margin: 0; text-transform: uppercase; 
-            letter-spacing: 3px; background: linear-gradient(90deg, var(--neon-gold), #ff5400);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-shadow: 0px 0px 30px rgba(255, 183, 3, 0.4); font-style: italic;
-        }
+        h1 { font-weight: 900; font-size: 3.5em; margin: 0; text-transform: uppercase; letter-spacing: 3px; background: linear-gradient(90deg, var(--neon-gold), #ff5400); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0px 0px 30px rgba(255, 183, 3, 0.4); font-style: italic; }
         .subtitle { color: #888; font-size: 1.2em; letter-spacing: 1px; margin-top: 10px; }
 
         .controls-wrapper { max-width: 1200px; margin: 0 auto 40px auto; display: flex; flex-direction: column; align-items: center; gap: 20px; }
@@ -103,24 +68,25 @@
         .tab-btn { background: transparent; color: #aaa; border: none; padding: 12px 30px; border-radius: 40px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.4s; font-family: 'Montserrat', sans-serif; }
         .tab-btn.active { background: var(--neon-gold); color: #000; box-shadow: 0 0 20px rgba(255, 183, 3, 0.5); }
         .filter-toggle-btn { background: var(--glass-bg); color: white; padding: 12px 30px; border: 1px solid var(--glass-border); border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: bold; backdrop-filter: blur(10px); transition: 0.3s; }
-        .filter-toggle-btn:hover { border-color: var(--neon-gold); box-shadow: 0 0 15px rgba(255, 183, 3, 0.2); }
+        
         .filter-panel { display: none; background: var(--glass-bg); backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px; width: 100%; max-width: 800px; grid-template-columns: 1fr 1fr; gap: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); box-sizing: border-box; }
         .filter-panel.active { display: grid; animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        
         .filter-group label { display: block; margin-bottom: 10px; color: #ccc; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;}
         .filter-group select, .filter-group input { width: 100%; padding: 12px; background: rgba(0,0,0,0.4); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; font-family: 'Montserrat', sans-serif; box-sizing: border-box; transition: 0.3s; }
         .filter-group select:focus, .filter-group input:focus { outline: none; border-color: var(--neon-gold); background: rgba(0,0,0,0.7);}
         .price-inputs { display: flex; gap: 10px; }
-        .apply-filters-btn { grid-column: span 2; background: linear-gradient(45deg, #ff5400, var(--neon-gold)); color: black; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: 900; font-size: 16px; margin-top: 10px; transition: 0.3s; text-transform: uppercase; }
-        .apply-filters-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255, 183, 3, 0.4); }
+        
+        .filter-actions { grid-column: span 2; display: flex; gap: 10px; margin-top: 10px; }
+        .apply-filters-btn { flex: 1; background: linear-gradient(45deg, #ff5400, var(--neon-gold)); color: black; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: 900; font-size: 16px; transition: 0.3s; text-transform: uppercase; }
+        .reset-filters-btn { background: transparent; color: white; border: 1px solid var(--neon-red); padding: 15px; border-radius: 10px; cursor: pointer; font-weight: 900; font-size: 16px; transition: 0.3s; text-transform: uppercase; }
 
         .car-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; max-width: 1300px; margin: 0 auto; }
         .car-card { background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px; transition: all 0.4s ease; position: relative; overflow: hidden; display: flex; flex-direction: column; }
-        .car-card::before { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); transform: skewX(-20deg); transition: 0.5s; }
         .car-card:hover { transform: translateY(-10px); border-color: var(--neon-gold); box-shadow: 0 15px 40px rgba(255, 183, 3, 0.15); }
-        .car-card:hover::before { left: 200%; }
-        .car-image-wrapper { position: relative; border-radius: 15px; overflow: hidden; margin-bottom: 15px; }
-        .car-card img { width: 100%; height: 220px; object-fit: cover; transition: 0.5s; }
+        .car-image-wrapper { position: relative; border-radius: 15px; overflow: hidden; margin-bottom: 15px; height: 220px; background: #111;}
+        .car-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
         .car-card:hover img { transform: scale(1.05); }
 
         .condition-badge { position: absolute; top: 15px; left: 15px; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(5px); }
@@ -132,21 +98,25 @@
         .car-stats { display: flex; justify-content: space-between; font-size: 0.9em; color: #aaa; margin-bottom: 20px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; }
         .car-card .price { color: var(--neon-green); font-size: 1.6em; font-weight: 900; margin-bottom: 20px; text-shadow: 0 0 10px rgba(0, 245, 212, 0.3); text-align: center; }
 
-        .buy-btn { background: transparent; color: white; border: 2px solid var(--neon-gold); padding: 15px; border-radius: 12px; cursor: pointer; font-weight: 900; font-size: 14px; transition: 0.3s; width: 100%; text-transform: uppercase; letter-spacing: 2px; margin-top: auto; }
+        .action-buttons { display: flex; gap: 10px; margin-top: auto; }
+        .buy-btn { flex: 1; background: transparent; color: white; border: 2px solid var(--neon-gold); padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 900; font-size: 14px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
         .buy-btn:hover:not(:disabled) { background: var(--neon-gold); color: black; box-shadow: 0 0 20px rgba(255, 183, 3, 0.4); }
+        .delete-btn { background: transparent; color: var(--neon-red); border: 2px solid var(--neon-red); padding: 12px; border-radius: 12px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .delete-btn:hover { background: var(--neon-red); color: white; }
+        
+        .owner-tag { font-size: 11px; color: #666; text-align: center; margin-top: 10px; font-style: italic; }
 
         .hidden { display: none !important; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .fade-in { animation: fadeIn 0.5s ease forwards; }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 1000; justify-content: center; align-items: center; }
+        /* Модальні вікна */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 1000; justify-content: center; align-items: center; overflow-y: auto;}
         .modal.active { display: flex; }
-        .modal-content { background: var(--glass-bg); border: 1px solid var(--neon-gold); padding: 30px; border-radius: 20px; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 0 40px rgba(255, 183, 3, 0.2); }
+        .modal-content { background: var(--glass-bg); border: 1px solid var(--neon-gold); padding: 30px; border-radius: 20px; text-align: center; width: 90%; max-width: 450px; box-shadow: 0 0 40px rgba(255, 183, 3, 0.2); margin: 20px auto;}
         .modal-content h3 { margin-top: 0; color: var(--neon-gold); font-weight: 900; }
-        
-        .modal-content input { width: 100%; padding: 15px; margin: 10px 0; background: rgba(0,0,0,0.5); border: 1px solid #555; color: white; border-radius: 8px; box-sizing: border-box; font-family: 'Montserrat', sans-serif; font-size: 14px; }
-        .modal-content input:focus { outline: none; border-color: var(--neon-gold); }
-        
+        .modal-content input, .modal-content select { width: 100%; padding: 12px; margin: 8px 0; background: rgba(0,0,0,0.5); border: 1px solid #555; color: white; border-radius: 8px; box-sizing: border-box; font-family: 'Montserrat', sans-serif; font-size: 14px; }
+        .modal-content input:focus, .modal-content select:focus { outline: none; border-color: var(--neon-gold); }
         .modal-content button { width: 100%; padding: 15px; margin-top: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Montserrat', sans-serif; transition: 0.3s; text-transform: uppercase; }
         .confirm-btn { background: var(--neon-gold); color: black; }
         .confirm-btn:hover { background: #e0a000; }
@@ -177,7 +147,8 @@
     </div>
 
     <div id="mainContent">
-        <div class="auth-container">
+        <div class="top-bar">
+            <button class="add-car-btn" onclick="openAddCarModal()">➕ Продати своє авто</button>
             <div id="userInfo" class="user-info">
                 <img id="userAvatar" src="" alt="Avatar">
                 <span id="userName"></span>
@@ -192,74 +163,104 @@
 
         <div class="controls-wrapper">
             <div class="tabs">
-                <button class="tab-btn active" onclick="filterCondition('all', this)">Всі авто</button>
-                <button class="tab-btn" onclick="filterCondition('new', this)">Нові з салону</button>
-                <button class="tab-btn" onclick="filterCondition('used', this)">Вживані (Б/У)</button>
+                <button class="tab-btn active" onclick="filterConditionTab('all', this)">Всі авто</button>
+                <button class="tab-btn" onclick="filterConditionTab('new', this)">Нові з салону</button>
+                <button class="tab-btn" onclick="filterConditionTab('used', this)">Вживані (Б/У)</button>
             </div>
             <button class="filter-toggle-btn" onclick="toggleFilters()">⚙️ Детальні фільтри</button>
 
             <div class="filter-panel" id="filterPanel">
-                <div class="filter-group"><label>Марка авто:</label><select><option>Всі марки</option></select></div>
-                <div class="filter-group"><label>Тип кузова:</label><select><option>Всі типи</option></select></div>
-                <div class="filter-group"><label>Ціна ($):</label><div class="price-inputs"><input type="number" placeholder="Від"><input type="number" placeholder="До"></div></div>
-                <div class="filter-group"><label>Клас авто:</label><select><option>Будь-який</option></select></div>
-                <button class="apply-filters-btn">ЗНАЙТИ ТАЧКУ</button>
+                <div class="filter-group">
+                    <label>Марка авто:</label>
+                    <select id="filterBrand">
+                        <option value="all">Всі марки</option>
+                        <option value="BMW">BMW</option>
+                        <option value="Toyota">Toyota</option>
+                        <option value="Porsche">Porsche</option>
+                        <option value="Mercedes">Mercedes</option>
+                        <option value="Audi">Audi</option>
+                        <option value="Other">Інше</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Тип кузова:</label>
+                    <select id="filterBody">
+                        <option value="all">Всі типи</option>
+                        <option value="sedan">Седан</option>
+                        <option value="coupe">Купе</option>
+                        <option value="suv">Позашляховик</option>
+                    </select>
+                </div>
+                <div class="filter-group"><label>Ціна ($):</label><div class="price-inputs"><input type="number" id="filterPriceMin" placeholder="Від"><input type="number" id="filterPriceMax" placeholder="До"></div></div>
+                <div class="filter-group">
+                    <label>Клас авто:</label>
+                    <select id="filterClass">
+                        <option value="all">Будь-який</option>
+                        <option value="premium">Преміум</option>
+                        <option value="business">Бізнес</option>
+                        <option value="sport">Спорт</option>
+                        <option value="economy">Економ</option>
+                    </select>
+                </div>
+                <div class="filter-actions">
+                    <button class="apply-filters-btn" onclick="applyFilters()">ЗНАЙТИ ТАЧКУ</button>
+                    <button class="reset-filters-btn" onclick="resetFilters()">СКИНУТИ</button>
+                </div>
             </div>
         </div>
 
-        <main class="car-container" id="carGrid">
-            <div class="car-card fade-in" data-condition="new" id="car_bmw_m5">
-                <div class="car-image-wrapper">
-                    <div class="condition-badge badge-new">З салону</div>
-                    <div class="class-badge">Преміум</div>
-                    <img src="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=600" alt="BMW">
-                </div>
-                <h3>BMW M5 F90</h3>
-                <div class="car-stats"><span>Багажник: 20</span><span>Швидкість: 310 км/год</span></div>
-                <p class="price">$120,000</p>
-                <button class="buy-btn">Забронювати</button>
-            </div>
+        <main class="car-container" id="carGrid"></main>
+    </div>
 
-            <div class="car-card fade-in" data-condition="used" id="car_toyota_camry">
-                <div class="car-image-wrapper">
-                    <div class="condition-badge badge-used">Б/У (Пробіг 120к)</div>
-                    <div class="class-badge">Бізнес</div>
-                    <img src="https://images.unsplash.com/photo-1597403864070-e692482390f7?auto=format&fit=crop&w=600" alt="Toyota">
-                </div>
-                <h3>Toyota Camry XV70</h3>
-                <div class="car-stats"><span>Багажник: 25</span><span>Швидкість: 220 км/год</span></div>
-                <p class="price">$35,000</p>
-                <button class="buy-btn">Забронювати</button>
-            </div>
+    <div id="addCarModal" class="modal">
+        <div class="modal-content">
+            <h3>ДОДАТИ АВТО НА БАЗАР</h3>
+            <input type="text" id="newCarName" placeholder="Назва (напр. BMW M5 F90)">
+            <input type="text" id="newCarImg" placeholder="Посилання на картинку (.jpg або .png)">
+            <input type="number" id="newCarPrice" placeholder="Ціна в доларах ($)">
+            <input type="number" id="newCarSpeed" placeholder="Макс. швидкість (км/год)">
+            <input type="number" id="newCarTrunk" placeholder="Місткість багажника (кг)">
+            
+            <select id="newCarCondition">
+                <option value="new">Стан: З салону</option>
+                <option value="used">Стан: Вживана (Б/У)</option>
+            </select>
+            <select id="newCarBrand">
+                <option value="BMW">Марка: BMW</option>
+                <option value="Toyota">Марка: Toyota</option>
+                <option value="Porsche">Марка: Porsche</option>
+                <option value="Mercedes">Марка: Mercedes</option>
+                <option value="Audi">Марка: Audi</option>
+                <option value="Other">Марка: Інше</option>
+            </select>
+            <select id="newCarBody">
+                <option value="sedan">Кузов: Седан</option>
+                <option value="coupe">Кузов: Купе</option>
+                <option value="suv">Кузов: Позашляховик</option>
+            </select>
+            <select id="newCarClass">
+                <option value="premium">Клас: Преміум</option>
+                <option value="business">Клас: Бізнес</option>
+                <option value="sport">Клас: Спорт</option>
+                <option value="economy">Клас: Економ</option>
+            </select>
 
-            <div class="car-card fade-in" data-condition="new" id="car_porsche_911">
-                <div class="car-image-wrapper">
-                    <div class="condition-badge badge-new">З салону</div>
-                    <div class="class-badge">Спорт</div>
-                    <img src="https://images.unsplash.com/photo-1614200179396-2bdb77ebf81b?auto=format&fit=crop&w=600" alt="Porsche">
-                </div>
-                <h3>Porsche 911 GT3</h3>
-                <div class="car-stats"><span>Багажник: 5</span><span>Швидкість: 340 км/год</span></div>
-                <p class="price">$200,000</p>
-                <button class="buy-btn">Забронювати</button>
-            </div>
-        </main>
+            <button class="confirm-btn" onclick="submitNewCar()">ВИСТАВИТИ НА ПРОДАЖ</button>
+            <button class="cancel-btn" onclick="closeAddCarModal()">СКАСУВАТИ</button>
+        </div>
     </div>
 
     <div id="bookingModal" class="modal">
         <div class="modal-content">
             <h3>ОФОРМЛЕННЯ АВТО</h3>
-            <p id="modalCarName" style="color: #aaa; margin-bottom: 20px;">BMW M5 F90</p>
+            <p id="modalCarName" style="color: #aaa; margin-bottom: 20px;"></p>
             <input type="text" id="playerNick" placeholder="Твій ігровий нік (напр. Maksim_Dudelkin)">
             <button class="confirm-btn" onclick="confirmBooking()">ПІДТВЕРДИТИ БРОНЬ</button>
-            <button class="cancel-btn" onclick="closeModal()">СКАСУВАТИ</button>
+            <button class="cancel-btn" onclick="closeBookingModal()">СКАСУВАТИ</button>
         </div>
     </div>
 
     <script>
-        // ==========================================
-        // ПОВІДОМЛЕННЯ
-        // ==========================================
         function showNotification(message, type = 'error') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
@@ -268,15 +269,9 @@
             toast.innerText = icon + message;
             container.appendChild(toast);
             setTimeout(() => toast.classList.add('show'), 10);
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 400);
-            }, 4000);
+            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 4000);
         }
 
-        // ==========================================
-        // НАЛАШТУВАННЯ FIREBASE
-        // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyCbNGyrjT1rf-2UHeRj2LCCdqIrsaZ0TG0",
             authDomain: "kurahivka-rp-avtobazar.firebaseapp.com",
@@ -293,28 +288,27 @@
         const provider = new firebase.auth.OAuthProvider('oidc.discord');
         provider.addScope('identify');
 
-        // Глобальні змінні стану
+        // ==========================================
+        // НАЛАШТУВАННЯ АДМІНІСТРАТОРА
+        // ==========================================
+        // Щоб ти міг видаляти БУДЬ-ЯКІ машини, встав сюди свій UID з Discord. 
+        // Поки що тут пустий рядок, але кожен зможе видаляти ТІЛЬКИ СВОЇ машини.
+        const ADMIN_UID = "ТВІЙ_UID_СЮДИ_ЯКЩО_ТРЕБА"; 
+
         let currentUser = null;
         let currentCarsData = {};
         let userHasBooking = false; 
-        const COOLDOWN_SEC = 10; 
+        const COOLDOWN_SEC = 5; 
 
-        // ==========================================
-        // ЛОГІКА ПОКАЗУ ЕКРАНІВ ТА АВТОРИЗАЦІЯ
-        // ==========================================
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUser = user;
-                // Ховаємо стартовий екран, показуємо сайт
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
-                
-                // Налаштовуємо аватарку та ім'я зверху справа
                 document.getElementById('userAvatar').src = user.photoURL || 'https://cdn.discordapp.com/embed/avatars/0.png';
                 document.getElementById('userName').innerText = user.displayName;
             } else {
                 currentUser = null;
-                // Ховаємо сайт, показуємо стартовий екран
                 document.getElementById('loginScreen').style.display = 'flex';
                 document.getElementById('mainContent').style.display = 'none';
             }
@@ -322,41 +316,21 @@
         });
 
         function signInWithDiscord() {
-            auth.signInWithPopup(provider).then(() => {
-                showNotification('Авторизація через Discord успішна!', 'success');
-            }).catch((error) => {
-                showNotification('Помилка входу: ' + error.message, 'error');
-            });
+            auth.signInWithPopup(provider).then(() => { showNotification('Успішний вхід!', 'success'); }).catch((e) => { showNotification('Помилка: ' + e.message, 'error'); });
         }
-
-        function signOut() {
-            auth.signOut().then(() => {
-                showNotification('Ти вийшов з акаунту.', 'success');
-            });
-        }
-
-        // ==========================================
-        // ЛОГІКА КУЛДАУНУ (КД)
-        // ==========================================
+        function signOut() { auth.signOut(); }
         function checkCooldown() {
             const lastAction = localStorage.getItem('lastActionTime');
             if (lastAction) {
-                const now = new Date().getTime();
-                const diff = (now - parseInt(lastAction)) / 1000;
-                if (diff < COOLDOWN_SEC) {
-                    showNotification(`Зачекай ще ${Math.ceil(COOLDOWN_SEC - diff)} сек. перед наступною дією!`, 'warning');
-                    return false;
-                }
+                const diff = (new Date().getTime() - parseInt(lastAction)) / 1000;
+                if (diff < COOLDOWN_SEC) { showNotification(`Зачекай ще ${Math.ceil(COOLDOWN_SEC - diff)} сек.!`, 'warning'); return false; }
             }
             return true;
         }
-
-        function setCooldown() {
-            localStorage.setItem('lastActionTime', new Date().getTime().toString());
-        }
+        function setCooldown() { localStorage.setItem('lastActionTime', new Date().getTime().toString()); }
 
         // ==========================================
-        // СИНХРОНІЗАЦІЯ З БАЗОЮ ТА РЕНДЕР КНОПОК
+        // ГЕНЕРАЦІЯ МАШИН З БАЗИ
         // ==========================================
         database.ref('cars').on('value', (snapshot) => {
             currentCarsData = snapshot.val() || {};
@@ -364,123 +338,178 @@
         });
 
         function renderCars() {
-            userHasBooking = false; 
+            const grid = document.getElementById('carGrid');
+            grid.innerHTML = ''; // Очищаємо сітку перед малюванням
+            userHasBooking = false;
 
-            document.querySelectorAll('.car-card').forEach(card => {
-                const btn = card.querySelector('.buy-btn');
-                const carId = card.id;
-                const carInfo = currentCarsData[carId];
+            // Спочатку перевіряємо, чи є в користувача бронь
+            if (currentUser) {
+                for (const carId in currentCarsData) {
+                    if (currentCarsData[carId].reserved && currentCarsData[carId].buyerId === currentUser.uid) {
+                        userHasBooking = true; break;
+                    }
+                }
+            }
 
-                if (carInfo && carInfo.reserved) {
-                    const isMyCar = currentUser && carInfo.userId === currentUser.uid;
+            // Малюємо кожну машину
+            for (const [carId, carData] of Object.entries(currentCarsData)) {
+                const card = document.createElement('div');
+                card.className = 'car-card fade-in';
+                card.id = carId;
+                card.setAttribute('data-condition', carData.condition);
+                card.setAttribute('data-brand', carData.brand);
+                card.setAttribute('data-body', carData.body);
+                card.setAttribute('data-price', carData.price);
+                card.setAttribute('data-class', carData.carClass);
 
-                    if (isMyCar) {
-                        userHasBooking = true; 
-                        btn.innerText = '❌ СКАСУВАТИ БРОНЬ';
-                        btn.style.background = 'var(--discord-color)';
-                        btn.style.color = 'white';
-                        btn.style.borderColor = 'var(--discord-color)';
-                        btn.disabled = false;
-                        btn.style.cursor = 'pointer';
-                        card.style.borderColor = 'var(--discord-color)';
-                        card.style.opacity = '1';
-                        btn.onclick = () => cancelBooking(carId);
+                const conditionText = carData.condition === 'new' ? 'З салону' : 'Вживана (Б/У)';
+                const conditionClass = carData.condition === 'new' ? 'badge-new' : 'badge-used';
+                
+                // Перевірка прав на видалення (Власник або Адмін)
+                const canDelete = currentUser && (currentUser.uid === carData.ownerId || currentUser.uid === ADMIN_UID);
+                let deleteBtnHtml = canDelete ? `<button class="delete-btn" onclick="deleteCar('${carId}')">🗑️</button>` : '';
+
+                // Логіка кнопок броні
+                let buyBtnHtml = '';
+                if (carData.reserved) {
+                    if (currentUser && carData.buyerId === currentUser.uid) {
+                        buyBtnHtml = `<button class="buy-btn" style="border-color: var(--discord-color); background: var(--discord-color); color: white;" onclick="cancelBooking('${carId}')">❌ СКАСУВАТИ БРОНЬ</button>`;
                     } else {
-                        btn.innerText = 'ЗАБРОНЬОВАНО (' + carInfo.playerNick + ')';
-                        btn.style.background = 'var(--neon-red)';
-                        btn.style.color = 'white';
-                        btn.style.borderColor = 'var(--neon-red)';
-                        btn.disabled = true;
-                        btn.style.cursor = 'not-allowed';
-                        card.style.borderColor = 'var(--neon-red)';
-                        card.style.opacity = '0.8';
-                        btn.onclick = null;
+                        buyBtnHtml = `<button class="buy-btn" style="border-color: var(--neon-red); background: var(--neon-red); color: white;" disabled>ЗАБРОНЬОВАНО (${carData.buyerNick})</button>`;
                     }
                 } else {
-                    card.style.borderColor = 'var(--glass-border)';
-                    card.style.opacity = '1';
-                    btn.disabled = false;
-                    btn.style.cursor = 'pointer';
-                    btn.innerText = 'Забронювати';
-                    btn.style.background = 'transparent';
-                    btn.style.color = 'white';
-                    btn.style.borderColor = 'var(--neon-gold)';
-                    btn.onclick = () => openBooking(carId, card.querySelector('h3').innerText);
+                    buyBtnHtml = `<button class="buy-btn" onclick="openBookingModal('${carId}', '${carData.name}')">Забронювати</button>`;
                 }
-            });
+
+                card.innerHTML = `
+                    <div class="car-image-wrapper">
+                        <div class="condition-badge ${conditionClass}">${conditionText}</div>
+                        <div class="class-badge">${carData.carClass.toUpperCase()}</div>
+                        <img src="${carData.image}" alt="${carData.name}" onerror="this.src='https://via.placeholder.com/600x400?text=Немає+фото'">
+                    </div>
+                    <h3>${carData.name}</h3>
+                    <div class="car-stats"><span>Багажник: ${carData.trunk} кг</span><span>Швидк: ${carData.speed} км/год</span></div>
+                    <p class="price">$${Number(carData.price).toLocaleString()}</p>
+                    <div class="action-buttons">
+                        ${buyBtnHtml}
+                        ${deleteBtnHtml}
+                    </div>
+                    <div class="owner-tag">Продавець: ${carData.ownerName}</div>
+                `;
+                grid.appendChild(card);
+            }
+            applyFilters(); // Застосовуємо фільтри після рендеру
         }
 
         // ==========================================
-        // БРОНЮВАННЯ ТА СКАСУВАННЯ
+        // ДОДАВАННЯ ТА ВИДАЛЕННЯ АВТО
         // ==========================================
-        let currentCarId = null;
+        function openAddCarModal() { document.getElementById('addCarModal').classList.add('active'); }
+        function closeAddCarModal() { document.getElementById('addCarModal').classList.remove('active'); }
 
-        function openBooking(carId, carName) {
-            if (!checkCooldown()) return; 
+        function submitNewCar() {
+            if (!checkCooldown()) return;
             
-            if (userHasBooking) {
-                showNotification('Бро! Ти вже маєш одну активну бронь. Спочатку скасуй її!', 'error');
-                return;
+            const name = document.getElementById('newCarName').value.trim();
+            const img = document.getElementById('newCarImg').value.trim();
+            const price = parseInt(document.getElementById('newCarPrice').value);
+            const speed = parseInt(document.getElementById('newCarSpeed').value);
+            const trunk = parseInt(document.getElementById('newCarTrunk').value);
+            const condition = document.getElementById('newCarCondition').value;
+            const brand = document.getElementById('newCarBrand').value;
+            const body = document.getElementById('newCarBody').value;
+            const carClass = document.getElementById('newCarClass').value;
+
+            if(!name || !img || !price || !speed || !trunk) {
+                showNotification('Заповни всі поля!', 'error'); return;
             }
-            currentCarId = carId;
+
+            const newCarId = 'car_' + Date.now(); // Унікальний ID
+
+            database.ref('cars/' + newCarId).set({
+                name: name, image: img, price: price, speed: speed, trunk: trunk,
+                condition: condition, brand: brand, body: body, carClass: carClass,
+                ownerId: currentUser.uid, ownerName: currentUser.displayName,
+                reserved: false
+            }).then(() => {
+                setCooldown(); closeAddCarModal();
+                showNotification('Машина успішно виставлена на продаж!', 'success');
+            }).catch(e => showNotification('Помилка: ' + e.message, 'error'));
+        }
+
+        function deleteCar(carId) {
+            if(confirm('Точно видалити це авто з базару?')) {
+                database.ref('cars/' + carId).remove()
+                    .then(() => showNotification('Авто видалено!', 'success'))
+                    .catch(e => showNotification('Помилка!', 'error'));
+            }
+        }
+
+        // ==========================================
+        // БРОНЮВАННЯ ТА ФІЛЬТРИ (старий код)
+        // ==========================================
+        let currentBookingCarId = null;
+        function openBookingModal(carId, carName) {
+            if (!checkCooldown()) return; 
+            if (userHasBooking) { showNotification('Ти вже маєш бронь!', 'error'); return; }
+            currentBookingCarId = carId;
             document.getElementById('modalCarName').innerText = carName;
             document.getElementById('bookingModal').classList.add('active');
         }
-
-        function closeModal() {
-            document.getElementById('bookingModal').classList.remove('active');
-            document.getElementById('playerNick').value = ''; 
-        }
+        function closeBookingModal() { document.getElementById('bookingModal').classList.remove('active'); }
 
         function confirmBooking() {
             if (!checkCooldown()) return; 
-
             const nick = document.getElementById('playerNick').value.trim();
-            if(nick.length < 3) {
-                showNotification('Введи нормальний ігровий нік!', 'error'); return;
-            }
+            if(nick.length < 3) { showNotification('Введи ігровий нік!', 'error'); return; }
 
-            database.ref('cars/' + currentCarId).set({
-                reserved: true,
-                playerNick: nick,
-                discordName: currentUser.displayName,
-                userId: currentUser.uid, 
-                time: new Date().toLocaleString()
+            database.ref('cars/' + currentBookingCarId).update({
+                reserved: true, buyerNick: nick, buyerId: currentUser.uid
             }).then(() => {
-                setCooldown(); 
-                closeModal();
-                showNotification('Машину успішно заброньовано! Заходь у гру.', 'success');
-            }).catch((error) => {
-                showNotification('Помилка бази даних! ' + error.message, 'error');
+                setCooldown(); closeBookingModal(); showNotification('Заброньовано!', 'success');
             });
         }
 
         function cancelBooking(carId) {
             if (!checkCooldown()) return; 
-
-            if(confirm('Ти впевнений, що хочеш відмовитись від цієї машини?')) {
-                database.ref('cars/' + carId).remove().then(() => {
-                    setCooldown(); 
-                    showNotification('Бронь успішно скасовано! Машина знову вільна.', 'success');
-                }).catch((error) => {
-                    showNotification('Помилка скасування!', 'error');
-                });
+            if(confirm('Відмовитись від цієї машини?')) {
+                database.ref('cars/' + carId).update({ reserved: false, buyerNick: null, buyerId: null })
+                    .then(() => { setCooldown(); showNotification('Бронь скасовано!', 'success'); });
             }
         }
 
-        // ==========================================
-        // ДИЗАЙН-ФУНКЦІЇ
-        // ==========================================
+        let currentTabCondition = 'all';
         function toggleFilters() { document.getElementById('filterPanel').classList.toggle('active'); }
-        function filterCondition(condition, btnElement) {
+        function filterConditionTab(condition, btnElement) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            btnElement.classList.add('active');
+            btnElement.classList.add('active'); currentTabCondition = condition; applyFilters();
+        }
+
+        function applyFilters() {
+            const brand = document.getElementById('filterBrand').value;
+            const body = document.getElementById('filterBody').value;
+            const carClass = document.getElementById('filterClass').value;
+            const priceMin = parseInt(document.getElementById('filterPriceMin').value) || 0;
+            const priceMax = parseInt(document.getElementById('filterPriceMax').value) || Infinity;
+
             document.querySelectorAll('.car-card').forEach(card => {
+                let isMatch = true;
+                if (currentTabCondition !== 'all' && card.getAttribute('data-condition') !== currentTabCondition) isMatch = false;
+                if (brand !== 'all' && card.getAttribute('data-brand') !== brand) isMatch = false;
+                if (body !== 'all' && card.getAttribute('data-body') !== body) isMatch = false;
+                if (carClass !== 'all' && card.getAttribute('data-class') !== carClass) isMatch = false;
+                const price = parseInt(card.getAttribute('data-price'));
+                if (price < priceMin || price > priceMax) isMatch = false;
+
                 card.classList.remove('fade-in');
-                if (condition === 'all' || card.dataset.condition === condition) {
-                    card.classList.remove('hidden'); setTimeout(() => card.classList.add('fade-in'), 10); 
-                } else { card.classList.add('hidden'); }
+                if (isMatch) { card.classList.remove('hidden'); setTimeout(() => card.classList.add('fade-in'), 10); } 
+                else { card.classList.add('hidden'); }
             });
+        }
+        function resetFilters() {
+            document.getElementById('filterBrand').value = 'all'; document.getElementById('filterBody').value = 'all';
+            document.getElementById('filterClass').value = 'all'; document.getElementById('filterPriceMin').value = '';
+            document.getElementById('filterPriceMax').value = ''; applyFilters();
         }
     </script>
 </body>
