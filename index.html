@@ -415,7 +415,11 @@
                 images: images, 
                 price: price, speed: speed, trunk: trunk,
                 condition: condition, brand: brand, body: body, carClass: carClass,
-                ownerId: currentUser.uid, ownerName: currentUser.displayName,
+                
+                // ВАМ НУЖНО ЗАМЕНИТЬ СТРОКУ НИЖЕ:
+                ownerId: currentUser.providerData[0].uid, 
+                
+                ownerName: currentUser.displayName,
                 reserved: false
             }).then(() => {
                 setCooldown(); closeAddCarModal();
