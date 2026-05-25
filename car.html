@@ -174,7 +174,7 @@
             `;
         }
 
-        async function contactSeller(sellerDiscordId, carName) {
+async function contactSeller(sellerDiscordId, carName) {
             if (!currentUser) {
                 alert("Спочатку авторизуйся на головній сторінці!");
                 window.location.href = 'index.html';
@@ -197,13 +197,13 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        seller_id: sellerDiscordId,
-                        buyer_id: currentUser.uid,
-                        buyer_name: currentUser.displayName,
-                        car_name: carName,
-                        car_url: window.location.href
+                        seller_id: String(sellerDiscordId), // Принудительно делаем строкой
+                        car_name: carName
                     })
                 });
+
+                // Читаем ответ от сервера (даже если это ошибка 400)
+                const responseData = await response.json();
 
                 if (response.ok) {
                     alert("✅ Продавець отримав твоє повідомлення в Discord!");
@@ -211,12 +211,14 @@
                     btn.style.background = "var(--neon-green)";
                     btn.style.color = "black";
                 } else {
-                    alert("❌ Помилка відправки. Можливо, у продавця закриті ПП.");
+                    // Если сервер вернул 400 или 404, показываем точную причину прямо на экране
+                    alert(`❌ Помилка: ${responseData.message}`);
                     btn.innerText = "💬 Написати продавцю";
                     btn.disabled = false;
                 }
             } catch (e) {
-                alert("❌ Помилка з'єднання з ботом!");
+                alert("❌ Помилка з'єднання з ботом! Бот вимкнений або помилка мережі.");
+                console.error(e);
                 btn.innerText = "💬 Написати продавцю";
                 btn.disabled = false;
             }
