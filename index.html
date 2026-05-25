@@ -335,6 +335,7 @@
             renderCars();
         });
 
+        // ОСЬ ТА САМА ОНОВЛЕНА ФУНКЦІЯ, ЯКА ПРАЦЮЄ З car.html
         function renderCars() {
             const grid = document.getElementById('carGrid');
             grid.innerHTML = ''; 
@@ -362,30 +363,22 @@
                 const conditionClass = carData.condition === 'new' ? 'badge-new' : 'badge-used';
                 
                 const canDelete = currentUser && (currentUser.uid === carData.ownerId || currentUser.uid === ADMIN_UID);
-                let deleteBtnHtml = canDelete ? `<button class="delete-btn" onclick="deleteCar('${carId}')">🗑️</button>` : '';
+                let deleteBtnHtml = canDelete ? `<button class="delete-btn" onclick="event.stopPropagation(); deleteCar('${carId}')">🗑️</button>` : '';
 
-                let buyBtnHtml = '';
-                if (carData.reserved) {
-                    if (currentUser && carData.buyerId === currentUser.uid) {
-                        buyBtnHtml = `<button class="buy-btn" style="border-color: var(--discord-color); background: var(--discord-color); color: white;" onclick="cancelBooking('${carId}')">❌ СКАСУВАТИ БРОНЬ</button>`;
-                    } else {
-                        buyBtnHtml = `<button class="buy-btn" style="border-color: var(--neon-red); background: var(--neon-red); color: white;" disabled>ЗАБРОНЬОВАНО (${carData.buyerNick})</button>`;
-                    }
-                } else {
-                    buyBtnHtml = `<button class="buy-btn" onclick="openBookingModal('${carId}', '${carData.name}')">Забронювати</button>`;
-                }
+                // Динамічне посилання на машину
+                const detailUrl = `car.html?id=${carId}`;
 
                 card.innerHTML = `
-                    <div class="car-image-wrapper">
+                    <div class="car-image-wrapper" onclick="window.location.href='${detailUrl}'" style="cursor:pointer;" title="Натисни, щоб подивитися деталі">
                         <div class="condition-badge ${conditionClass}">${conditionText}</div>
                         <div class="class-badge">${carData.carClass.toUpperCase()}</div>
                         <img src="${carData.image}" alt="${carData.name}" onerror="this.src='https://via.placeholder.com/600x400?text=Немає+фото'">
                     </div>
-                    <h3>${carData.name}</h3>
+                    <h3 onclick="window.location.href='${detailUrl}'" style="cursor:pointer;" title="Натисни, щоб подивитися деталі">${carData.name}</h3>
                     <div class="car-stats"><span>Багажник: ${carData.trunk} кг</span><span>Швидк: ${carData.speed} км/год</span></div>
                     <p class="price">$${Number(carData.price).toLocaleString()}</p>
                     <div class="action-buttons">
-                        ${buyBtnHtml}
+                        <button class="buy-btn" onclick="window.location.href='${detailUrl}'">Детальніше / Купити</button>
                         ${deleteBtnHtml}
                     </div>
                     <div class="owner-tag">Продавець: ${carData.ownerName}</div>
