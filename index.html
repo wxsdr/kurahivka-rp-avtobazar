@@ -85,13 +85,24 @@
         .car-card { background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px; transition: all 0.4s ease; position: relative; overflow: hidden; display: flex; flex-direction: column; }
         .car-card:hover { transform: translateY(-10px); border-color: var(--neon-gold); box-shadow: 0 15px 40px rgba(255, 183, 3, 0.15); }
         .car-image-wrapper { position: relative; border-radius: 15px; overflow: hidden; margin-bottom: 15px; height: 220px; background: #111;}
-        .car-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-        .car-card:hover img { transform: scale(1.05); }
+        
+        /* ОБНОВЛЕННЫЕ СТИЛИ ДЛЯ ФОТО */
+        .car-card img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            transition: 0.5s; 
+            filter: brightness(0.65); 
+        }
+        .car-card:hover img { 
+            transform: scale(1.05); 
+            filter: brightness(1); 
+        }
 
-        .condition-badge { position: absolute; top: 15px; left: 15px; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(5px); }
+        .condition-badge { position: absolute; top: 15px; left: 15px; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(5px); z-index: 2;}
         .badge-new { background: rgba(0, 245, 212, 0.2); color: var(--neon-green); border: 1px solid var(--neon-green); }
         .badge-used { background: rgba(255, 183, 3, 0.2); color: var(--neon-gold); border: 1px solid var(--neon-gold); }
-        .class-badge { position: absolute; top: 15px; right: 15px; background: rgba(0, 0, 0, 0.7); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; border: 1px solid #444; color: #fff; }
+        .class-badge { position: absolute; top: 15px; right: 15px; background: rgba(0, 0, 0, 0.7); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; border: 1px solid #444; color: #fff; z-index: 2;}
 
         .car-card h3 { margin: 10px 0; font-size: 1.5em; font-weight: 900; letter-spacing: 1px; }
         .car-stats { display: flex; justify-content: space-between; font-size: 0.9em; color: #aaa; margin-bottom: 20px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; }
@@ -219,7 +230,12 @@
         <div class="modal-content">
             <h3>ДОДАТИ АВТО НА БАЗАР</h3>
             <input type="text" id="newCarName" placeholder="Назва (напр. BMW M5 F90)">
-            <input type="text" id="newCarImg" placeholder="Посилання на картинку (.jpg або .png)">
+            
+            <div id="photoInputsContainer">
+                <input type="text" class="car-photo-input" placeholder="Головне фото (з'явиться в каталозі)">
+            </div>
+            <button type="button" id="addPhotoBtn" onclick="addPhotoField()" style="background: rgba(0,0,0,0.5); border: 1px dashed var(--neon-gold); color: var(--neon-gold); font-size: 12px; padding: 10px;">➕ ДОДАТИ ЩЕ ФОТО (1/10)</button>
+
             <div class="img-hint">
                 💡 Немає посилання? Завантаж фото на <a href="https://imgbb.com/" target="_blank">imgbb.com</a> та встав сюди.
             </div>
@@ -335,7 +351,6 @@
             renderCars();
         });
 
-        // ОСЬ ТА САМА ОНОВЛЕНА ФУНКЦІЯ, ЯКА ПРАЦЮЄ З car.html
         function renderCars() {
             const grid = document.getElementById('carGrid');
             grid.innerHTML = ''; 
@@ -365,14 +380,16 @@
                 const canDelete = currentUser && (currentUser.uid === carData.ownerId || currentUser.uid === ADMIN_UID);
                 let deleteBtnHtml = canDelete ? `<button class="delete-btn" onclick="event.stopPropagation(); deleteCar('${carId}')">🗑️</button>` : '';
 
-                // Динамічне посилання на машину
                 const detailUrl = `car.html?id=${carId}`;
+
+                // Вибір головного фото (перше з масиву images) або сумісність зі старими записами
+                const mainImage = (carData.images && carData.images.length > 0) ? carData.images[0] : (carData.image || 'https://via.placeholder.com/600x400?text=Немає+фото');
 
                 card.innerHTML = `
                     <div class="car-image-wrapper" onclick="window.location.href='${detailUrl}'" style="cursor:pointer;" title="Натисни, щоб подивитися деталі">
                         <div class="condition-badge ${conditionClass}">${conditionText}</div>
                         <div class="class-badge">${carData.carClass.toUpperCase()}</div>
-                        <img src="${carData.image}" alt="${carData.name}" onerror="this.src='https://via.placeholder.com/600x400?text=Немає+фото'">
+                        <img src="${mainImage}" alt="${carData.name}" onerror="this.src='https://via.placeholder.com/600x400?text=Немає+фото'">
                     </div>
                     <h3 onclick="window.location.href='${detailUrl}'" style="cursor:pointer;" title="Натисни, щоб подивитися деталі">${carData.name}</h3>
                     <div class="car-stats"><span>Багажник: ${carData.trunk} кг</span><span>Швидк: ${carData.speed} км/год</span></div>
@@ -389,13 +406,26 @@
         }
 
         function openAddCarModal() { document.getElementById('addCarModal').classList.add('active'); }
-        function closeAddCarModal() { document.getElementById('addCarModal').classList.remove('active'); }
+        
+        function closeAddCarModal() { 
+            document.getElementById('addCarModal').classList.remove('active'); 
+            resetPhotoFields(); 
+        }
 
         function submitNewCar() {
             if (!checkCooldown()) return;
             
             const name = document.getElementById('newCarName').value.trim();
-            const img = document.getElementById('newCarImg').value.trim();
+            
+            // Збираємо всі фотографії
+            const photoInputs = document.querySelectorAll('.car-photo-input');
+            const images = [];
+            photoInputs.forEach(input => {
+                if (input.value.trim() !== '') {
+                    images.push(input.value.trim());
+                }
+            });
+
             const price = parseInt(document.getElementById('newCarPrice').value);
             const speed = parseInt(document.getElementById('newCarSpeed').value);
             const trunk = parseInt(document.getElementById('newCarTrunk').value);
@@ -404,14 +434,16 @@
             const body = document.getElementById('newCarBody').value;
             const carClass = document.getElementById('newCarClass').value;
 
-            if(!name || !img || !price || !speed || !trunk) {
-                showNotification('Заповни всі поля!', 'error'); return;
+            if(!name || images.length === 0 || !price || !speed || !trunk) {
+                showNotification('Заповни всі поля та додай хоча б 1 фото!', 'error'); return;
             }
 
             const newCarId = 'car_' + Date.now();
 
             database.ref('cars/' + newCarId).set({
-                name: name, image: img, price: price, speed: speed, trunk: trunk,
+                name: name, 
+                images: images, 
+                price: price, speed: speed, trunk: trunk,
                 condition: condition, brand: brand, body: body, carClass: carClass,
                 ownerId: currentUser.uid, ownerName: currentUser.displayName,
                 reserved: false
@@ -487,10 +519,52 @@
                 else { card.classList.add('hidden'); }
             });
         }
+        
         function resetFilters() {
-            document.getElementById('filterBrand').value = 'all'; document.getElementById('filterBody').value = 'all';
-            document.getElementById('filterClass').value = 'all'; document.getElementById('filterPriceMin').value = '';
-            document.getElementById('filterPriceMax').value = ''; applyFilters();
+            document.getElementById('filterBrand').value = 'all'; 
+            document.getElementById('filterBody').value = 'all';
+            document.getElementById('filterClass').value = 'all'; 
+            document.getElementById('filterPriceMin').value = ''; 
+            document.getElementById('filterPriceMax').value = '';
+            applyFilters();
+        }
+
+        // ЛОГІКА ДЛЯ ДОДАВАННЯ БАГАТЬОХ ФОТОГРАФІЙ
+        let photoCount = 1;
+        const MAX_PHOTOS = 10;
+
+        function addPhotoField() {
+            if (photoCount >= MAX_PHOTOS) return;
+
+            const container = document.getElementById('photoInputsContainer');
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'car-photo-input';
+            input.placeholder = `Додаткове фото ${photoCount + 1}`;
+            container.appendChild(input);
+
+            photoCount++;
+            const btn = document.getElementById('addPhotoBtn');
+            btn.innerText = `➕ ДОДАТИ ЩЕ ФОТО (${photoCount}/${MAX_PHOTOS})`;
+
+            if (photoCount >= MAX_PHOTOS) {
+                btn.style.display = 'none';
+            }
+        }
+
+        function resetPhotoFields() {
+            const container = document.getElementById('photoInputsContainer');
+            container.innerHTML = '<input type="text" class="car-photo-input" placeholder="Головне фото (з\'явиться в каталозі)">';
+            photoCount = 1;
+            const btn = document.getElementById('addPhotoBtn');
+            btn.innerText = `➕ ДОДАТИ ЩЕ ФОТО (1/${MAX_PHOTOS})`;
+            btn.style.display = 'block';
+            
+            // Також очищаємо інші інпути
+            document.getElementById('newCarName').value = '';
+            document.getElementById('newCarPrice').value = '';
+            document.getElementById('newCarSpeed').value = '';
+            document.getElementById('newCarTrunk').value = '';
         }
     </script>
 </body>
