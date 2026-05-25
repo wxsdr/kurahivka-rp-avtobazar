@@ -408,7 +408,18 @@
                 showNotification('Заповни всі поля та додай хоча б 1 фото!', 'error'); return;
             }
 
+            // ... (код выше остается без изменений)
             const newCarId = 'car_' + Date.now();
+
+            // Определяем ID: берем Discord ID, если он есть, иначе - UID
+            let discordId = currentUser.uid; // По умолчанию UID
+            if (currentUser.providerData && currentUser.providerData.length > 0) {
+                // Пытаемся найти ID именно от Discord
+                const discordProvider = currentUser.providerData.find(p => p.providerId === 'discord.com');
+                if (discordProvider) {
+                    discordId = discordProvider.uid;
+                }
+            }
 
             database.ref('cars/' + newCarId).set({
                 name: name, 
@@ -416,12 +427,13 @@
                 price: price, speed: speed, trunk: trunk,
                 condition: condition, brand: brand, body: body, carClass: carClass,
                 
-                // ВАМ НУЖНО ЗАМЕНИТЬ СТРОКУ НИЖЕ:
-                ownerId: currentUser.providerData[0].uid, 
+                // Используем вычисленный discordId
+                ownerId: discordId, 
                 
                 ownerName: currentUser.displayName,
                 reserved: false
             }).then(() => {
+            // ... (код ниже остается без изменений)
                 setCooldown(); closeAddCarModal();
                 showNotification('Машина успішно виставлена на продаж!', 'success');
             }).catch(e => showNotification('Помилка: ' + e.message, 'error'));
