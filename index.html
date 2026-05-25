@@ -12,15 +12,9 @@
 
     <style>
         :root {
-            --neon-gold: #ffb703;
-            --neon-red: #d90429;
-            --neon-green: #00f5d4;
-            --discord-color: #5865F2; 
-            --dark-bg: #0b0c10;
-            --glass-bg: rgba(31, 33, 40, 0.6);
-            --glass-border: rgba(255, 255, 255, 0.08);
+            --neon-gold: #ffb703; --neon-red: #d90429; --neon-green: #00f5d4; --discord-color: #5865F2; 
+            --dark-bg: #0b0c10; --glass-bg: rgba(31, 33, 40, 0.6); --glass-border: rgba(255, 255, 255, 0.08);
         }
-
         body {
             background-color: var(--dark-bg);
             background-image: 
@@ -28,26 +22,18 @@
                 linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
             background-size: 100% 100%, 40px 40px, 40px 40px;
-            color: #ffffff;
-            font-family: 'Montserrat', sans-serif;
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
-            overflow-x: hidden;
+            color: #ffffff; font-family: 'Montserrat', sans-serif; margin: 0; padding: 20px;
+            min-height: 100vh; overflow-x: hidden;
         }
-
         #loginScreen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 90vh; text-align: center; animation: fadeIn 0.8s ease; }
         #loginScreen h1 { font-size: 4em; margin-bottom: 10px; }
         #loginScreen p { color: #888; font-size: 1.2em; letter-spacing: 2px; margin-bottom: 40px; text-transform: uppercase; }
         #loginScreen .auth-btn { font-size: 1.2em; padding: 15px 30px; border-radius: 30px; }
-
         #mainContent { display: none; animation: fadeIn 0.5s ease; }
         
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        
         .add-car-btn { background: linear-gradient(45deg, var(--neon-green), #00b4d8); color: black; border: none; padding: 10px 20px; border-radius: 20px; font-weight: 900; font-family: 'Montserrat'; cursor: pointer; transition: 0.3s; text-transform: uppercase; display: flex; align-items: center; gap: 8px;}
         .add-car-btn:hover { box-shadow: 0 0 20px rgba(0, 245, 212, 0.4); transform: translateY(-2px); }
-
         .user-info { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 20px; border: 1px solid var(--discord-color); }
         .user-info img { width: 30px; height: 30px; border-radius: 50%; }
         .user-info span { font-weight: bold; font-size: 14px; color: var(--discord-color); }
@@ -130,7 +116,6 @@
         .toast.success { border-left-color: var(--neon-green); }
         .toast.warning { border-left-color: var(--neon-gold); }
         
-        /* Виправлено відступи підказки */
         .img-hint { font-size: 11px; color: #888; text-align: left; margin: 15px 0 20px 5px; }
         .img-hint a { color: var(--neon-gold); text-decoration: none; font-weight: bold; }
         .img-hint a:hover { text-decoration: underline; }
@@ -349,7 +334,8 @@
                 const conditionText = carData.condition === 'new' ? 'З салону' : 'Вживана (Б/У)';
                 const conditionClass = carData.condition === 'new' ? 'badge-new' : 'badge-used';
                 
-                const canDelete = currentUser && (currentUser.uid === carData.ownerId || currentUser.uid === ADMIN_UID);
+                // Перевірка прав на видалення
+                const canDelete = currentUser && (currentUser.providerData && currentUser.providerData[0] && currentUser.providerData[0].uid === carData.ownerId || currentUser.uid === carData.ownerId || currentUser.uid === ADMIN_UID);
                 let deleteBtnHtml = canDelete ? `<button class="delete-btn" onclick="event.stopPropagation(); deleteCar('${carId}')">🗑️</button>` : '';
 
                 const detailUrl = `car.html?id=${carId}`;
@@ -408,32 +394,31 @@
                 showNotification('Заповни всі поля та додай хоча б 1 фото!', 'error'); return;
             }
 
-            // ... (код выше остается без изменений)
-            const newCarId = 'car_' + Date.now();
-
-            // Определяем ID: берем Discord ID, если он есть, иначе - UID
-            let discordId = currentUser.uid; // По умолчанию UID
+            // ЖЕЛЕЗОБЕТОННАЯ ЛОГИКА ПОЛУЧЕНИЯ DISCORD ID
+            let discordId = null;
             if (currentUser.providerData && currentUser.providerData.length > 0) {
-                // Пытаемся найти ID именно от Discord
                 const discordProvider = currentUser.providerData.find(p => p.providerId === 'discord.com');
-                if (discordProvider) {
+                if (discordProvider && discordProvider.uid) {
                     discordId = discordProvider.uid;
                 }
             }
+            
+            if (!discordId) {
+                showNotification('Помилка авторизації: неможливо отримати Discord ID!', 'error');
+                return; // Не даем добавить машину, если ID не найден
+            }
+
+            const newCarId = 'car_' + Date.now();
 
             database.ref('cars/' + newCarId).set({
                 name: name, 
                 images: images, 
                 price: price, speed: speed, trunk: trunk,
                 condition: condition, brand: brand, body: body, carClass: carClass,
-                
-                // Используем вычисленный discordId
-                ownerId: 636937889003077632, 
-                
+                ownerId: discordId, // ЗДЕСЬ ТЕПЕРЬ ВСЕГДА БУДУТ ЦИФРЫ
                 ownerName: currentUser.displayName,
                 reserved: false
             }).then(() => {
-            // ... (код ниже остается без изменений)
                 setCooldown(); closeAddCarModal();
                 showNotification('Машина успішно виставлена на продаж!', 'success');
             }).catch(e => showNotification('Помилка: ' + e.message, 'error'));
@@ -485,14 +470,12 @@
             applyFilters();
         }
 
-        // ЛОГІКА ДЛЯ ДОДАВАННЯ БАГАТЬОХ ФОТОГРАФІЙ (з перевіркою)
         let photoCount = 1;
         const MAX_PHOTOS = 10;
 
         function addPhotoField() {
             if (photoCount >= MAX_PHOTOS) return;
 
-            // Перевірка, чи заповнене останнє створене поле
             const inputs = document.querySelectorAll('.car-photo-input');
             const lastInput = inputs[inputs.length - 1];
             
