@@ -1,61 +1,367 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Оголошення | Kurahivka RP</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,900;1,900&display=swap" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-    <style>
-        /* Стилі копіюємо з головної, щоб було гармонійно */
-        :root { --neon-gold: #ffb703; --neon-red: #d90429; --neon-green: #00f5d4; --discord-color: #5865F2; --dark-bg: #0b0c10; --glass-bg: rgba(31, 33, 40, 0.8); }
-        body { background-color: var(--dark-bg); color: white; font-family: 'Montserrat', sans-serif; padding: 20px; display: flex; justify-content: center; }
-        .car-detail { background: var(--glass-bg); padding: 30px; border-radius: 20px; border: 1px solid var(--neon-gold); max-width: 800px; width: 100%; }
-        img { width: 100%; border-radius: 15px; margin-bottom: 20px; }
-        .price { color: var(--neon-green); font-size: 2em; font-weight: 900; margin: 10px 0; }
-        .btn-back { background: transparent; color: white; border: 1px solid #555; padding: 10px 20px; border-radius: 10px; cursor: pointer; margin-bottom: 20px; }
-        .btn-contact { background: var(--discord-color); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1.2em; }
-        .btn-contact:hover { background: #4752C4; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Авто | Kurahivka RP</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+
+<style>
+:root{
+    --gold:#ffb703;
+    --green:#00f5d4;
+    --red:#ff2d55;
+    --bg:#0b0c10;
+}
+
+body{
+    margin:0;
+    font-family:'Montserrat',sans-serif;
+    background:var(--bg);
+    color:white;
+}
+
+.container{
+    max-width:1300px;
+    margin:auto;
+    padding:30px;
+}
+
+.back-btn{
+    display:inline-block;
+    margin-bottom:25px;
+    text-decoration:none;
+    color:white;
+    border:1px solid #444;
+    padding:12px 22px;
+    border-radius:12px;
+    transition:.3s;
+}
+
+.back-btn:hover{
+    border-color:var(--gold);
+    color:var(--gold);
+}
+
+.car-layout{
+    display:grid;
+    grid-template-columns:1.3fr 1fr;
+    gap:40px;
+}
+
+.car-image{
+    width:100%;
+    border-radius:25px;
+    height:600px;
+    object-fit:cover;
+    border:2px solid rgba(255,255,255,.1);
+}
+
+.right-panel{
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:25px;
+    padding:30px;
+    backdrop-filter:blur(10px);
+}
+
+.car-title{
+    font-size:3em;
+    font-weight:900;
+    margin-bottom:10px;
+}
+
+.price{
+    color:var(--green);
+    font-size:2.5em;
+    font-weight:900;
+    margin-bottom:25px;
+}
+
+.stats{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+    margin-bottom:30px;
+}
+
+.stat{
+    background:rgba(0,0,0,.3);
+    padding:18px;
+    border-radius:15px;
+}
+
+.stat-title{
+    color:#999;
+    margin-bottom:8px;
+    font-size:14px;
+}
+
+.stat-value{
+    font-size:1.3em;
+    font-weight:700;
+}
+
+.owner-box{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    margin-bottom:30px;
+    padding:20px;
+    border-radius:15px;
+    background:rgba(0,0,0,.3);
+}
+
+.owner-box img{
+    width:60px;
+    height:60px;
+    border-radius:50%;
+}
+
+.contact-btn{
+    width:100%;
+    padding:18px;
+    border:none;
+    border-radius:16px;
+    font-size:17px;
+    font-weight:900;
+    cursor:pointer;
+    background:linear-gradient(45deg,var(--gold),#ff6d00);
+    transition:.3s;
+}
+
+.contact-btn:hover{
+    transform:translateY(-3px);
+}
+
+.loading{
+    text-align:center;
+    padding:100px;
+    font-size:2em;
+}
+
+@media(max-width:900px){
+    .car-layout{
+        grid-template-columns:1fr;
+    }
+
+    .car-image{
+        height:350px;
+    }
+}
+</style>
 </head>
+
 <body>
 
-    <div class="car-detail" id="carDetails">
-        <button class="btn-back" onclick="history.back()">← Назад</button>
-        <div id="content">Завантаження...</div>
-    </div>
+<div class="container">
 
-    <script>
-        const firebaseConfig = { /* Твій конфіг з index.html */ };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        const carId = new URLSearchParams(window.location.search).get('id');
+<a href="index.html" class="back-btn">← Назад до автобазару</a>
 
-        database.ref('cars/' + carId).once('value').then((snapshot) => {
-            const data = snapshot.val();
-            if (!data) { document.getElementById('content').innerHTML = "Машину не знайдено!"; return; }
-            
-            document.getElementById('content').innerHTML = `
-                <img src="${data.image}" alt="${data.name}">
-                <h1>${data.name}</h1>
-                <p class="price">$${Number(data.price).toLocaleString()}</p>
-                <div style="margin: 20px 0; background: #222; padding: 15px; border-radius: 10px;">
-                    <p><b>Марка:</b> ${data.brand}</p>
-                    <p><b>Швидкість:</b> ${data.speed} км/год</p>
-                    <p><b>Багажник:</b> ${data.trunk} кг</p>
-                    <p><b>Продавець:</b> ${data.ownerName}</p>
-                </div>
-                <button class="btn-contact" onclick="contactSeller('${data.ownerId}', '${data.name}')">💬 Написати продавцю</button>
-            `;
-        });
+<div id="loading" class="loading">
+Завантаження авто...
+</div>
 
-        function contactSeller(ownerId, carName) {
-            // Тут буде магія для бота
-            alert("Запит надіслано продавцю в Discord!");
-            console.log("Відправка запиту боту для власника:", ownerId);
+<div id="carPage" style="display:none;">
+
+<div class="car-layout">
+
+<div>
+<img id="carImage" class="car-image">
+</div>
+
+<div class="right-panel">
+
+<div id="carName" class="car-title"></div>
+
+<div id="carPrice" class="price"></div>
+
+<div class="stats">
+
+<div class="stat">
+<div class="stat-title">Максимальна швидкість</div>
+<div id="carSpeed" class="stat-value"></div>
+</div>
+
+<div class="stat">
+<div class="stat-title">Місткість багажника</div>
+<div id="carTrunk" class="stat-value"></div>
+</div>
+
+<div class="stat">
+<div class="stat-title">Тип кузова</div>
+<div id="carBody" class="stat-value"></div>
+</div>
+
+<div class="stat">
+<div class="stat-title">Клас авто</div>
+<div id="carClass" class="stat-value"></div>
+</div>
+
+</div>
+
+<div class="owner-box">
+<img id="ownerAvatar">
+<div>
+<div style="color:#999;font-size:14px;">Продавець</div>
+<div id="ownerName" style="font-weight:700;font-size:20px;"></div>
+</div>
+</div>
+
+<button class="contact-btn" onclick="contactSeller()">
+💬 Написати продавцю
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const firebaseConfig = {
+    apiKey: "ТВОЙ_API",
+    authDomain: "ТВОЙ_DOMAIN",
+    databaseURL: "ТВОЙ_DB",
+    projectId: "ТВОЙ_ID",
+    storageBucket: "ТВОЙ_BUCKET",
+    messagingSenderId: "ТВОЙ_SENDER",
+    appId: "ТВОЙ_APP_ID"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const database = firebase.database();
+const auth = firebase.auth();
+
+const provider = new firebase.auth.OAuthProvider('oidc.discord');
+provider.addScope('identify');
+
+let currentUser = null;
+let currentCar = null;
+
+auth.onAuthStateChanged(async(user)=>{
+
+    if(!user){
+        await auth.signInWithPopup(provider);
+        return;
+    }
+
+    currentUser = user;
+
+    loadCar();
+});
+
+function getCarId(){
+    const params = new URLSearchParams(window.location.search);
+    return params.get('id');
+}
+
+function loadCar(){
+
+    const carId = getCarId();
+
+    if(!carId){
+        alert("Авто не знайдено");
+        return;
+    }
+
+    database.ref('cars/' + carId).once('value')
+    .then(snapshot=>{
+
+        const car = snapshot.val();
+
+        if(!car){
+            alert("Авто видалено");
+            return;
         }
-    </script>
+
+        currentCar = car;
+
+        document.getElementById('carImage').src = car.image;
+        document.getElementById('carName').innerText = car.name;
+        document.getElementById('carPrice').innerText =
+            '$' + Number(car.price).toLocaleString();
+
+        document.getElementById('carSpeed').innerText =
+            car.speed + ' км/год';
+
+        document.getElementById('carTrunk').innerText =
+            car.trunk + ' кг';
+
+        document.getElementById('carBody').innerText =
+            car.body;
+
+        document.getElementById('carClass').innerText =
+            car.carClass.toUpperCase();
+
+        document.getElementById('ownerName').innerText =
+            car.ownerName;
+
+        document.getElementById('ownerAvatar').src =
+            car.ownerAvatar ||
+            'https://cdn.discordapp.com/embed/avatars/0.png';
+
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('carPage').style.display = 'block';
+
+    });
+
+}
+
+function contactSeller(){
+
+    if(!currentUser){
+        alert("Увійди через Discord");
+        return;
+    }
+
+    fetch("https://ТВОЙ_СЕРВЕР/api/contact-seller",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+
+            sellerDiscordId: currentCar.ownerDiscordId,
+
+            buyerName: currentUser.displayName,
+
+            buyerDiscordId: currentUser.providerData[0].uid,
+
+            carName: currentCar.name,
+
+            carLink: window.location.href
+
+        })
+
+    })
+    .then(()=>{
+
+        alert("Продавцю відправлено повідомлення у Discord!");
+
+    })
+    .catch(()=>{
+
+        alert("Помилка відправки");
+
+    });
+
+}
+
+</script>
+
 </body>
 </html>
