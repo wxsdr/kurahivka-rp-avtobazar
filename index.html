@@ -33,12 +33,46 @@
             margin: 0;
             padding: 20px;
             min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* === СТАРТОВИЙ ЕКРАН (LOGIN SCREEN) === */
+        #loginScreen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 90vh;
+            text-align: center;
+            animation: fadeIn 0.8s ease;
+        }
+        #loginScreen h1 {
+            font-size: 4em;
+            margin-bottom: 10px;
+        }
+        #loginScreen p {
+            color: #888;
+            font-size: 1.2em;
+            letter-spacing: 2px;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+        }
+        #loginScreen .auth-btn {
+            font-size: 1.2em;
+            padding: 15px 30px;
+            border-radius: 30px;
+        }
+
+        /* === ГОЛОВНИЙ КОНТЕНТ (ПРИХОВАНИЙ ЗА ЗМОВЧУВАННЯМ) === */
+        #mainContent {
+            display: none;
+            animation: fadeIn 0.5s ease;
         }
         
         .auth-container {
             display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-bottom: 20px;
         }
-        .user-info { display: none; align-items: center; gap: 10px; background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 20px; border: 1px solid var(--discord-color); }
+        .user-info { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 20px; border: 1px solid var(--discord-color); }
         .user-info img { width: 30px; height: 30px; border-radius: 50%; }
         .user-info span { font-weight: bold; font-size: 14px; color: var(--discord-color); }
         
@@ -46,13 +80,13 @@
             background: var(--discord-color); 
             color: white; border: none; padding: 10px 20px; border-radius: 20px; 
             cursor: pointer; font-weight: bold; font-family: 'Montserrat'; 
-            display: flex; align-items: center; gap: 10px; transition: 0.3s; 
+            display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; 
         }
-        .auth-btn:hover { background: #4752C4; box-shadow: 0 0 15px rgba(88, 101, 242, 0.4); }
+        .auth-btn:hover { background: #4752C4; box-shadow: 0 0 15px rgba(88, 101, 242, 0.4); transform: translateY(-2px); }
         .auth-btn svg { width: 20px; fill: white; }
         
-        .auth-btn.logout { background: transparent; color: var(--neon-red); border: 1px solid var(--neon-red); }
-        .auth-btn.logout:hover { background: var(--neon-red); color: white; }
+        .auth-btn.logout { background: transparent; color: var(--neon-red); border: 1px solid var(--neon-red); padding: 8px 15px; font-size: 12px; }
+        .auth-btn.logout:hover { background: var(--neon-red); color: white; box-shadow: 0 0 15px rgba(217, 4, 41, 0.4); }
 
         header { text-align: center; margin-bottom: 40px; position: relative; }
         
@@ -102,6 +136,7 @@
         .buy-btn:hover:not(:disabled) { background: var(--neon-gold); color: black; box-shadow: 0 0 20px rgba(255, 183, 3, 0.4); }
 
         .hidden { display: none !important; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .fade-in { animation: fadeIn 0.5s ease forwards; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 1000; justify-content: center; align-items: center; }
@@ -130,80 +165,86 @@
 
     <div class="toast-container" id="toastContainer"></div>
 
-    <div class="auth-container">
-        <button id="loginBtn" class="auth-btn" onclick="signInWithDiscord()">
+    <div id="loginScreen">
+        <h1>KURAHIVKA RP</h1>
+        <p>Для доступу до автобазару потрібна авторизація</p>
+        <button class="auth-btn" onclick="signInWithDiscord()">
             <svg viewBox="0 0 127.14 96.36">
                 <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14c2.64-27.38-4.51-51.11-18.9-72.15ZM42.56,65.36c-5.36,0-9.72-4.86-9.72-10.82s4.25-10.82,9.72-10.82c5.49,0,9.79,4.89,9.72,10.82C52.28,60.5,48.05,65.36,42.56,65.36Zm42.24,0c-5.36,0-9.72-4.86-9.72-10.82s4.25-10.82,9.72-10.82c5.49,0,9.79,4.89,9.72,10.82C84.8,60.5,80.57,65.36,84.8,65.36Z"/>
             </svg>
             Увійти через Discord
         </button>
-        
-        <div id="userInfo" class="user-info">
-            <img id="userAvatar" src="" alt="Avatar">
-            <span id="userName"></span>
-            <button class="auth-btn logout" onclick="signOut()">Вийти</button>
-        </div>
     </div>
 
-    <header>
-        <h1>АВТОБАЗАР У АШОТА</h1>
-        <div class="subtitle">НАЙКРАЩІ ТАЧКИ ДЛЯ KURAHIVKA RP</div>
-    </header>
-
-    <div class="controls-wrapper">
-        <div class="tabs">
-            <button class="tab-btn active" onclick="filterCondition('all', this)">Всі авто</button>
-            <button class="tab-btn" onclick="filterCondition('new', this)">Нові з салону</button>
-            <button class="tab-btn" onclick="filterCondition('used', this)">Вживані (Б/У)</button>
+    <div id="mainContent">
+        <div class="auth-container">
+            <div id="userInfo" class="user-info">
+                <img id="userAvatar" src="" alt="Avatar">
+                <span id="userName"></span>
+                <button class="auth-btn logout" onclick="signOut()">Вийти</button>
+            </div>
         </div>
-        <button class="filter-toggle-btn" onclick="toggleFilters()">⚙️ Детальні фільтри</button>
 
-        <div class="filter-panel" id="filterPanel">
-            <div class="filter-group"><label>Марка авто:</label><select><option>Всі марки</option></select></div>
-            <div class="filter-group"><label>Тип кузова:</label><select><option>Всі типи</option></select></div>
-            <div class="filter-group"><label>Ціна ($):</label><div class="price-inputs"><input type="number" placeholder="Від"><input type="number" placeholder="До"></div></div>
-            <div class="filter-group"><label>Клас авто:</label><select><option>Будь-який</option></select></div>
-            <button class="apply-filters-btn">ЗНАЙТИ ТАЧКУ</button>
+        <header>
+            <h1>АВТОБАЗАР У АШОТА</h1>
+            <div class="subtitle">НАЙКРАЩІ ТАЧКИ ДЛЯ KURAHIVKA RP</div>
+        </header>
+
+        <div class="controls-wrapper">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="filterCondition('all', this)">Всі авто</button>
+                <button class="tab-btn" onclick="filterCondition('new', this)">Нові з салону</button>
+                <button class="tab-btn" onclick="filterCondition('used', this)">Вживані (Б/У)</button>
+            </div>
+            <button class="filter-toggle-btn" onclick="toggleFilters()">⚙️ Детальні фільтри</button>
+
+            <div class="filter-panel" id="filterPanel">
+                <div class="filter-group"><label>Марка авто:</label><select><option>Всі марки</option></select></div>
+                <div class="filter-group"><label>Тип кузова:</label><select><option>Всі типи</option></select></div>
+                <div class="filter-group"><label>Ціна ($):</label><div class="price-inputs"><input type="number" placeholder="Від"><input type="number" placeholder="До"></div></div>
+                <div class="filter-group"><label>Клас авто:</label><select><option>Будь-який</option></select></div>
+                <button class="apply-filters-btn">ЗНАЙТИ ТАЧКУ</button>
+            </div>
         </div>
+
+        <main class="car-container" id="carGrid">
+            <div class="car-card fade-in" data-condition="new" id="car_bmw_m5">
+                <div class="car-image-wrapper">
+                    <div class="condition-badge badge-new">З салону</div>
+                    <div class="class-badge">Преміум</div>
+                    <img src="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=600" alt="BMW">
+                </div>
+                <h3>BMW M5 F90</h3>
+                <div class="car-stats"><span>Багажник: 20</span><span>Швидкість: 310 км/год</span></div>
+                <p class="price">$120,000</p>
+                <button class="buy-btn">Забронювати</button>
+            </div>
+
+            <div class="car-card fade-in" data-condition="used" id="car_toyota_camry">
+                <div class="car-image-wrapper">
+                    <div class="condition-badge badge-used">Б/У (Пробіг 120к)</div>
+                    <div class="class-badge">Бізнес</div>
+                    <img src="https://images.unsplash.com/photo-1597403864070-e692482390f7?auto=format&fit=crop&w=600" alt="Toyota">
+                </div>
+                <h3>Toyota Camry XV70</h3>
+                <div class="car-stats"><span>Багажник: 25</span><span>Швидкість: 220 км/год</span></div>
+                <p class="price">$35,000</p>
+                <button class="buy-btn">Забронювати</button>
+            </div>
+
+            <div class="car-card fade-in" data-condition="new" id="car_porsche_911">
+                <div class="car-image-wrapper">
+                    <div class="condition-badge badge-new">З салону</div>
+                    <div class="class-badge">Спорт</div>
+                    <img src="https://images.unsplash.com/photo-1614200179396-2bdb77ebf81b?auto=format&fit=crop&w=600" alt="Porsche">
+                </div>
+                <h3>Porsche 911 GT3</h3>
+                <div class="car-stats"><span>Багажник: 5</span><span>Швидкість: 340 км/год</span></div>
+                <p class="price">$200,000</p>
+                <button class="buy-btn">Забронювати</button>
+            </div>
+        </main>
     </div>
-
-    <main class="car-container" id="carGrid">
-        <div class="car-card fade-in" data-condition="new" id="car_bmw_m5">
-            <div class="car-image-wrapper">
-                <div class="condition-badge badge-new">З салону</div>
-                <div class="class-badge">Преміум</div>
-                <img src="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=600" alt="BMW">
-            </div>
-            <h3>BMW M5 F90</h3>
-            <div class="car-stats"><span>Багажник: 20</span><span>Швидкість: 310 км/год</span></div>
-            <p class="price">$120,000</p>
-            <button class="buy-btn">Забронювати</button>
-        </div>
-
-        <div class="car-card fade-in" data-condition="used" id="car_toyota_camry">
-            <div class="car-image-wrapper">
-                <div class="condition-badge badge-used">Б/У (Пробіг 120к)</div>
-                <div class="class-badge">Бізнес</div>
-                <img src="https://images.unsplash.com/photo-1597403864070-e692482390f7?auto=format&fit=crop&w=600" alt="Toyota">
-            </div>
-            <h3>Toyota Camry XV70</h3>
-            <div class="car-stats"><span>Багажник: 25</span><span>Швидкість: 220 км/год</span></div>
-            <p class="price">$35,000</p>
-            <button class="buy-btn">Забронювати</button>
-        </div>
-
-        <div class="car-card fade-in" data-condition="new" id="car_porsche_911">
-            <div class="car-image-wrapper">
-                <div class="condition-badge badge-new">З салону</div>
-                <div class="class-badge">Спорт</div>
-                <img src="https://images.unsplash.com/photo-1614200179396-2bdb77ebf81b?auto=format&fit=crop&w=600" alt="Porsche">
-            </div>
-            <h3>Porsche 911 GT3</h3>
-            <div class="car-stats"><span>Багажник: 5</span><span>Швидкість: 340 км/год</span></div>
-            <p class="price">$200,000</p>
-            <button class="buy-btn">Забронювати</button>
-        </div>
-    </main>
 
     <div id="bookingModal" class="modal">
         <div class="modal-content">
@@ -255,25 +296,29 @@
         // Глобальні змінні стану
         let currentUser = null;
         let currentCarsData = {};
-        let userHasBooking = false; // Змінна для перевірки, чи є вже бронь
-        const COOLDOWN_SEC = 10; // 10 секунд КД
+        let userHasBooking = false; 
+        const COOLDOWN_SEC = 10; 
 
         // ==========================================
-        // АВТОРИЗАЦІЯ
+        // ЛОГІКА ПОКАЗУ ЕКРАНІВ ТА АВТОРИЗАЦІЯ
         // ==========================================
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUser = user;
-                document.getElementById('loginBtn').style.display = 'none';
-                document.getElementById('userInfo').style.display = 'flex';
+                // Ховаємо стартовий екран, показуємо сайт
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                
+                // Налаштовуємо аватарку та ім'я зверху справа
                 document.getElementById('userAvatar').src = user.photoURL || 'https://cdn.discordapp.com/embed/avatars/0.png';
                 document.getElementById('userName').innerText = user.displayName;
             } else {
                 currentUser = null;
-                document.getElementById('loginBtn').style.display = 'flex';
-                document.getElementById('userInfo').style.display = 'none';
+                // Ховаємо сайт, показуємо стартовий екран
+                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('mainContent').style.display = 'none';
             }
-            renderCars(); // Оновлюємо кнопки після входу/виходу
+            renderCars();
         });
 
         function signInWithDiscord() {
@@ -318,9 +363,8 @@
             renderCars();
         });
 
-        // Головна функція, яка вирішує, як виглядають кнопки
         function renderCars() {
-            userHasBooking = false; // Скидаємо статус перед перевіркою бази
+            userHasBooking = false; 
 
             document.querySelectorAll('.car-card').forEach(card => {
                 const btn = card.querySelector('.buy-btn');
@@ -328,11 +372,10 @@
                 const carInfo = currentCarsData[carId];
 
                 if (carInfo && carInfo.reserved) {
-                    // ЯКЩО МАШИНА ЗАБРОНЬОВАНА
                     const isMyCar = currentUser && carInfo.userId === currentUser.uid;
 
                     if (isMyCar) {
-                        userHasBooking = true; // Фіксуємо, що у гравця вже є тачка
+                        userHasBooking = true; 
                         btn.innerText = '❌ СКАСУВАТИ БРОНЬ';
                         btn.style.background = 'var(--discord-color)';
                         btn.style.color = 'white';
@@ -354,27 +397,15 @@
                         btn.onclick = null;
                     }
                 } else {
-                    // ЯКЩО МАШИНА ВІЛЬНА
                     card.style.borderColor = 'var(--glass-border)';
                     card.style.opacity = '1';
                     btn.disabled = false;
                     btn.style.cursor = 'pointer';
-                    
-                    if (!currentUser) {
-                        // Лок для тих, хто не зайшов
-                        btn.innerText = '🔑 ПОТРІБЕН DISCORD';
-                        btn.style.background = 'transparent';
-                        btn.style.color = '#aaa';
-                        btn.style.borderColor = '#555';
-                        btn.onclick = () => showNotification('Спочатку увійди через Discord (кнопка зверху)!', 'error');
-                    } else {
-                        // Нормальна кнопка для авторизованих
-                        btn.innerText = 'Забронювати';
-                        btn.style.background = 'transparent';
-                        btn.style.color = 'white';
-                        btn.style.borderColor = 'var(--neon-gold)';
-                        btn.onclick = () => openBooking(carId, card.querySelector('h3').innerText);
-                    }
+                    btn.innerText = 'Забронювати';
+                    btn.style.background = 'transparent';
+                    btn.style.color = 'white';
+                    btn.style.borderColor = 'var(--neon-gold)';
+                    btn.onclick = () => openBooking(carId, card.querySelector('h3').innerText);
                 }
             });
         }
@@ -385,7 +416,7 @@
         let currentCarId = null;
 
         function openBooking(carId, carName) {
-            if (!checkCooldown()) return; // Перевірка КД
+            if (!checkCooldown()) return; 
             
             if (userHasBooking) {
                 showNotification('Бро! Ти вже маєш одну активну бронь. Спочатку скасуй її!', 'error');
@@ -402,22 +433,21 @@
         }
 
         function confirmBooking() {
-            if (!checkCooldown()) return; // Перевірка КД
+            if (!checkCooldown()) return; 
 
             const nick = document.getElementById('playerNick').value.trim();
             if(nick.length < 3) {
                 showNotification('Введи нормальний ігровий нік!', 'error'); return;
             }
 
-            // Записуємо унікальний UID з Діскорду, щоб точно знати власника
             database.ref('cars/' + currentCarId).set({
                 reserved: true,
                 playerNick: nick,
                 discordName: currentUser.displayName,
-                userId: currentUser.uid, // Унікальний ID, який неможливо підробити
+                userId: currentUser.uid, 
                 time: new Date().toLocaleString()
             }).then(() => {
-                setCooldown(); // Встановлюємо КД після успішної дії
+                setCooldown(); 
                 closeModal();
                 showNotification('Машину успішно заброньовано! Заходь у гру.', 'success');
             }).catch((error) => {
@@ -426,12 +456,11 @@
         }
 
         function cancelBooking(carId) {
-            if (!checkCooldown()) return; // Перевірка КД
+            if (!checkCooldown()) return; 
 
             if(confirm('Ти впевнений, що хочеш відмовитись від цієї машини?')) {
-                // Видаляємо запис про машину з бази
                 database.ref('cars/' + carId).remove().then(() => {
-                    setCooldown(); // Встановлюємо КД
+                    setCooldown(); 
                     showNotification('Бронь успішно скасовано! Машина знову вільна.', 'success');
                 }).catch((error) => {
                     showNotification('Помилка скасування!', 'error');
