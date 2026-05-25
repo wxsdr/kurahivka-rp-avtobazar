@@ -193,6 +193,7 @@ async function contactSeller(sellerDiscordId, carName) {
             const botApiUrl = "https://kurahivka-rp-avtobazar-bot.onrender.com/api/contact"; 
             
             try {
+                console.log("Пытаюсь отправить sellerDiscordId:", sellerDiscordId);
                 const response = await fetch(botApiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
