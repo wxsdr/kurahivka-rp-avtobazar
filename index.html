@@ -15,7 +15,7 @@
             --neon-gold: #ffb703;
             --neon-red: #d90429;
             --neon-green: #00f5d4;
-            --discord-color: #5865F2; /* Колір Discord */
+            --discord-color: #5865F2; 
             --dark-bg: #0b0c10;
             --glass-bg: rgba(31, 33, 40, 0.6);
             --glass-border: rgba(255, 255, 255, 0.08);
@@ -35,7 +35,6 @@
             min-height: 100vh;
         }
         
-        /* === ПАНЕЛЬ АВТОРИЗАЦІЇ DISCORD === */
         .auth-container {
             display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-bottom: 20px;
         }
@@ -43,7 +42,6 @@
         .user-info img { width: 30px; height: 30px; border-radius: 50%; }
         .user-info span { font-weight: bold; font-size: 14px; color: var(--discord-color); }
         
-        /* Кнопка Discord */
         .auth-btn { 
             background: var(--discord-color); 
             color: white; border: none; padding: 10px 20px; border-radius: 20px; 
@@ -111,7 +109,6 @@
         .modal-content { background: var(--glass-bg); border: 1px solid var(--neon-gold); padding: 30px; border-radius: 20px; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 0 40px rgba(255, 183, 3, 0.2); }
         .modal-content h3 { margin-top: 0; color: var(--neon-gold); font-weight: 900; }
         
-        /* Поле для ніку */
         .modal-content input { width: 100%; padding: 15px; margin: 10px 0; background: rgba(0,0,0,0.5); border: 1px solid #555; color: white; border-radius: 8px; box-sizing: border-box; font-family: 'Montserrat', sans-serif; font-size: 14px; }
         .modal-content input:focus { outline: none; border-color: var(--neon-gold); }
         
@@ -126,6 +123,7 @@
         .toast.show { transform: translateX(0); }
         .toast.error { border-left-color: var(--neon-red); }
         .toast.success { border-left-color: var(--neon-green); }
+        .toast.warning { border-left-color: var(--neon-gold); }
     </style>
 </head>
 <body>
@@ -179,7 +177,7 @@
             <h3>BMW M5 F90</h3>
             <div class="car-stats"><span>Багажник: 20</span><span>Швидкість: 310 км/год</span></div>
             <p class="price">$120,000</p>
-            <button class="buy-btn" onclick="openBooking('car_bmw_m5', 'BMW M5 F90')">Забронювати</button>
+            <button class="buy-btn">Забронювати</button>
         </div>
 
         <div class="car-card fade-in" data-condition="used" id="car_toyota_camry">
@@ -191,7 +189,7 @@
             <h3>Toyota Camry XV70</h3>
             <div class="car-stats"><span>Багажник: 25</span><span>Швидкість: 220 км/год</span></div>
             <p class="price">$35,000</p>
-            <button class="buy-btn" onclick="openBooking('car_toyota_camry', 'Toyota Camry XV70')">Забронювати</button>
+            <button class="buy-btn">Забронювати</button>
         </div>
 
         <div class="car-card fade-in" data-condition="new" id="car_porsche_911">
@@ -203,7 +201,7 @@
             <h3>Porsche 911 GT3</h3>
             <div class="car-stats"><span>Багажник: 5</span><span>Швидкість: 340 км/год</span></div>
             <p class="price">$200,000</p>
-            <button class="buy-btn" onclick="openBooking('car_porsche_911', 'Porsche 911 GT3')">Забронювати</button>
+            <button class="buy-btn">Забронювати</button>
         </div>
     </main>
 
@@ -218,11 +216,14 @@
     </div>
 
     <script>
+        // ==========================================
+        // ПОВІДОМЛЕННЯ
+        // ==========================================
         function showNotification(message, type = 'error') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            const icon = type === 'error' ? '❌ ' : '✅ ';
+            const icon = type === 'error' ? '❌ ' : type === 'warning' ? '⚠️ ' : '✅ ';
             toast.innerText = icon + message;
             container.appendChild(toast);
             setTimeout(() => toast.classList.add('show'), 10);
@@ -232,6 +233,9 @@
             }, 4000);
         }
 
+        // ==========================================
+        // НАЛАШТУВАННЯ FIREBASE
+        // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyCbNGyrjT1rf-2UHeRj2LCCdqIrsaZ0TG0",
             authDomain: "kurahivka-rp-avtobazar.firebaseapp.com",
@@ -245,21 +249,23 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         const auth = firebase.auth();
-        
-        // Підключаємо кастомний провайдер (Discord), який ми створили в Firebase!
         const provider = new firebase.auth.OAuthProvider('oidc.discord');
-        // Запитуємо в Discord базові дані: нік та пошту
         provider.addScope('identify');
-        provider.addScope('email');
 
+        // Глобальні змінні стану
         let currentUser = null;
+        let currentCarsData = {};
+        let userHasBooking = false; // Змінна для перевірки, чи є вже бронь
+        const COOLDOWN_SEC = 10; // 10 секунд КД
 
+        // ==========================================
+        // АВТОРИЗАЦІЯ
+        // ==========================================
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUser = user;
                 document.getElementById('loginBtn').style.display = 'none';
                 document.getElementById('userInfo').style.display = 'flex';
-                // Встановлюємо аватарку та ім'я з Discord
                 document.getElementById('userAvatar').src = user.photoURL || 'https://cdn.discordapp.com/embed/avatars/0.png';
                 document.getElementById('userName').innerText = user.displayName;
             } else {
@@ -267,15 +273,14 @@
                 document.getElementById('loginBtn').style.display = 'flex';
                 document.getElementById('userInfo').style.display = 'none';
             }
+            renderCars(); // Оновлюємо кнопки після входу/виходу
         });
 
-        // Функція входу через Discord
         function signInWithDiscord() {
-            auth.signInWithPopup(provider).then((result) => {
+            auth.signInWithPopup(provider).then(() => {
                 showNotification('Авторизація через Discord успішна!', 'success');
             }).catch((error) => {
                 showNotification('Помилка входу: ' + error.message, 'error');
-                console.error(error);
             });
         }
 
@@ -285,15 +290,105 @@
             });
         }
 
+        // ==========================================
+        // ЛОГІКА КУЛДАУНУ (КД)
+        // ==========================================
+        function checkCooldown() {
+            const lastAction = localStorage.getItem('lastActionTime');
+            if (lastAction) {
+                const now = new Date().getTime();
+                const diff = (now - parseInt(lastAction)) / 1000;
+                if (diff < COOLDOWN_SEC) {
+                    showNotification(`Зачекай ще ${Math.ceil(COOLDOWN_SEC - diff)} сек. перед наступною дією!`, 'warning');
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function setCooldown() {
+            localStorage.setItem('lastActionTime', new Date().getTime().toString());
+        }
+
+        // ==========================================
+        // СИНХРОНІЗАЦІЯ З БАЗОЮ ТА РЕНДЕР КНОПОК
+        // ==========================================
+        database.ref('cars').on('value', (snapshot) => {
+            currentCarsData = snapshot.val() || {};
+            renderCars();
+        });
+
+        // Головна функція, яка вирішує, як виглядають кнопки
+        function renderCars() {
+            userHasBooking = false; // Скидаємо статус перед перевіркою бази
+
+            document.querySelectorAll('.car-card').forEach(card => {
+                const btn = card.querySelector('.buy-btn');
+                const carId = card.id;
+                const carInfo = currentCarsData[carId];
+
+                if (carInfo && carInfo.reserved) {
+                    // ЯКЩО МАШИНА ЗАБРОНЬОВАНА
+                    const isMyCar = currentUser && carInfo.userId === currentUser.uid;
+
+                    if (isMyCar) {
+                        userHasBooking = true; // Фіксуємо, що у гравця вже є тачка
+                        btn.innerText = '❌ СКАСУВАТИ БРОНЬ';
+                        btn.style.background = 'var(--discord-color)';
+                        btn.style.color = 'white';
+                        btn.style.borderColor = 'var(--discord-color)';
+                        btn.disabled = false;
+                        btn.style.cursor = 'pointer';
+                        card.style.borderColor = 'var(--discord-color)';
+                        card.style.opacity = '1';
+                        btn.onclick = () => cancelBooking(carId);
+                    } else {
+                        btn.innerText = 'ЗАБРОНЬОВАНО (' + carInfo.playerNick + ')';
+                        btn.style.background = 'var(--neon-red)';
+                        btn.style.color = 'white';
+                        btn.style.borderColor = 'var(--neon-red)';
+                        btn.disabled = true;
+                        btn.style.cursor = 'not-allowed';
+                        card.style.borderColor = 'var(--neon-red)';
+                        card.style.opacity = '0.8';
+                        btn.onclick = null;
+                    }
+                } else {
+                    // ЯКЩО МАШИНА ВІЛЬНА
+                    card.style.borderColor = 'var(--glass-border)';
+                    card.style.opacity = '1';
+                    btn.disabled = false;
+                    btn.style.cursor = 'pointer';
+                    
+                    if (!currentUser) {
+                        // Лок для тих, хто не зайшов
+                        btn.innerText = '🔑 ПОТРІБЕН DISCORD';
+                        btn.style.background = 'transparent';
+                        btn.style.color = '#aaa';
+                        btn.style.borderColor = '#555';
+                        btn.onclick = () => showNotification('Спочатку увійди через Discord (кнопка зверху)!', 'error');
+                    } else {
+                        // Нормальна кнопка для авторизованих
+                        btn.innerText = 'Забронювати';
+                        btn.style.background = 'transparent';
+                        btn.style.color = 'white';
+                        btn.style.borderColor = 'var(--neon-gold)';
+                        btn.onclick = () => openBooking(carId, card.querySelector('h3').innerText);
+                    }
+                }
+            });
+        }
+
+        // ==========================================
+        // БРОНЮВАННЯ ТА СКАСУВАННЯ
+        // ==========================================
         let currentCarId = null;
 
         function openBooking(carId, carName) {
-            if (!currentUser) {
-                showNotification('Спочатку увійди через Discord (кнопка зверху)!', 'error');
-                return;
-            }
-            if(localStorage.getItem('hasBookedCar') === 'true') {
-                showNotification('Бро! Ти вже забронював одну машину. Залиш іншим!', 'error');
+            if (!checkCooldown()) return; // Перевірка КД
+            
+            if (userHasBooking) {
+                showNotification('Бро! Ти вже маєш одну активну бронь. Спочатку скасуй її!', 'error');
                 return;
             }
             currentCarId = carId;
@@ -307,50 +402,46 @@
         }
 
         function confirmBooking() {
+            if (!checkCooldown()) return; // Перевірка КД
+
             const nick = document.getElementById('playerNick').value.trim();
-            
             if(nick.length < 3) {
                 showNotification('Введи нормальний ігровий нік!', 'error'); return;
             }
 
-            // Записуємо нік в грі, та АВТОМАТИЧНО записуємо Discord ID/Нік
+            // Записуємо унікальний UID з Діскорду, щоб точно знати власника
             database.ref('cars/' + currentCarId).set({
                 reserved: true,
                 playerNick: nick,
                 discordName: currentUser.displayName,
-                discordEmail: currentUser.email,
+                userId: currentUser.uid, // Унікальний ID, який неможливо підробити
                 time: new Date().toLocaleString()
             }).then(() => {
-                localStorage.setItem('hasBookedCar', 'true');
+                setCooldown(); // Встановлюємо КД після успішної дії
                 closeModal();
-                showNotification('Машину успішно заброньовано! Чекай повідомлення.', 'success');
+                showNotification('Машину успішно заброньовано! Заходь у гру.', 'success');
             }).catch((error) => {
-                showNotification('Помилка бази даних! Перевір вкладку Rules.', 'error');
+                showNotification('Помилка бази даних! ' + error.message, 'error');
             });
         }
 
-        database.ref('cars').on('value', (snapshot) => {
-            const data = snapshot.val();
-            if(data) {
-                for (const [carId, carInfo] of Object.entries(data)) {
-                    if(carInfo.reserved) {
-                        const card = document.getElementById(carId);
-                        if(card) {
-                            const btn = card.querySelector('.buy-btn');
-                            btn.innerText = 'ЗАБРОНЬОВАНО (' + carInfo.playerNick + ')';
-                            btn.style.background = 'var(--neon-red)';
-                            btn.style.color = 'white';
-                            btn.style.borderColor = 'var(--neon-red)';
-                            btn.disabled = true;
-                            btn.style.cursor = 'not-allowed';
-                            card.style.borderColor = 'var(--neon-red)';
-                            card.style.opacity = '0.8';
-                        }
-                    }
-                }
-            }
-        });
+        function cancelBooking(carId) {
+            if (!checkCooldown()) return; // Перевірка КД
 
+            if(confirm('Ти впевнений, що хочеш відмовитись від цієї машини?')) {
+                // Видаляємо запис про машину з бази
+                database.ref('cars/' + carId).remove().then(() => {
+                    setCooldown(); // Встановлюємо КД
+                    showNotification('Бронь успішно скасовано! Машина знову вільна.', 'success');
+                }).catch((error) => {
+                    showNotification('Помилка скасування!', 'error');
+                });
+            }
+        }
+
+        // ==========================================
+        // ДИЗАЙН-ФУНКЦІЇ
+        // ==========================================
         function toggleFilters() { document.getElementById('filterPanel').classList.toggle('active'); }
         function filterCondition(condition, btnElement) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
