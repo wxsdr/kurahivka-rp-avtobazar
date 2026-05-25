@@ -45,7 +45,6 @@
         
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         
-        /* Кнопка додавання авто */
         .add-car-btn { background: linear-gradient(45deg, var(--neon-green), #00b4d8); color: black; border: none; padding: 10px 20px; border-radius: 20px; font-weight: 900; font-family: 'Montserrat'; cursor: pointer; transition: 0.3s; text-transform: uppercase; display: flex; align-items: center; gap: 8px;}
         .add-car-btn:hover { box-shadow: 0 0 20px rgba(0, 245, 212, 0.4); transform: translateY(-2px); }
 
@@ -129,6 +128,10 @@
         .toast.error { border-left-color: var(--neon-red); }
         .toast.success { border-left-color: var(--neon-green); }
         .toast.warning { border-left-color: var(--neon-gold); }
+        
+        .img-hint { font-size: 11px; color: #888; text-align: left; margin: -5px 0 10px 5px; }
+        .img-hint a { color: var(--neon-gold); text-decoration: none; font-weight: bold; }
+        .img-hint a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -217,6 +220,9 @@
             <h3>ДОДАТИ АВТО НА БАЗАР</h3>
             <input type="text" id="newCarName" placeholder="Назва (напр. BMW M5 F90)">
             <input type="text" id="newCarImg" placeholder="Посилання на картинку (.jpg або .png)">
+            <div class="img-hint">
+                💡 Немає посилання? Завантаж фото на <a href="https://imgbb.com/" target="_blank">imgbb.com</a> та встав сюди.
+            </div>
             <input type="number" id="newCarPrice" placeholder="Ціна в доларах ($)">
             <input type="number" id="newCarSpeed" placeholder="Макс. швидкість (км/год)">
             <input type="number" id="newCarTrunk" placeholder="Місткість багажника (кг)">
@@ -288,11 +294,6 @@
         const provider = new firebase.auth.OAuthProvider('oidc.discord');
         provider.addScope('identify');
 
-        // ==========================================
-        // НАЛАШТУВАННЯ АДМІНІСТРАТОРА
-        // ==========================================
-        // Щоб ти міг видаляти БУДЬ-ЯКІ машини, встав сюди свій UID з Discord. 
-        // Поки що тут пустий рядок, але кожен зможе видаляти ТІЛЬКИ СВОЇ машини.
         const ADMIN_UID = "ТВІЙ_UID_СЮДИ_ЯКЩО_ТРЕБА"; 
 
         let currentUser = null;
@@ -329,9 +330,6 @@
         }
         function setCooldown() { localStorage.setItem('lastActionTime', new Date().getTime().toString()); }
 
-        // ==========================================
-        // ГЕНЕРАЦІЯ МАШИН З БАЗИ
-        // ==========================================
         database.ref('cars').on('value', (snapshot) => {
             currentCarsData = snapshot.val() || {};
             renderCars();
@@ -339,10 +337,9 @@
 
         function renderCars() {
             const grid = document.getElementById('carGrid');
-            grid.innerHTML = ''; // Очищаємо сітку перед малюванням
+            grid.innerHTML = ''; 
             userHasBooking = false;
 
-            // Спочатку перевіряємо, чи є в користувача бронь
             if (currentUser) {
                 for (const carId in currentCarsData) {
                     if (currentCarsData[carId].reserved && currentCarsData[carId].buyerId === currentUser.uid) {
@@ -351,7 +348,6 @@
                 }
             }
 
-            // Малюємо кожну машину
             for (const [carId, carData] of Object.entries(currentCarsData)) {
                 const card = document.createElement('div');
                 card.className = 'car-card fade-in';
@@ -365,11 +361,9 @@
                 const conditionText = carData.condition === 'new' ? 'З салону' : 'Вживана (Б/У)';
                 const conditionClass = carData.condition === 'new' ? 'badge-new' : 'badge-used';
                 
-                // Перевірка прав на видалення (Власник або Адмін)
                 const canDelete = currentUser && (currentUser.uid === carData.ownerId || currentUser.uid === ADMIN_UID);
                 let deleteBtnHtml = canDelete ? `<button class="delete-btn" onclick="deleteCar('${carId}')">🗑️</button>` : '';
 
-                // Логіка кнопок броні
                 let buyBtnHtml = '';
                 if (carData.reserved) {
                     if (currentUser && carData.buyerId === currentUser.uid) {
@@ -398,12 +392,9 @@
                 `;
                 grid.appendChild(card);
             }
-            applyFilters(); // Застосовуємо фільтри після рендеру
+            applyFilters(); 
         }
 
-        // ==========================================
-        // ДОДАВАННЯ ТА ВИДАЛЕННЯ АВТО
-        // ==========================================
         function openAddCarModal() { document.getElementById('addCarModal').classList.add('active'); }
         function closeAddCarModal() { document.getElementById('addCarModal').classList.remove('active'); }
 
@@ -424,7 +415,7 @@
                 showNotification('Заповни всі поля!', 'error'); return;
             }
 
-            const newCarId = 'car_' + Date.now(); // Унікальний ID
+            const newCarId = 'car_' + Date.now();
 
             database.ref('cars/' + newCarId).set({
                 name: name, image: img, price: price, speed: speed, trunk: trunk,
@@ -445,9 +436,6 @@
             }
         }
 
-        // ==========================================
-        // БРОНЮВАННЯ ТА ФІЛЬТРИ (старий код)
-        // ==========================================
         let currentBookingCarId = null;
         function openBookingModal(carId, carName) {
             if (!checkCooldown()) return; 
