@@ -5,9 +5,9 @@ import asyncio
 import json
 
 # Твій токен бота з Discord Developer Portal
-TOKEN = 'ТВІЙ_ТОКЕН_БОТА'
+TOKEN = 'MTUwODU2ODkyNjM5NTgyNjIxOA.GpgK-C.6HQpdPS2fQKb1VhvlqN-QnFv5rVwMmkex2CBeY'
 # Порт, на якому працюватиме веб-сервер бота
-PORT = 5000 
+PORT = 5000
 
 intents = discord.Intents.default()
 intents.members = True # Обов'язково увімкни Server Members Intent в порталі!
