@@ -3,341 +3,334 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>АВТОБАЗАР У АШОТА | Kurahivka RP</title>
+<title>АВТОБАЗАР У АШОТА</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
 
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
 <style>
 
 :root{
-    --gold:#ffb703;
-    --green:#00f5d4;
-    --red:#ff2d55;
-    --discord:#5865F2;
-    --bg:#0b0c10;
+--gold:#ffb703;
+--green:#00f5d4;
+--red:#ff2d55;
+--bg:#0b0c10;
+--glass:rgba(255,255,255,0.05);
 }
 
 *{
-    box-sizing:border-box;
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Montserrat',sans-serif;
 }
 
 body{
-    margin:0;
-    padding:20px;
-    background:var(--bg);
-    color:white;
-    font-family:'Montserrat',sans-serif;
-
-    background-image:
-    radial-gradient(circle at top, rgba(255,183,3,.15), transparent 40%);
+background:var(--bg);
+color:white;
+min-height:100vh;
+padding:20px;
+background-image:
+radial-gradient(circle at top, rgba(255,183,3,.15), transparent 40%);
 }
 
-.topbar{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:30px;
-    flex-wrap:wrap;
-    gap:15px;
-}
-
-.logo{
-    font-size:3em;
-    font-weight:900;
-    background:linear-gradient(45deg,var(--gold),#ff6d00);
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
+h1{
+font-size:4rem;
+font-weight:900;
+text-align:center;
+margin-bottom:10px;
+background:linear-gradient(90deg,var(--gold),#ff5400);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
 }
 
 .subtitle{
-    color:#999;
-    margin-top:5px;
+text-align:center;
+color:#777;
+margin-bottom:30px;
 }
 
-.auth-btn{
-    background:var(--discord);
-    border:none;
-    color:white;
-    padding:14px 24px;
-    border-radius:14px;
-    cursor:pointer;
-    font-weight:700;
-    transition:.3s;
+.topbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:30px;
+gap:10px;
+flex-wrap:wrap;
 }
 
-.auth-btn:hover{
-    transform:translateY(-2px);
+.btn{
+border:none;
+padding:12px 20px;
+border-radius:12px;
+cursor:pointer;
+font-weight:700;
+transition:.3s;
 }
 
-.user-box{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    background:rgba(255,255,255,.05);
-    padding:10px 15px;
-    border-radius:15px;
-}
-
-.user-box img{
-    width:40px;
-    height:40px;
-    border-radius:50%;
+.btn:hover{
+transform:translateY(-2px);
 }
 
 .add-btn{
-    background:linear-gradient(45deg,var(--green),#00b4d8);
-    color:black;
-    border:none;
-    padding:15px 25px;
-    border-radius:15px;
-    font-weight:900;
-    cursor:pointer;
-    transition:.3s;
+background:linear-gradient(45deg,var(--green),#00b4d8);
+color:black;
 }
 
-.add-btn:hover{
-    transform:translateY(-3px);
+.logout-btn{
+background:transparent;
+border:1px solid var(--red);
+color:var(--red);
 }
 
-.grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-    gap:30px;
+.logout-btn:hover{
+background:var(--red);
+color:white;
 }
 
-.card{
-    background:rgba(255,255,255,.04);
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:25px;
-    overflow:hidden;
-    cursor:pointer;
-    transition:.4s;
-    position:relative;
+.login-screen{
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+height:90vh;
 }
 
-.card:hover{
-    transform:translateY(-8px);
-    border-color:var(--gold);
+.discord-btn{
+background:#5865F2;
+color:white;
+font-size:18px;
+padding:15px 30px;
+border-radius:15px;
 }
 
-.card img{
-    width:100%;
-    height:230px;
-    object-fit:cover;
+.filters{
+display:flex;
+gap:10px;
+margin-bottom:25px;
+flex-wrap:wrap;
+justify-content:center;
 }
 
-.card-content{
-    padding:20px;
+.filters input,
+.filters select{
+background:#111;
+border:1px solid #333;
+padding:12px;
+border-radius:10px;
+color:white;
+}
+
+.car-grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+gap:25px;
+}
+
+.car-card{
+background:var(--glass);
+border:1px solid rgba(255,255,255,0.08);
+border-radius:20px;
+overflow:hidden;
+backdrop-filter:blur(10px);
+transition:.3s;
+}
+
+.car-card:hover{
+transform:translateY(-8px);
+border-color:var(--gold);
+}
+
+.car-image{
+width:100%;
+height:220px;
+object-fit:cover;
+}
+
+.card-body{
+padding:20px;
 }
 
 .car-name{
-    font-size:1.5em;
-    font-weight:900;
-    margin-bottom:10px;
+font-size:1.5rem;
+font-weight:900;
+margin-bottom:10px;
 }
 
 .stats{
-    display:flex;
-    justify-content:space-between;
-    color:#aaa;
-    margin-bottom:20px;
+display:flex;
+justify-content:space-between;
+font-size:14px;
+color:#999;
+margin-bottom:15px;
 }
 
 .price{
-    color:var(--green);
-    font-size:2em;
-    font-weight:900;
-    margin-bottom:20px;
+font-size:2rem;
+font-weight:900;
+color:var(--green);
+margin-bottom:20px;
 }
 
-.buttons{
-    display:flex;
-    gap:10px;
+.actions{
+display:flex;
+gap:10px;
 }
 
 .buy-btn{
-    flex:1;
-    padding:14px;
-    border:none;
-    border-radius:12px;
-    background:transparent;
-    border:2px solid var(--gold);
-    color:white;
-    font-weight:900;
-    cursor:pointer;
-    transition:.3s;
+flex:1;
+background:transparent;
+border:2px solid var(--gold);
+color:white;
 }
 
 .buy-btn:hover{
-    background:var(--gold);
-    color:black;
+background:var(--gold);
+color:black;
 }
 
 .delete-btn{
-    padding:14px;
-    border:none;
-    border-radius:12px;
-    background:transparent;
-    border:2px solid var(--red);
-    color:var(--red);
-    cursor:pointer;
-    font-weight:900;
+background:transparent;
+border:2px solid var(--red);
+color:var(--red);
 }
 
-.badge{
-    position:absolute;
-    top:15px;
-    left:15px;
-    padding:8px 12px;
-    border-radius:10px;
-    font-size:12px;
-    font-weight:900;
-}
-
-.new{
-    background:rgba(0,245,212,.2);
-    border:1px solid var(--green);
-    color:var(--green);
-}
-
-.used{
-    background:rgba(255,183,3,.2);
-    border:1px solid var(--gold);
-    color:var(--gold);
+.delete-btn:hover{
+background:var(--red);
+color:white;
 }
 
 .modal{
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.8);
-    backdrop-filter:blur(10px);
-    justify-content:center;
-    align-items:center;
-    z-index:100;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.8);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:999;
 }
 
 .modal.active{
-    display:flex;
+display:flex;
 }
 
-.modal-box{
-    width:90%;
-    max-width:500px;
-    background:#111;
-    border-radius:25px;
-    padding:30px;
-    border:1px solid rgba(255,255,255,.08);
+.modal-content{
+background:#111;
+padding:30px;
+border-radius:20px;
+width:90%;
+max-width:450px;
+border:1px solid var(--gold);
 }
 
-.modal-box h2{
-    margin-top:0;
+.modal-content h2{
+margin-bottom:20px;
 }
 
-.modal-box input,
-.modal-box select{
-    width:100%;
-    padding:15px;
-    margin-bottom:15px;
-    border:none;
-    border-radius:12px;
-    background:rgba(255,255,255,.05);
-    color:white;
+.modal-content input,
+.modal-content select{
+width:100%;
+margin-bottom:15px;
+padding:12px;
+background:#1a1a1a;
+border:1px solid #333;
+border-radius:10px;
+color:white;
 }
 
-.modal-actions{
-    display:flex;
-    gap:10px;
+.toast{
+position:fixed;
+top:20px;
+right:20px;
+background:#111;
+padding:15px 20px;
+border-left:5px solid var(--green);
+border-radius:10px;
+z-index:9999;
+animation:slide .4s;
 }
 
-.modal-actions button{
-    flex:1;
-    padding:15px;
-    border:none;
-    border-radius:12px;
-    cursor:pointer;
-    font-weight:900;
+@keyframes slide{
+from{
+transform:translateX(100%);
+}
+to{
+transform:translateX(0);
+}
 }
 
-.confirm{
-    background:var(--gold);
-    color:black;
-}
-
-.cancel{
-    background:transparent;
-    border:1px solid #555 !important;
-    color:white;
-}
-
-@media(max-width:700px){
-
-    .logo{
-        font-size:2em;
-    }
-
+.hidden{
+display:none;
 }
 
 </style>
 </head>
-
 <body>
 
-<div id="loginScreen">
-
-<div class="topbar">
-
-<div>
-<div class="logo">АВТОБАЗАР У АШОТА</div>
-<div class="subtitle">KURAHIVKA RP</div>
-</div>
-
-<button class="auth-btn" onclick="signInWithDiscord()">
-Увійти через Discord
+<div id="loginScreen" class="login-screen">
+<h1>KURAHIVKA RP</h1>
+<div class="subtitle">Авторизація через Discord</div>
+<button class="btn discord-btn" onclick="login()">
+УВІЙТИ ЧЕРЕЗ DISCORD
 </button>
-
 </div>
 
-</div>
-
-<div id="mainContent" style="display:none;">
+<div id="app" class="hidden">
 
 <div class="topbar">
 
-<button class="add-btn" onclick="openModal()">
+<button class="btn add-btn" onclick="openModal()">
 ➕ Продати авто
 </button>
 
-<div class="user-box">
-<img id="userAvatar">
-
-<div id="userName"></div>
-
-<button class="auth-btn" onclick="signOut()">
-Вийти
-</button>
+<div style="display:flex;align-items:center;gap:10px;">
+<img id="avatar" width="40" height="40" style="border-radius:50%;">
+<span id="username"></span>
+<button class="btn logout-btn" onclick="logout()">Вийти</button>
 </div>
 
 </div>
 
-<div class="grid" id="carGrid"></div>
+<h1>АВТОБАЗАР У АШОТА</h1>
+<div class="subtitle">Кращі тачки Kurahivka RP</div>
+
+<div class="filters">
+
+<input type="text" id="search" placeholder="Пошук..." oninput="renderCars()">
+
+<select id="filterBrand" onchange="renderCars()">
+<option value="all">Всі марки</option>
+<option>BMW</option>
+<option>Mercedes</option>
+<option>Audi</option>
+<option>Toyota</option>
+<option>Porsche</option>
+</select>
+
+<select id="filterCondition" onchange="renderCars()">
+<option value="all">Всі</option>
+<option value="new">Нові</option>
+<option value="used">Б/У</option>
+</select>
 
 </div>
 
-<div class="modal" id="addModal">
+<div class="car-grid" id="carGrid"></div>
 
-<div class="modal-box">
+</div>
+
+<div class="modal" id="carModal">
+
+<div class="modal-content">
 
 <h2>Додати авто</h2>
 
-<input type="text" id="carName" placeholder="BMW M5 F90">
+<input type="text" id="carName" placeholder="Назва">
 
-<input type="text" id="carImage" placeholder="Посилання на фото">
+<input type="text" id="carImg" placeholder="Фото URL">
 
 <input type="number" id="carPrice" placeholder="Ціна">
 
@@ -345,35 +338,28 @@ body{
 
 <input type="number" id="carTrunk" placeholder="Багажник">
 
+<select id="carBrand">
+<option>BMW</option>
+<option>Mercedes</option>
+<option>Audi</option>
+<option>Toyota</option>
+<option>Porsche</option>
+</select>
+
 <select id="carCondition">
-<option value="new">З салону</option>
+<option value="new">Нова</option>
 <option value="used">Б/У</option>
 </select>
 
-<select id="carBody">
-<option value="sedan">Седан</option>
-<option value="coupe">Купе</option>
-<option value="suv">SUV</option>
-</select>
-
-<select id="carClass">
-<option value="premium">Преміум</option>
-<option value="business">Бізнес</option>
-<option value="sport">Спорт</option>
-<option value="economy">Економ</option>
-</select>
-
-<div class="modal-actions">
-
-<button class="confirm" onclick="submitCar()">
+<button class="btn add-btn" style="width:100%;" onclick="addCar()">
 Виставити
 </button>
 
-<button class="cancel" onclick="closeModal()">
+<br><br>
+
+<button class="btn logout-btn" style="width:100%;" onclick="closeModal()">
 Скасувати
 </button>
-
-</div>
 
 </div>
 
@@ -383,28 +369,25 @@ body{
 
 const firebaseConfig = {
 
-    apiKey: "ТВОЙ_API_KEY",
-    authDomain: "ТВОЙ_AUTH_DOMAIN",
-    databaseURL: "ТВОЙ_DATABASE_URL",
-    projectId: "ТВОЙ_PROJECT_ID",
-    storageBucket: "ТВОЙ_BUCKET",
-    messagingSenderId: "ТВОЙ_SENDER_ID",
-    appId: "ТВОЙ_APP_ID"
+apiKey: "ТВОЙ_API",
+authDomain: "ТВОЙ_AUTH_DOMAIN",
+databaseURL: "ТВОЙ_DATABASE",
+projectId: "ТВОЙ_PROJECT_ID",
+storageBucket: "ТВОЙ_STORAGE",
+messagingSenderId: "ТВОЙ_SENDER_ID",
+appId: "ТВОЙ_APP_ID"
 
 };
 
 firebase.initializeApp(firebaseConfig);
 
-const database = firebase.database();
 const auth = firebase.auth();
+const db = firebase.database();
 
-const provider =
-new firebase.auth.OAuthProvider('oidc.discord');
-
-provider.addScope('identify');
+const provider = new firebase.auth.OAuthProvider('oidc.discord');
 
 provider.setCustomParameters({
-    prompt:'consent'
+prompt:'consent'
 });
 
 let currentUser = null;
@@ -412,270 +395,228 @@ let cars = {};
 
 auth.onAuthStateChanged(user=>{
 
-    if(user){
+if(user){
 
-        currentUser = user;
+currentUser = user;
 
-        document.getElementById('loginScreen')
-        .style.display = 'none';
+document.getElementById('loginScreen').classList.add('hidden');
+document.getElementById('app').classList.remove('hidden');
 
-        document.getElementById('mainContent')
-        .style.display = 'block';
+document.getElementById('username').innerText = user.displayName;
+document.getElementById('avatar').src = user.photoURL;
 
-        document.getElementById('userAvatar').src =
-        user.photoURL ||
-        'https://cdn.discordapp.com/embed/avatars/0.png';
+}else{
 
-        document.getElementById('userName').innerText =
-        user.displayName;
+document.getElementById('loginScreen').classList.remove('hidden');
+document.getElementById('app').classList.add('hidden');
 
-    }else{
-
-        currentUser = null;
-
-        document.getElementById('loginScreen')
-        .style.display = 'block';
-
-        document.getElementById('mainContent')
-        .style.display = 'none';
-
-    }
+}
 
 });
 
-async function signInWithDiscord(){
+function login(){
 
-    try{
-
-        const result =
-        await auth.signInWithPopup(provider);
-
-        console.log(result.user);
-
-    }catch(e){
-
-        console.error(e);
-
-        alert(
-            "Помилка входу:\n\n" +
-            e.message
-        );
-
-    }
+auth.signInWithPopup(provider)
+.then(()=>{
+toast('Успішний вхід!');
+})
+.catch(e=>{
+toast(e.message,true);
+});
 
 }
 
-function signOut(){
-
-    auth.signOut();
-
+function logout(){
+auth.signOut();
 }
 
-database.ref('cars').on('value', snapshot=>{
+db.ref('cars').on('value',snap=>{
 
-    cars = snapshot.val() || {};
-
-    renderCars();
+cars = snap.val() || {};
+renderCars();
 
 });
 
 function renderCars(){
 
-    const grid =
-    document.getElementById('carGrid');
+const grid = document.getElementById('carGrid');
 
-    grid.innerHTML = '';
+grid.innerHTML = '';
 
-    for(const carId in cars){
+const search = document.getElementById('search').value.toLowerCase();
+const brand = document.getElementById('filterBrand').value;
+const condition = document.getElementById('filterCondition').value;
 
-        const car = cars[carId];
+Object.entries(cars).forEach(([id,car])=>{
 
-        const card =
-        document.createElement('div');
+if(search && !car.name.toLowerCase().includes(search)) return;
+if(brand !== 'all' && car.brand !== brand) return;
+if(condition !== 'all' && car.condition !== condition) return;
 
-        card.className = 'card';
+grid.innerHTML += `
 
-        card.onclick = (e)=>{
+<div class="car-card">
 
-            if(
-                e.target.classList.contains('buy-btn') ||
-                e.target.classList.contains('delete-btn')
-            ) return;
+<img src="${car.image}" class="car-image">
 
-            window.location.href =
-            `car.html?id=${carId}`;
+<div class="card-body">
 
-        };
+<div class="car-name">${car.name}</div>
 
-        card.innerHTML = `
+<div class="stats">
+<span>${car.speed} км/год</span>
+<span>${car.trunk} кг</span>
+</div>
 
-        <div class="badge ${car.condition}">
-        ${car.condition === 'new'
-        ? 'З САЛОНУ'
-        : 'Б/У'}
-        </div>
+<div class="price">$${Number(car.price).toLocaleString()}</div>
 
-        <img src="${car.image}"
-        onerror="this.src='https://via.placeholder.com/600x400?text=Немає+фото'">
+<div class="actions">
 
-        <div class="card-content">
+${
+car.reserved
+?
+`<button class="btn buy-btn" disabled>ЗАБРОНЬОВАНО</button>`
+:
+`<button class="btn buy-btn" onclick="bookCar('${id}')">КУПИТИ</button>`
+}
 
-        <div class="car-name">
-        ${car.name}
-        </div>
+${
+currentUser && currentUser.uid === car.ownerId
+?
+`<button class="btn delete-btn" onclick="deleteCar('${id}')">X</button>`
+:
+''
+}
 
-        <div class="stats">
+</div>
 
-        <div>${car.speed} км/год</div>
+</div>
 
-        <div>${car.trunk} кг</div>
+</div>
 
-        </div>
+`;
 
-        <div class="price">
-        $${Number(car.price).toLocaleString()}
-        </div>
-
-        <div class="buttons">
-
-        <button class="buy-btn">
-        Детальніше
-        </button>
-
-        ${
-            currentUser &&
-            currentUser.uid === car.ownerId
-
-            ?
-
-            `<button
-            class="delete-btn"
-            onclick="deleteCar(event,'${carId}')">
-            🗑
-            </button>`
-
-            :
-
-            ''
-        }
-
-        </div>
-
-        </div>
-
-        `;
-
-        grid.appendChild(card);
-
-    }
+});
 
 }
 
 function openModal(){
 
-    if(!currentUser){
-
-        alert('Увійди через Discord');
-
-        return;
-
-    }
-
-    document.getElementById('addModal')
-    .classList.add('active');
+document.getElementById('carModal').classList.add('active');
 
 }
 
 function closeModal(){
 
-    document.getElementById('addModal')
-    .classList.remove('active');
+document.getElementById('carModal').classList.remove('active');
 
 }
 
-function submitCar(){
+function addCar(){
 
-    const name =
-    document.getElementById('carName').value;
+const car = {
 
-    const image =
-    document.getElementById('carImage').value;
+name:document.getElementById('carName').value,
+image:document.getElementById('carImg').value,
+price:Number(document.getElementById('carPrice').value),
+speed:Number(document.getElementById('carSpeed').value),
+trunk:Number(document.getElementById('carTrunk').value),
+brand:document.getElementById('carBrand').value,
+condition:document.getElementById('carCondition').value,
 
-    const price =
-    document.getElementById('carPrice').value;
+ownerId:currentUser.uid,
+ownerName:currentUser.displayName,
 
-    const speed =
-    document.getElementById('carSpeed').value;
+reserved:false
 
-    const trunk =
-    document.getElementById('carTrunk').value;
+};
 
-    const condition =
-    document.getElementById('carCondition').value;
+if(!car.name || !car.image || !car.price){
 
-    const body =
-    document.getElementById('carBody').value;
-
-    const carClass =
-    document.getElementById('carClass').value;
-
-    if(
-        !name ||
-        !image ||
-        !price ||
-        !speed ||
-        !trunk
-    ){
-
-        alert('Заповни всі поля');
-
-        return;
-
-    }
-
-    const carId =
-    'car_' + Date.now();
-
-    database.ref('cars/' + carId).set({
-
-        name:name,
-        image:image,
-        price:price,
-        speed:speed,
-        trunk:trunk,
-        condition:condition,
-        body:body,
-        carClass:carClass,
-
-        ownerId: currentUser.uid,
-
-        ownerName:
-        currentUser.displayName,
-
-        ownerDiscordId:
-        currentUser.providerData[0].uid,
-
-        ownerAvatar:
-        currentUser.photoURL,
-
-        reserved:false
-
-    });
-
-    closeModal();
+toast('Заповни всі поля',true);
+return;
 
 }
 
-function deleteCar(event, carId){
+const id = 'car_' + Date.now();
 
-    event.stopPropagation();
+db.ref('cars/' + id).set(car)
+.then(()=>{
 
-    if(confirm('Видалити авто?')){
+toast('Авто додано!');
+closeModal();
 
-        database.ref('cars/' + carId)
-        .remove();
+})
+.catch(e=>{
 
-    }
+toast(e.message,true);
+
+});
+
+}
+
+function deleteCar(id){
+
+if(!confirm('Видалити авто?')) return;
+
+db.ref('cars/' + id).remove();
+
+}
+
+function bookCar(id){
+
+const nick = prompt('Введи ігровий нік');
+
+if(!nick) return;
+
+db.ref('cars/' + id).transaction(car=>{
+
+if(car && !car.reserved){
+
+car.reserved = true;
+car.buyerNick = nick;
+car.buyerId = currentUser.uid;
+
+return car;
+
+}
+
+return;
+
+})
+.then(result=>{
+
+if(result.committed){
+
+toast('Авто заброньовано!');
+
+}else{
+
+toast('Авто вже зайняте',true);
+
+}
+
+});
+
+}
+
+function toast(text,error=false){
+
+const div = document.createElement('div');
+
+div.className = 'toast';
+
+if(error){
+div.style.borderColor = 'var(--red)';
+}
+
+div.innerText = text;
+
+document.body.appendChild(div);
+
+setTimeout(()=>{
+div.remove();
+},3000);
 
 }
 
