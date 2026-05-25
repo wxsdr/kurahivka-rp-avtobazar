@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>АВТОБАЗАР У АШОТА | Kurahivka RP</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+<title>АВТОБАЗАР У АШОТА | Kurahivka RP</title>
 
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 
 <style>
 
@@ -314,6 +315,7 @@ body{
 
 <div class="user-box">
 <img id="userAvatar">
+
 <div id="userName"></div>
 
 <button class="auth-btn" onclick="signOut()">
@@ -396,8 +398,14 @@ firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const auth = firebase.auth();
 
-const provider = new firebase.auth.OAuthProvider('oidc.discord');
+const provider =
+new firebase.auth.OAuthProvider('oidc.discord');
+
 provider.addScope('identify');
+
+provider.setCustomParameters({
+    prompt:'consent'
+});
 
 let currentUser = null;
 let cars = {};
@@ -408,27 +416,52 @@ auth.onAuthStateChanged(user=>{
 
         currentUser = user;
 
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('mainContent').style.display = 'block';
+        document.getElementById('loginScreen')
+        .style.display = 'none';
+
+        document.getElementById('mainContent')
+        .style.display = 'block';
 
         document.getElementById('userAvatar').src =
-        user.photoURL;
+        user.photoURL ||
+        'https://cdn.discordapp.com/embed/avatars/0.png';
 
         document.getElementById('userName').innerText =
         user.displayName;
 
     }else{
 
-        document.getElementById('loginScreen').style.display = 'block';
-        document.getElementById('mainContent').style.display = 'none';
+        currentUser = null;
+
+        document.getElementById('loginScreen')
+        .style.display = 'block';
+
+        document.getElementById('mainContent')
+        .style.display = 'none';
 
     }
 
 });
 
-function signInWithDiscord(){
+async function signInWithDiscord(){
 
-    auth.signInWithPopup(provider);
+    try{
+
+        const result =
+        await auth.signInWithPopup(provider);
+
+        console.log(result.user);
+
+    }catch(e){
+
+        console.error(e);
+
+        alert(
+            "Помилка входу:\n\n" +
+            e.message
+        );
+
+    }
 
 }
 
@@ -448,7 +481,8 @@ database.ref('cars').on('value', snapshot=>{
 
 function renderCars(){
 
-    const grid = document.getElementById('carGrid');
+    const grid =
+    document.getElementById('carGrid');
 
     grid.innerHTML = '';
 
@@ -456,7 +490,8 @@ function renderCars(){
 
         const car = cars[carId];
 
-        const card = document.createElement('div');
+        const card =
+        document.createElement('div');
 
         card.className = 'card';
 
@@ -475,10 +510,13 @@ function renderCars(){
         card.innerHTML = `
 
         <div class="badge ${car.condition}">
-        ${car.condition === 'new' ? 'З САЛОНУ' : 'Б/У'}
+        ${car.condition === 'new'
+        ? 'З САЛОНУ'
+        : 'Б/У'}
         </div>
 
-        <img src="${car.image}">
+        <img src="${car.image}"
+        onerror="this.src='https://via.placeholder.com/600x400?text=Немає+фото'">
 
         <div class="card-content">
 
@@ -510,8 +548,9 @@ function renderCars(){
 
             ?
 
-            `<button class="delete-btn"
-            onclick="deleteCar('${carId}')">
+            `<button
+            class="delete-btn"
+            onclick="deleteCar(event,'${carId}')">
             🗑
             </button>`
 
@@ -537,6 +576,7 @@ function openModal(){
     if(!currentUser){
 
         alert('Увійди через Discord');
+
         return;
 
     }
@@ -588,11 +628,13 @@ function submitCar(){
     ){
 
         alert('Заповни всі поля');
+
         return;
 
     }
 
-    const carId = 'car_' + Date.now();
+    const carId =
+    'car_' + Date.now();
 
     database.ref('cars/' + carId).set({
 
@@ -607,7 +649,8 @@ function submitCar(){
 
         ownerId: currentUser.uid,
 
-        ownerName: currentUser.displayName,
+        ownerName:
+        currentUser.displayName,
 
         ownerDiscordId:
         currentUser.providerData[0].uid,
@@ -623,13 +666,14 @@ function submitCar(){
 
 }
 
-function deleteCar(carId){
+function deleteCar(event, carId){
 
     event.stopPropagation();
 
     if(confirm('Видалити авто?')){
 
-        database.ref('cars/' + carId).remove();
+        database.ref('cars/' + carId)
+        .remove();
 
     }
 
