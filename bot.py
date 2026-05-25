@@ -1,57 +1,88 @@
-from flask import Flask, request, jsonify
 import discord
-import threading
+from discord.ext import commands
+from aiohttp import web
+import asyncio
+import json
 
-TOKEN = "ТОКЕН_БОТА"
-
-app = Flask(__name__)
+# Твій токен бота з Discord Developer Portal
+TOKEN = 'ТВІЙ_ТОКЕН_БОТА'
+# Порт, на якому працюватиме веб-сервер бота
+PORT = 5000 
 
 intents = discord.Intents.default()
-bot = discord.Client(intents=intents)
+intents.members = True # Обов'язково увімкни Server Members Intent в порталі!
+bot = commands.Bot(command_prefix="!", intents=intents)
 
-@app.route("/api/contact-seller", methods=["POST"])
-def contact_seller():
+# Функція обробки HTTP-запитів від сайту
+async def handle_contact_request(request):
+    try:
+        data = await request.json()
+        seller_id = int(data.get('seller_id'))
+        buyer_id = data.get('buyer_id')
+        buyer_name = data.get('buyer_name')
+        car_name = data.get('car_name')
+        car_url = data.get('car_url')
 
-    data = request.json
+        # Шукаємо продавця
+        seller = await bot.fetch_user(seller_id)
+        if not seller:
+            return web.json_response({'status': 'error', 'message': 'Seller not found'}, status=404)
 
-    seller_id = int(data["sellerDiscordId"])
+        # Формуємо красивий Embed
+        embed = discord.Embed(
+            title="🚗 Нова заявка на покупку авто!",
+            description=f"Привіт! Гравець **{buyer_name}** цікавиться твоїм авто, яке ти виставив на автобазарі.",
+            color=discord.Color.gold()
+        )
+        embed.add_field(name="Автомобіль", value=car_name, inline=False)
+        embed.add_field(name="Покупець (Discord)", value=f"<@{buyer_id}>", inline=False)
+        embed.add_field(name="Посилання на авто", value=f"[Перейти до оголошення]({car_url})", inline=False)
+        embed.set_footer(text="Kurahivka RP | Автобазар")
 
-    buyer_name = data["buyerName"]
+        # Відправляємо в ПП
+        await seller.send(embed=embed)
+        
+        # Додаємо CORS заголовки, щоб браузер дозволив запит з твого сайту
+        headers = {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type"
+        }
+        return web.json_response({'status': 'success'}, headers=headers)
 
-    buyer_id = data["buyerDiscordId"]
+    except discord.Forbidden:
+        # Якщо у продавця закриті ПП
+        headers = {"Access-Control-Allow-Origin": "*"}
+        return web.json_response({'status': 'error', 'message': 'DMs are closed'}, status=403, headers=headers)
+    except Exception as e:
+        headers = {"Access-Control-Allow-Origin": "*"}
+        return web.json_response({'status': 'error', 'message': str(e)}, status=500, headers=headers)
 
-    car_name = data["carName"]
+# Обробка OPTIONS запитів для CORS (попередній запит браузера)
+async def handle_options(request):
+    headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type"
+    }
+    return web.Response(status=200, headers=headers)
 
-    car_link = data["carLink"]
+async def web_server():
+    app = web.Application()
+    app.router.add_options('/api/contact', handle_options)
+    app.router.add_post('/api/contact', handle_contact_request)
+    
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, '0.0.0.0', PORT)
+    await site.start()
+    print(f"Web server started on port {PORT}")
 
-    async def send_dm():
+@bot.event
+async def on_ready():
+    print(f'Bot is ready as {bot.user}')
+    # Запускаємо веб-сервер паралельно з ботом
+    bot.loop.create_task(web_server())
 
-        user = await bot.fetch_user(seller_id)
-
-        if user:
-
-            message = f"""
-🚗 **[Kurahivka RP Автобазар] Нова заявка!**
-
-Привіт!
-
-Гравець <@{buyer_id}> цікавиться твоїм авто **{car_name}**
-
-Напиши йому в Discord та домовтесь про продаж 🚘
-
-🔗 Оголошення:
-{car_link}
-"""
-
-            await user.send(message)
-
-    bot.loop.create_task(send_dm())
-
-    return jsonify({"status":"ok"})
-
-def run_flask():
-    app.run(host="0.0.0.0", port=5000)
-
-threading.Thread(target=run_flask).start()
-
+# Запуск бота
 bot.run(TOKEN)
