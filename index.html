@@ -397,15 +397,13 @@
             // ЖЕЛЕЗОБЕТОННАЯ ЛОГИКА ПОЛУЧЕНИЯ DISCORD ID
             let discordId = null;
             if (currentUser.providerData && currentUser.providerData.length > 0) {
-                const discordProvider = currentUser.providerData.find(p => p.providerId === 'discord.com');
-                if (discordProvider && discordProvider.uid) {
-                    discordId = discordProvider.uid;
-                }
+                // Оскільки вхід тільки через Discord, просто беремо перший доступний ID провайдера
+                discordId = currentUser.providerData[0].uid;
             }
             
             if (!discordId) {
                 showNotification('Помилка авторизації: неможливо отримати Discord ID!', 'error');
-                return; // Не даем добавить машину, если ID не найден
+                return; 
             }
 
             const newCarId = 'car_' + Date.now();
