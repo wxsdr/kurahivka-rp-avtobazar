@@ -12,96 +12,111 @@
 
     <style>
         :root { 
-            --olx-dark: #002f34; 
-            --olx-light-bg: #f2f4f5; 
-            --olx-border: #d8dfe0; 
-            --olx-text: #002f34; 
-            --olx-gray: #406367; 
-            --olx-btn-hover: #00a098;
-            --olx-accent: #23e5db;
-            --olx-heart: #ff5a5f;
+            --olx-dark: #002f34; --olx-light-bg: #f2f4f5; --olx-border: #d8dfe0; 
+            --olx-text: #002f34; --olx-gray: #406367; --olx-btn-hover: #00a098;
+            --olx-accent: #23e5db; --olx-heart: #ff5a5f;
         }
-        body { background-color: var(--olx-light-bg); color: var(--olx-text); font-family: 'Roboto', sans-serif; margin: 0; padding: 0; min-height: 100vh; }
+        
+        /* ПЛАВНИЙ СКРОЛЛ ТА БАЗОВІ СТИЛІ */
+        html { scroll-behavior: smooth; }
+        body { background-color: var(--olx-light-bg); color: var(--olx-text); font-family: 'Roboto', sans-serif; margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; }
         a { text-decoration: none; color: inherit; }
         * { box-sizing: border-box; }
 
-        header { background: var(--olx-dark); padding: 15px 0; position: sticky; top: 0; z-index: 100; }
+        /* --- ЄДИНА ШАПКА ДЛЯ ВСІХ СТОРІНОК --- */
+        header { background: var(--olx-dark); padding: 12px 0; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: 0.3s; }
         .header-container { max-width: 1230px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; }
-        .logo { font-size: 28px; font-weight: 900; color: var(--olx-accent); letter-spacing: -1px; cursor: pointer; }
-        .header-actions { display: flex; align-items: center; gap: 25px; color: white; font-weight: 700; font-size: 15px; }
+        .logo { font-size: 26px; font-weight: 900; color: var(--olx-accent); letter-spacing: -1px; cursor: pointer; transition: 0.2s; }
+        .logo:hover { transform: scale(1.05); }
+        .header-actions { display: flex; align-items: center; gap: 20px; color: white; font-weight: 700; font-size: 15px; }
         
         .header-link { display: flex; align-items: center; gap: 8px; cursor: pointer; position: relative; transition: 0.2s; padding: 5px; }
         .header-link:hover { color: var(--olx-accent); }
-        
-        .chat-badge {
-            position: absolute; top: -5px; right: -8px; background: var(--olx-heart); color: white;
-            font-size: 11px; font-weight: 900; padding: 2px 6px; border-radius: 10px; min-width: 18px;
-            text-align: center; display: none; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
+        .chat-badge { position: absolute; top: -5px; right: -8px; background: var(--olx-heart); color: white; font-size: 11px; font-weight: 900; padding: 2px 6px; border-radius: 10px; min-width: 18px; text-align: center; display: none; box-shadow: 0 2px 4px rgba(0,0,0,0.2); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .chat-badge.active { display: block; }
-
-        .add-btn { background: white; color: var(--olx-dark); font-weight: 700; font-size: 15px; padding: 12px 20px; border-radius: 4px; border: none; cursor: pointer; transition: 0.2s; }
-        .add-btn:hover { background: #e8e8e8; }
-
-        .container { max-width: 1230px; margin: 0 auto; padding: 20px 15px; }
         
-        /* Категорії згідно з 2 скрином */
-        .categories-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0; }
-        .cat-card { background: white; border: 1px solid var(--olx-border); padding: 20px; text-align: center; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .cat-card:hover, .cat-card.active { background: var(--olx-dark); color: white; border-color: var(--olx-dark); }
+        /* ВИПАДАЮЧЕ МЕНЮ ПРОФІЛЮ */
+        .profile-menu-container { position: relative; display: flex; align-items: center; cursor: pointer; padding: 5px 0; }
+        .header-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--olx-accent); transition: 0.2s; }
+        .profile-menu-container:hover .header-avatar { transform: scale(1.1); box-shadow: 0 0 10px rgba(35, 229, 219, 0.5); }
+        .profile-dropdown { position: absolute; top: 100%; right: 0; margin-top: 10px; background: white; border: 1px solid var(--olx-border); border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: none; flex-direction: column; min-width: 200px; z-index: 1000; animation: dropdownFadeIn 0.3s ease forwards; overflow: hidden; }
+        .profile-menu-container:hover .profile-dropdown { display: flex; }
+        .dropdown-item { padding: 15px; color: var(--olx-dark); text-decoration: none; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
+        .dropdown-item:hover { background: var(--olx-light-bg); color: var(--olx-btn-hover); padding-left: 20px; }
 
-        .search-bar { display: flex; margin-bottom: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-radius: 4px; overflow: hidden; }
-        .search-input { flex: 1; padding: 18px; border: none; font-size: 16px; outline: none; }
-        .search-btn { background: var(--olx-dark); color: white; border: none; font-weight: 700; font-size: 16px; padding: 0 30px; cursor: pointer; }
+        .add-btn { background: white; color: var(--olx-dark); font-weight: 700; font-size: 14px; padding: 10px 20px; border-radius: 4px; border: none; cursor: pointer; transition: 0.3s; }
+        .add-btn:hover { background: var(--olx-accent); color: var(--olx-dark); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(35, 229, 219, 0.3); }
+
+        /* ОСНОВНИЙ КОНТЕНТ */
+        .container { max-width: 1230px; margin: 0 auto; padding: 20px 15px; animation: pageAppear 0.5s ease-out; }
+        
+        .categories-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0; }
+        .cat-card { background: white; border: 1px solid var(--olx-border); padding: 20px; text-align: center; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .cat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); border-color: var(--olx-btn-hover); }
+        .cat-card.active { background: var(--olx-dark); color: white; border-color: var(--olx-dark); transform: scale(1.02); }
+
+        .search-bar { display: flex; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden; transition: 0.3s; border: 1px solid var(--olx-border); }
+        .search-bar:focus-within { box-shadow: 0 8px 25px rgba(0,0,0,0.1); border-color: var(--olx-btn-hover); }
+        .search-input { flex: 1; padding: 20px; border: none; font-size: 16px; outline: none; }
+        .search-btn { background: var(--olx-dark); color: white; border: none; font-weight: 700; font-size: 16px; padding: 0 40px; cursor: pointer; transition: 0.2s; }
+        .search-btn:hover { background: #001f22; }
 
         .filters-actions { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--olx-border); padding-bottom: 15px; margin-bottom: 25px; }
-        .tabs { display: flex; gap: 20px; font-weight: 700; font-size: 14px; }
-        .tab { cursor: pointer; padding-bottom: 15px; margin-bottom: -16px; border-bottom: 2px solid transparent; color: var(--olx-gray); }
+        .tabs { display: flex; gap: 20px; font-weight: 700; font-size: 15px; }
+        .tab { cursor: pointer; padding-bottom: 15px; margin-bottom: -16px; border-bottom: 3px solid transparent; color: var(--olx-gray); transition: 0.3s; }
+        .tab:hover { color: var(--olx-text); }
         .tab.active { border-bottom-color: var(--olx-text); color: var(--olx-text); }
 
-        .item-list { display: flex; flex-direction: column; gap: 12px; }
-        .item-card { background: white; border-radius: 4px; display: flex; height: 190px; overflow: hidden; cursor: pointer; border: 1px solid var(--olx-border); position: relative; }
-        .item-img-wrapper { width: 250px; background: #e0e0e0; flex-shrink: 0; }
-        .item-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        /* КАРТКИ ОГОЛОШЕНЬ */
+        .item-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(100%, 1fr)); gap: 15px; }
+        .item-card { background: white; border-radius: 8px; display: flex; height: 200px; overflow: hidden; cursor: pointer; border: 1px solid var(--olx-border); position: relative; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 0; animation: cardFadeIn 0.5s forwards; }
+        .item-card:hover { transform: translateY(-4px) scale(1.01); box-shadow: 0 15px 30px rgba(0,0,0,0.08); border-color: var(--olx-btn-hover); z-index: 10; }
+        .item-img-wrapper { width: 280px; background: #e0e0e0; flex-shrink: 0; overflow: hidden; }
+        .item-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .item-card:hover .item-img-wrapper img { transform: scale(1.08); }
         
         .item-info { padding: 20px; display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1; }
-        .item-top-row { display: flex; justify-content: space-between; align-items: flex-start; }
-        .item-title { margin: 0; font-size: 19px; font-weight: 500; }
-        .item-price { font-size: 20px; font-weight: 700; }
+        .item-title { margin: 0; font-size: 20px; font-weight: 500; transition: 0.2s; }
+        .item-card:hover .item-title { color: var(--olx-btn-hover); }
+        .item-price { font-size: 22px; font-weight: 700; margin-top: 5px; }
+        .item-specs { font-size: 13px; color: var(--olx-gray); margin-top: 8px; }
         
-        .item-specs { font-size: 13px; color: var(--olx-gray); margin-top: 5px; }
-        .seller-rating { color: #ffb800; font-size: 12px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
-        
-        .heart-btn { width: 36px; height: 36px; display: flex; justify-content: center; align-items: center; border-radius: 50%; cursor: pointer; }
-        .heart-icon { width: 24px; height: 24px; fill: none; stroke: var(--olx-text); stroke-width: 2; }
-        .heart-icon.liked { fill: var(--olx-heart); stroke: var(--olx-heart); }
+        .heart-btn { width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; border-radius: 50%; cursor: pointer; transition: 0.2s; background: transparent; }
+        .heart-btn:hover { background: rgba(255, 90, 95, 0.1); transform: scale(1.1); }
+        .heart-icon { width: 26px; height: 26px; fill: none; stroke: var(--olx-text); stroke-width: 2; transition: 0.3s; }
+        .heart-icon.liked { fill: var(--olx-heart); stroke: var(--olx-heart); transform: scale(1.15); }
 
-        /* ОКРЕМА СТОРІНКА ПОДАЧІ ОБ'ЯВИ */
-        .full-page-form { display: none; background: white; min-height: 100vh; position: fixed; top: 0; left: 0; width: 100%; z-index: 200; overflow-y: auto; padding: 40px 20px; }
-        .full-page-form.active { display: block; }
-        .form-container { max-width: 800px; margin: 0 auto; }
-        
-        .olx-box { border: 1px solid var(--olx-border); padding: 30px; border-radius: 4px; margin-bottom: 20px; background: white; }
-        .olx-box h3 { margin-top: 0; font-size: 20px; margin-bottom: 20px; color: var(--olx-dark); }
+        /* МОДАЛКИ ТА АНІМАЦІЇ */
+        @keyframes pageAppear { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes dropdownFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes cardFadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn { 0% { transform: scale(0); } 80% { transform: scale(1.2); } 100% { transform: scale(1); } }
 
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,47,52,0.8); z-index: 2000; justify-content: center; align-items: center; padding: 15px; animation: pageAppear 0.3s ease; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 100%; max-width: 450px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
         .filter-group { margin-bottom: 20px; }
         .filter-group label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 8px; color: var(--olx-dark); }
-        .filter-group input, .filter-group select, .filter-group textarea { width: 100%; padding: 14px; border: 1px solid var(--olx-border); border-radius: 4px; font-size: 16px; outline: none; }
-        .filter-group input:focus { border-color: var(--olx-dark); }
+        .filter-group input, .filter-group select { width: 100%; padding: 14px; border: 1px solid var(--olx-border); border-radius: 4px; font-size: 15px; outline: none; transition: 0.3s; }
+        .filter-group input:focus { border-color: var(--olx-btn-hover); box-shadow: 0 0 0 3px rgba(0, 160, 152, 0.1); }
 
-        .photo-uploader { border: 2px dashed var(--olx-border); padding: 40px; text-align: center; cursor: pointer; background: #f8fafb; border-radius: 4px; }
+        .full-page-form { display: none; background: white; min-height: 100vh; position: fixed; top: 0; left: 0; width: 100%; z-index: 3000; overflow-y: auto; padding: 40px 20px; animation: pageAppear 0.4s ease; }
+        .full-page-form.active { display: block; }
+        .form-container { max-width: 800px; margin: 0 auto; }
+        .olx-box { border: 1px solid var(--olx-border); padding: 40px; border-radius: 8px; margin-bottom: 20px; background: white; box-shadow: 0 5px 20px rgba(0,0,0,0.03); }
+        .olx-box h3 { margin-top: 0; font-size: 24px; margin-bottom: 25px; color: var(--olx-dark); }
 
-        /* Модалки подій */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,47,52,0.8); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
-        .modal.active { display: flex; }
-        .modal-content { background: white; padding: 25px; border-radius: 4px; width: 100%; max-width: 500px; }
-
-        #toastContainer { position: fixed; bottom: 20px; right: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background: var(--olx-dark); color: white; padding: 15px 25px; border-radius: 4px; font-weight: bold; opacity: 0; transform: translateY(50px); transition: 0.3s; }
-        .toast.show { opacity: 1; transform: translateY(0); }
+        #toastContainer { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: var(--olx-dark); color: white; padding: 16px 24px; border-radius: 8px; font-weight: bold; opacity: 0; transform: translateX(50px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .toast.show { opacity: 1; transform: translateX(0); }
         .toast.error { background: var(--olx-heart); }
-        
-        .avatar-settings { display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 4px; }
+
+        @media (max-width: 768px) {
+            .header-link span { display: none; }
+            .item-card { flex-direction: column; height: auto; }
+            .item-img-wrapper { width: 100%; height: 220px; }
+            .cat-card { padding: 15px 10px; font-size: 14px; }
+        }
     </style>
 </head>
 <body>
@@ -110,10 +125,10 @@
 
     <header>
         <div class="header-container">
-            <div class="logo" onclick="window.location.reload()">kurahivka.olx</div>
+            <a class="logo" href="index.html">kurahivka.olx</a>
             <div class="header-actions">
                 <div class="header-link" onclick="setViewMode('favorites')">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                     <span>Обране</span>
                 </div>
                 
@@ -123,8 +138,17 @@
                     <div class="chat-badge" id="globalChatBadge">0</div>
                 </div>
 
-                <div class="avatar-settings" id="profileBlock">
-                    <div id="authBtn" onclick="signInWithDiscord()" style="cursor:pointer;">Увійти</div>
+                <div id="authBtnBlock" class="header-link" onclick="signInWithDiscord()">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <span>Увійти</span>
+                </div>
+
+                <div class="profile-menu-container" id="profileMenu" style="display: none;">
+                    <img class="header-avatar" id="myHeaderAvatar" src="https://via.placeholder.com/40">
+                    <div class="profile-dropdown">
+                        <div class="dropdown-item" onclick="openAvatarModal()">🖼️ Змінити аватарку</div>
+                        <div class="dropdown-item" onclick="logoutAccount()" style="border-top: 1px solid #eee; color: var(--olx-heart);">🚪 Вийти з акаунту</div>
+                    </div>
                 </div>
                 
                 <button class="add-btn" onclick="startCreationPage()">Подати оголошення</button>
@@ -150,15 +174,27 @@
                 <div class="tab" id="tab-private" onclick="setTabFilter('private')">Приватні</div>
                 <div class="tab" id="tab-business" onclick="setTabFilter('business')">Бізнес</div>
             </div>
-            <div style="cursor:pointer; color:var(--olx-gray);" onclick="resetFilters()">Скинути фільтри</div>
+            <div style="cursor:pointer; color:var(--olx-gray); font-weight:bold; transition:0.2s;" onclick="resetFilters()" onmouseover="this.style.color='var(--olx-heart)'" onmouseout="this.style.color='var(--olx-gray)'">Скинути фільтри ✖</div>
         </div>
 
         <div class="item-list" id="itemsGrid"></div>
     </div>
 
+    <div id="avatarModal" class="modal">
+        <div class="modal-content">
+            <h3 style="color:var(--olx-dark); margin-top:0;">Оновлення профілю</h3>
+            <div class="filter-group">
+                <label>Оберіть нову аватарку (файл)</label>
+                <input type="file" id="newAvatarFile" accept="image/*">
+            </div>
+            <button class="add-btn" style="background:var(--olx-dark); color:white; width:100%; padding:15px;" id="saveAvatarBtn" onclick="uploadNewAvatar()">Зберегти зміни</button>
+            <button class="add-btn" style="background:transparent; color:var(--olx-gray); width:100%; margin-top:10px;" onclick="closeAvatarModal()">Скасувати</button>
+        </div>
+    </div>
+
     <div id="addItemPage" class="full-page-form">
         <div class="form-container">
-            <h2 style="font-size:32px; font-weight:900; margin-bottom:30px;">Поділіться з усіма своїм товаром</h2>
+            <h2 style="font-size:36px; font-weight:900; margin-bottom:30px; text-align:center;">Поділіться своїм товаром</h2>
             
             <div id="create-step-1">
                 <div class="olx-box">
@@ -167,165 +203,102 @@
                         <label>Введіть назву вашого товару чи послуги *</label>
                         <input type="text" id="creationTitle" placeholder="Наприклад: Продам BMW X5 або Квартира в центрі">
                     </div>
-                    <button class="add-btn" style="background:var(--olx-dark); color:white; width:100%; padding:15px;" onclick="processStep1()">Продовжити</button>
-                    <button class="add-btn" style="background:transparent; color:var(--olx-dark); width:100%; margin-top:10px;" onclick="closeCreationPage()">Скасувати</button>
+                    <button class="add-btn" style="background:var(--olx-dark); color:white; width:100%; padding:15px; font-size:16px;" onclick="processStep1()">Продовжити</button>
+                    <button class="add-btn" style="background:transparent; color:var(--olx-gray); width:100%; margin-top:10px;" onclick="closeCreationPage()">Скасувати</button>
                 </div>
             </div>
 
             <div id="create-step-2" style="display:none;">
                 <div class="olx-box">
                     <h3>Крок 2: Деталі оголошення</h3>
-                    
                     <div class="filter-group">
-                        <label>Рубрика (Визначено автоматично, можна змінити)</label>
+                        <label>Рубрика</label>
                         <select id="creationCategory" onchange="toggleFormFields(this.value)">
-                            <option value="cars">🚗 Автомобілі</option>
-                            <option value="realty">🏠 Нерухомість</option>
-                            <option value="other">📦 Інше</option>
+                            <option value="cars">🚗 Автомобілі</option><option value="realty">🏠 Нерухомість</option><option value="other">📦 Інше</option>
                         </select>
                     </div>
 
                     <div class="filter-group">
-                        <label>Фотографії (Перша буде головною)</label>
+                        <label>Фотографії (Оберіть файли з пристрою)</label>
                         <div id="formPhotosContainer">
                             <input type="file" class="c-file-input" accept="image/*" style="margin-bottom:10px;">
                         </div>
-                        <span style="color:var(--olx-btn-hover); cursor:pointer; font-size:14px;" onclick="addMorePhotoInputs()">+ Додати ще фото</span>
+                        <span style="color:var(--olx-btn-hover); cursor:pointer; font-weight:bold;" onclick="addMorePhotoInputs()">+ Додати ще файл</span>
                     </div>
 
-                    <div class="filter-group">
-                        <label>Опис товару</label>
-                        <textarea id="creationDesc" rows="5" placeholder="Напишіть деталі..."></textarea>
-                    </div>
+                    <div class="filter-group"><label>Опис</label><textarea id="creationDesc" rows="5"></textarea></div>
 
-                    <div id="formCarOptions" style="display:none; border-left:4px solid var(--olx-dark); padding-left:15px;">
-                        <div class="filter-group"><label>Марка авто</label><input type="text" id="cCarBrand" placeholder="Наприклад: BMW, Audi"></div>
-                        <div class="filter-group"><label>Максимальна швидкість (км/год)</label><input type="number" id="cCarSpeed" value="180"></div>
-                        <div class="filter-group"><label>Об'єм багажника (кг)</label><input type="number" id="cCarTrunk" value="50"></div>
+                    <div id="formCarOptions" style="display:none; border-left:4px solid var(--olx-accent); padding-left:20px;">
+                        <div class="filter-group"><label>Марка</label><input type="text" id="cCarBrand" placeholder="BMW, Audi"></div>
+                        <div class="filter-group"><label>Швидкість (км/год)</label><input type="number" id="cCarSpeed" value="180"></div>
+                        <div class="filter-group"><label>Багажник (кг)</label><input type="number" id="cCarTrunk" value="50"></div>
                     </div>
-
-                    <div id="formRealtyOptions" style="display:none; border-left:4px solid var(--olx-dark); padding-left:15px;">
-                        <div class="filter-group"><label>Кількість кімнат</label><input type="number" id="cRealRooms" value="1"></div>
-                        <div class="filter-group"><label>Загальна площа (м²)</label><input type="number" id="cRealArea" value="40"></div>
+                    <div id="formRealtyOptions" style="display:none; border-left:4px solid var(--olx-accent); padding-left:20px;">
+                        <div class="filter-group"><label>Кімнати</label><input type="number" id="cRealRooms" value="1"></div>
+                        <div class="filter-group"><label>Площа (м²)</label><input type="number" id="cRealArea" value="40"></div>
                     </div>
 
                     <div style="display:flex; gap:15px;">
-                        <div class="filter-group" style="flex:1;">
-                            <label>Ціна ($)</label>
-                            <input type="number" id="creationPrice" placeholder="Сума в USD">
-                        </div>
-                        <div class="filter-group" style="flex:1;">
-                            <label>Стан</label>
-                            <select id="creationCondition">
-                                <option value="used">Вживане</option>
-                                <option value="new">Нове</option>
-                            </select>
-                        </div>
+                        <div class="filter-group" style="flex:1;"><label>Ціна ($)</label><input type="number" id="creationPrice"></div>
+                        <div class="filter-group" style="flex:1;"><label>Стан</label><select id="creationCondition"><option value="used">Вживане</option><option value="new">Нове</option></select></div>
                     </div>
 
-                    <div class="filter-group">
-                        <label>Тип продавця</label>
-                        <select id="creationSellerType">
-                            <option value="private">Приватна особа</option>
-                            <option value="business">Бізнес</option>
-                        </select>
+                    <div style="display:flex; gap:15px;">
+                        <div class="filter-group" style="flex:1;"><label>Продавець</label><select id="creationSellerType"><option value="private">Приватна особа</option><option value="business">Бізнес</option></select></div>
+                        <div class="filter-group" style="flex:1;"><label>Телефон</label><input type="text" id="creationPhone" placeholder="+380..."></div>
                     </div>
 
-                    <div class="filter-group">
-                        <label>Номер телефону зв'язку</label>
-                        <input type="text" id="creationPhone" placeholder="+380...">
-                    </div>
-
-                    <button class="add-btn" id="finalSubmitBtn" style="background:var(--olx-dark); color:white; width:100%; padding:15px;" onclick="publishItem()">Опублікувати оголошення</button>
+                    <button class="add-btn" id="finalSubmitBtn" style="background:var(--olx-dark); color:white; width:100%; padding:15px; font-size:16px;" onclick="publishItem()">Опублікувати оголошення</button>
                     <button class="add-btn" style="background:transparent; color:var(--olx-gray); width:100%; margin-top:10px;" onclick="goToStep(1)">Назад</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="avatarModal" class="modal">
-        <div class="modal-content">
-            <h3>Оновити аватарку профілю</h3>
-            <div class="filter-group">
-                <label>Оберіть новий файл зображення</label>
-                <input type="file" id="newAvatarFile" accept="image/*">
-            </div>
-            <button class="add-btn" style="background:var(--olx-dark); color:white; width:100%;" id="saveAvatarBtn" onclick="uploadNewAvatar()">Зберегти</button>
-            <button class="add-btn" style="background:transparent; width:100%; margin-top:10px;" onclick="closeAvatarModal()">Скасувати</button>
-        </div>
-    </div>
-
-    <div id="reviewModal" class="modal">
-        <div class="modal-content">
-            <h3>Залишити відгук продавцю</h3>
-            <div class="filter-group">
-                <label>Оцінка (1-5 зірок)</label>
-                <select id="revStars">
-                    <option value="5">⭐️⭐️⭐️⭐️⭐️ (5)</option>
-                    <option value="4">⭐️⭐️⭐️⭐️ (4)</option>
-                    <option value="3">⭐️⭐️⭐️ (3)</option>
-                    <option value="2">⭐️⭐️ (2)</option>
-                    <option value="1">⭐️ (1)</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label>Ваш коментар</label>
-                <textarea id="revText" rows="3" placeholder="Напишіть враження від угоди..."></textarea>
-            </div>
-            <button class="add-btn" style="background:var(--olx-dark); color:white; width:100%;" onclick="submitReview()">Надіслати відгук</button>
-            <button class="add-btn" style="background:transparent; width:100%; margin-top:10px;" onclick="closeReviewModal()">Закрити</button>
-        </div>
-    </div>
-
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyCbNGyrjT1rf-2UHeRj2LCCdqIrsaZ0TG0",
-            authDomain: "kurahivka-rp-avtobazar.firebaseapp.com",
-            databaseURL: "https://kurahivka-rp-avtobazar-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "kurahivka-rp-avtobazar",
-            storageBucket: "kurahivka-rp-avtobazar.firebasestorage.app"
+            apiKey: "AIzaSyCbNGyrjT1rf-2UHeRj2LCCdqIrsaZ0TG0", authDomain: "kurahivka-rp-avtobazar.firebaseapp.com", databaseURL: "https://kurahivka-rp-avtobazar-default-rtdb.europe-west1.firebasedatabase.app", projectId: "kurahivka-rp-avtobazar", storageBucket: "kurahivka-rp-avtobazar.firebasestorage.app"
         };
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const auth = firebase.auth();
-        const provider = new firebase.auth.OAuthProvider('oidc.discord');
+        const db = firebase.database(); const auth = firebase.auth(); const provider = new firebase.auth.OAuthProvider('oidc.discord');
 
         let currentUser = null, myId = null;
-        let itemsData = {}, userFavorites = {}, targetSellerId = null;
+        let itemsData = {}, userFavorites = {};
         let filterCategory = 'all', filterTab = 'all', viewMode = 'all';
 
         function notify(msg, type='info') {
             const container = document.getElementById('toastContainer');
             const t = document.createElement('div'); t.className = `toast ${type}`; t.innerText = msg;
             container.appendChild(t); setTimeout(() => t.classList.add('show'), 10);
-            setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 4000);
+            setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 3500);
         }
 
+        // АВТОРИЗАЦІЯ ТА ШАПКА
         auth.onAuthStateChanged(user => {
             if (user) {
-                currentUser = user;
-                myId = user.providerData?.[0]?.uid || user.uid;
-                loadProfileBlock();
+                currentUser = user; myId = user.providerData?.[0]?.uid || user.uid;
+                
+                document.getElementById('authBtnBlock').style.display = 'none';
+                document.getElementById('profileMenu').style.display = 'flex';
+                
+                db.ref(`users/${myId}/profile`).on('value', snap => {
+                    const prof = snap.val() || {};
+                    const finalAvatar = prof.avatar || user.photoURL || 'https://via.placeholder.com/40';
+                    document.getElementById('myHeaderAvatar').src = finalAvatar;
+                });
+
                 db.ref(`users/${myId}/favorites`).on('value', s => { userFavorites = s.val() || {}; applyFilters(); });
                 initGlobalBadge(myId);
             } else {
                 currentUser = null; myId = null;
-                document.getElementById('profileBlock').innerHTML = `<div id="authBtn" onclick="signInWithDiscord()">Увійти</div>`;
+                document.getElementById('authBtnBlock').style.display = 'flex';
+                document.getElementById('profileMenu').style.display = 'none';
             }
             fetchItems();
         });
 
         function signInWithDiscord() { auth.signInWithPopup(provider).catch(e => notify(e.message, 'error')); }
-        
-        async function loadProfileBlock() {
-            const snap = await db.ref(`users/${myId}/profile`).get();
-            const prof = snap.val() || {};
-            const finalAvatar = prof.avatar || currentUser.photoURL || 'https://via.placeholder.com/32';
-            document.getElementById('profileBlock').innerHTML = `
-                <img src="${finalAvatar}" style="width:32px; height:32px; border-radius:50%; object-fit:cover; cursor:pointer;" onclick="openAvatarModal()">
-                <span style="color:white; font-size:13px; cursor:pointer;" onclick="auth.signOut()">Вийти</span>
-            `;
-        }
+        function logoutAccount() { if(confirm("Вийти з акаунту?")) auth.signOut(); }
 
         function openAvatarModal() { document.getElementById('avatarModal').classList.add('active'); }
         function closeAvatarModal() { document.getElementById('avatarModal').classList.remove('active'); }
@@ -334,31 +307,27 @@
             const file = document.getElementById('newAvatarFile').files[0];
             if(!file) return notify('Оберіть файл!', 'error');
             const btn = document.getElementById('saveAvatarBtn');
-            btn.disabled = true; btn.innerText = 'Завантаження...';
+            btn.disabled = true; btn.innerText = 'Завантаження на сервер...';
             try {
                 const url = await uploadToImgBB(file);
                 await db.ref(`users/${myId}/profile`).update({ avatar: url });
-                notify('Аватарку успішно змінено!', 'success');
-                closeAvatarModal(); loadProfileBlock();
-            } catch(e) { notify('Помилка завантаження', 'error'); }
-            btn.disabled = false; btn.innerText = 'Зберегти';
+                notify('Аватарку успішно оновлено!', 'success');
+                closeAvatarModal();
+            } catch(e) { notify('Помилка завантаження файлу', 'error'); }
+            btn.disabled = false; btn.innerText = 'Зберегти зміни';
         }
 
         function initGlobalBadge(uid) {
             db.ref('chats').on('value', snap => {
                 let unread = 0;
-                Object.values(snap.val() || {}).forEach(c => {
-                    if((c.buyerId === uid || c.sellerId === uid) && c.lastSenderId && c.lastSenderId !== uid) unread++;
-                });
+                Object.values(snap.val() || {}).forEach(c => { if((c.buyerId === uid || c.sellerId === uid) && c.lastSenderId && c.lastSenderId !== uid) unread++; });
                 const b = document.getElementById('globalChatBadge');
                 b.innerText = unread > 99 ? '99+' : unread;
-                b.style.display = unread > 0 ? 'block' : 'none';
+                b.classList.toggle('active', unread > 0);
             });
         }
 
-        function fetchItems() {
-            db.ref('items').on('value', snap => { itemsData = snap.val() || {}; applyFilters(); });
-        }
+        function fetchItems() { db.ref('items').on('value', snap => { itemsData = snap.val() || {}; applyFilters(); }); }
 
         function selectMainCategory(cat) {
             document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
@@ -373,9 +342,7 @@
             viewMode = 'all'; applyFilters();
         }
 
-        function setViewMode(mode) {
-            viewMode = mode; applyFilters();
-        }
+        function setViewMode(mode) { viewMode = mode; applyFilters(); }
 
         function applyFilters() {
             const search = document.getElementById('searchInput').value.toLowerCase();
@@ -397,47 +364,38 @@
             setTabFilter('all');
         }
 
-        async function renderItems(ids) {
+        function renderItems(ids) {
             const grid = document.getElementById('itemsGrid');
             grid.innerHTML = '';
-            for(let id of ids) {
+            
+            ids.forEach((id, index) => {
                 const item = itemsData[id];
                 const img = (item.images && item.images.length > 0) ? item.images[0] : 'https://via.placeholder.com/250';
                 const isLiked = !!userFavorites[id];
-
-                // Отримання справжнього динамічного рейтингу продавця від гравців
-                const rSnap = await db.ref(`ratings/${item.ownerId}`).get();
-                let starsText = 'Немає відгуків', totalStars = 0, count = 0;
-                if(rSnap.exists()) {
-                    Object.values(rSnap.val()).forEach(r => { totalStars += parseInt(r.stars); count++; });
-                    starsText = `⭐️ ${(totalStars/count).toFixed(1)} (${count} відгуків)`;
-                }
+                const delay = index * 0.05; // Каскадна анімація появи
 
                 const card = document.createElement('div');
                 card.className = 'item-card';
+                card.style.animationDelay = `${delay}s`;
                 card.onclick = () => window.location.href = `car.html?id=${id}`;
                 card.innerHTML = `
                     <div class="item-img-wrapper"><img src="${img}"></div>
                     <div class="item-info">
-                        <div class="item-top-row">
+                        <div>
                             <h3 class="item-title">${item.name}</h3>
                             <div class="item-price">${Number(item.price).toLocaleString()} $</div>
+                            <div class="item-specs"><span>Категорія: ${item.category.toUpperCase()}</span> | <span>${item.condition === 'new' ? 'Нове' : 'Вживане'}</span></div>
                         </div>
-                        <div class="item-specs">
-                            <span>Категорія: ${item.category.toUpperCase()}</span> | <span>Стан: ${item.condition === 'new' ? 'Нове' : 'Вживане'}</span>
-                            <br>
-                            <div class="seller-rating" onclick="event.stopPropagation(); openReviewModal('${item.ownerId}')">${starsText}</div>
-                        </div>
-                        <div style="display:flex; justify-content:between; align-items:center; margin-top:auto;">
-                            <span style="font-size:12px; color:var(--olx-gray);">${item.ownerName}</span>
-                            <div class="heart-btn" style="margin-left:auto;" onclick="toggleLike(event, '${id}')">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
+                            <span style="font-size:12px; color:var(--olx-gray); font-weight:bold;">${item.ownerName}</span>
+                            <div class="heart-btn" onclick="toggleLike(event, '${id}')">
                                 <svg class="heart-icon ${isLiked ? 'liked' : ''}" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                             </div>
                         </div>
                     </div>
                 `;
                 grid.appendChild(card);
-            }
+            });
         }
 
         function toggleLike(e, id) {
@@ -446,48 +404,32 @@
             else { db.ref(`users/${myId}/favorites/${id}`).set(true); }
         }
 
-        function openReviewModal(sellerId) { 
-            if(!myId) return notify('Увійдіть, щоб залишити відгук!', 'error');
-            if(myId === sellerId) return notify('Не можна оцінити самого себе!', 'error');
-            targetSellerId = sellerId; document.getElementById('reviewModal').classList.add('active'); 
-        }
-        function closeReviewModal() { document.getElementById('reviewModal').classList.remove('active'); }
-        async function submitReview() {
-            const stars = document.getElementById('revStars').value;
-            const text = document.getElementById('revText').value.trim();
-            await db.ref(`ratings/${targetSellerId}/${myId}`).set({ stars, text, senderName: currentUser.displayName });
-            notify('Відгук збережено!', 'success'); closeReviewModal(); fetchItems();
+        // ЗАВАНТАЖЕННЯ НА IMGBB ТА ПУБЛІКАЦІЯ
+        async function uploadToImgBB(file) {
+            const apiKey = '7ef81dfc56bab94048936358f8fb9097'; // Твій ключ
+            const formData = new FormData(); formData.append('image', file);
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, { method: 'POST', body: formData });
+            const data = await res.json();
+            if(data.success) return data.data.url;
+            throw new Error('Upload failed');
         }
 
-        /* КЕРУВАННЯ СТОРІНКОЮ СТВОРЕННЯ ОБ'ЯВИ */
         function startCreationPage() {
-            if(!myId) return notify('Спочатку авторизуйтесь через Discord!', 'error');
+            if(!myId) return notify('Спочатку авторизуйтесь!', 'error');
             document.getElementById('mainPageContent').style.display = 'none';
             document.getElementById('addItemPage').classList.add('active');
             goToStep(1);
         }
-        function closeCreationPage() {
-            document.getElementById('addItemPage').classList.remove('active');
-            document.getElementById('mainPageContent').style.display = 'block';
-        }
-        function goToStep(s) {
-            document.getElementById('create-step-1').style.display = s === 1 ? 'block' : 'none';
-            document.getElementById('create-step-2').style.display = s === 2 ? 'block' : 'none';
-        }
+        function closeCreationPage() { document.getElementById('addItemPage').classList.remove('active'); document.getElementById('mainPageContent').style.display = 'block'; }
+        function goToStep(s) { document.getElementById('create-step-1').style.display = s === 1 ? 'block' : 'none'; document.getElementById('create-step-2').style.display = s === 2 ? 'block' : 'none'; }
 
         function processStep1() {
             const title = document.getElementById('creationTitle').value.trim();
             if(title.length < 4) return notify('Введіть нормальну назву!', 'error');
-            
-            // Інтелектуальне автоматичне визначення категорії за назвою
-            let guessed = 'other';
-            const low = title.toLowerCase();
-            if(low.includes('бмв') || low.includes('bmw') || low.includes('авто') || low.includes('машина') || low.includes('ваз') || low.includes('мерс')) guessed = 'cars';
-            else if(low.includes('дім') || low.includes('будинок') || low.includes('квартира') || low.includes('гараж') || low.includes('оренда')) guessed = 'realty';
-            
-            document.getElementById('creationCategory').value = guessed;
-            toggleFormFields(guessed);
-            goToStep(2);
+            let guessed = 'other'; const low = title.toLowerCase();
+            if(low.includes('авто') || low.includes('bmw') || low.includes('ваз')) guessed = 'cars';
+            else if(low.includes('дім') || low.includes('квартира')) guessed = 'realty';
+            document.getElementById('creationCategory').value = guessed; toggleFormFields(guessed); goToStep(2);
         }
 
         function toggleFormFields(cat) {
@@ -500,55 +442,37 @@
             document.getElementById('formPhotosContainer').appendChild(input);
         }
 
-        async function uploadToImgBB(file) {
-            const apiKey = '7ef81dfc56bab94048936358f8fb9097'; // <-- ВСТАВИТИ СВІЙ API КЛЮЧ ТУТ
-            const formData = new FormData(); formData.append('image', file);
-            const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, { method: 'POST', body: formData });
-            const data = await res.json();
-            if(data.success) return data.data.url;
-            throw new Error('error');
-        }
-
         async function publishItem() {
             const name = document.getElementById('creationTitle').value.trim();
-            const description = document.getElementById('creationDesc').value.trim();
             const price = parseInt(document.getElementById('creationPrice').value);
-            const category = document.getElementById('creationCategory').value;
-            const condition = document.getElementById('creationCondition').value;
-            const sellerType = document.getElementById('creationSellerType').value;
-            const phone = document.getElementById('creationPhone').value.trim();
+            const files = Array.from(document.querySelectorAll('.c-file-input')).map(i => i.files[0]).filter(f => f);
 
-            const fileInputs = Array.from(document.querySelectorAll('.c-file-input'));
-            const files = fileInputs.map(i => i.files[0]).filter(f => f);
-
-            if(!price || files.length === 0) return notify('Заповніть ціну та додайте хоча б 1 фото!', 'error');
+            if(!price || files.length === 0) return notify('Ціна та мінімум 1 фото є обов\'язковими!', 'error');
 
             const btn = document.getElementById('finalSubmitBtn');
-            btn.disabled = true; btn.innerText = 'Завантаження фото на сервери OLX...';
+            btn.disabled = true; btn.innerText = 'Завантаження файлів на сервер...';
 
             try {
                 const uploadedUrls = [];
-                for(let f of files) { const url = await uploadToImgBB(f); uploadedUrls.push(url); }
+                for(let f of files) { uploadedUrls.push(await uploadToImgBB(f)); }
 
-                const itemId = 'item_' + Date.now();
+                const cat = document.getElementById('creationCategory').value;
                 const payload = {
-                    name, description, price, category, condition, sellerType, phone,
-                    images: uploadedUrls, ownerId: myId, ownerName: currentUser.displayName, createdAt: Date.now()
+                    name, price, category: cat,
+                    description: document.getElementById('creationDesc').value.trim(),
+                    condition: document.getElementById('creationCondition').value,
+                    sellerType: document.getElementById('creationSellerType').value,
+                    phone: document.getElementById('creationPhone').value.trim(),
+                    images: uploadedUrls, ownerId: myId, ownerName: currentUser.displayName, 
+                    ownerAvatar: document.getElementById('myHeaderAvatar').src, createdAt: Date.now()
                 };
 
-                if(category === 'cars') {
-                    payload.brand = document.getElementById('cCarBrand').value || 'Не вказано';
-                    payload.speed = document.getElementById('cCarSpeed').value || 120;
-                    payload.trunk = document.getElementById('cCarTrunk').value || 40;
-                } else if(category === 'realty') {
-                    payload.rooms = document.getElementById('cRealRooms').value || 1;
-                    payload.area = document.getElementById('cRealArea').value || 30;
-                }
-
-                await db.ref('items/' + itemId).set(payload);
-                notify('Оголошення успішно додано!', 'success');
+                if(cat === 'cars') { payload.brand = document.getElementById('cCarBrand').value; payload.speed = document.getElementById('cCarSpeed').value; payload.trunk = document.getElementById('cCarTrunk').value; }
+                
+                await db.ref('cars/item_' + Date.now()).set(payload); // Зберігаємо в гілку cars
+                notify('Успішно опубліковано!', 'success');
                 closeCreationPage();
-            } catch(e) { notify('Сталася помилка створення', 'error'); }
+            } catch(e) { notify('Помилка!', 'error'); }
             btn.disabled = false; btn.innerText = 'Опублікувати оголошення';
         }
     </script>
