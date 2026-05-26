@@ -78,75 +78,39 @@
     </div>
 
     <script>
-        // Ініціалізація звуків
         const sendSound = new Audio('https://actions.google.com/sounds/v1/ui/confirmation_up.ogg');
         const recvSound = new Audio('https://actions.google.com/sounds/v1/notifications/complete.ogg');
         
-        let hasLoadedMessages = false; // Захист від звуку при першому завантаженні
-
-        const firebaseConfig = { apiKey: "AIzaSyCbNGyrjT1rf-2UHeRj2LCCdqIrsaZ0TG0", authDomain: "kurahivka-rp-avtobazar.firebaseapp.com", databaseURL: "https://kurahivka-rp-avtobazar-default-rtdb.europe-west1.firebasedatabase.app", projectId: "kurahivka-rp-avtobazar", storageBucket: "kurahivka-rp-avtobazar.firebasestorage.app" };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database(); const auth = firebase.auth();
-
-        let myId = null, myName = null, currentRole = 'buyer', activeChatId = new URLSearchParams(window.location.search).get('id'), activeChatInfo = null;
-
-        auth.onAuthStateChanged(user => {
-            if(user) {
-                myId = user.providerData?.[0]?.uid || user.uid;
-                myName = user.displayName;
-                loadChatsList();
-            } else { window.location.href = 'index.html'; }
-        });
-
-        function changeChatRole(role) {
-            currentRole = role;
-            document.getElementById('tabRoleBuy').classList.toggle('active', role === 'buyer');
-            document.getElementById('tabRoleSell').classList.toggle('active', role === 'seller');
-            renderChatsList();
-        }
-
-        function loadChatsList() {
-            db.ref('chats').on('value', snap => {
-                const allChats = snap.val() || {};
-                const container = document.getElementById('chatsContainer');
-                container.innerHTML = '';
-                
-                const filtered = Object.keys(allChats).filter(id => {
-                    const c = allChats[id];
-                    return (currentRole === 'buyer' && c.buyerId === myId) || (currentRole === 'seller' && c.sellerId === myId);
-                }).sort((a, b) => (allChats[b].lastUpdated || 0) - (allChats[a].lastUpdated || 0));
-
-                filtered.forEach(id => {
-                    const c = allChats[id];
-                    const partnerName = currentRole === 'buyer' ? c.sellerName : c.buyerName;
-                    const item = document.createElement('div');
-                    item.className = `chat-item ${activeChatId === id ? 'active' : ''}`;
-                    item.onclick = () => window.location.href = `chat.html?id=${id}`;
-                    item.innerHTML = `
-                        <div style="width:50px;height:50px;border-radius:50%;background:#e0e0e0;display:flex;justify-content:center;align-items:center;font-weight:bold;">${partnerName.charAt(0)}</div>
-                        <div class="chat-item-info">
-                            <div class="chat-item-name">${partnerName}</div>
-                            <div class="chat-item-title">${c.carTitle}</div>
-                        </div>
-                    `;
-                    container.appendChild(item);
-                });
+        // --- ФУНКЦІЯ ДЛЯ ПРИМУСОВОГО ВІДТВОРЕННЯ ---
+        function playAudio(audioObj) {
+            audioObj.play().catch(e => {
+                console.warn("Звук заблоковано браузером, клікніть будь-де на сторінці для розблокування.");
             });
         }
 
+        // Розблокування звуку при першому кліку
+        document.addEventListener('click', () => {
+            sendSound.load();
+            recvSound.load();
+        }, { once: true });
+
+        // ... (твій код Firebase і Auth) ...
+
+        // ОНОВЛЕНА ФУНКЦІЯ ОТРИМАННЯ ПОВІДОМЛЕНЬ
         function openChatMessages(id) {
-            hasLoadedMessages = false; // Скидаємо прапорець при зміні чату
+            if(!document.getElementById('messagesArea')) buildChatWindowStructure();
             
+            db.ref(`chats/${id}/messages`).off();
             db.ref(`chats/${id}/messages`).on('value', snap => {
                 const area = document.getElementById('messagesArea');
                 if(!area) return;
                 
-                // ЗВУК ПРИ ОТРИМАННІ (тільки якщо вже прогрузилась історія)
-                if (hasLoadedMessages) {
+                // Якщо повідомлень стало більше і це не перше завантаження — граємо звук
+                if (isChatInitialized) {
                     const msgs = Object.values(snap.val() || {});
                     const lastMsg = msgs[msgs.length - 1];
                     if (lastMsg && lastMsg.senderId !== myId) {
-                        recvSound.play().catch(e => console.log("Чекаю на клік користувача"));
+                        playAudio(recvSound);
                     }
                 }
                 
@@ -155,6 +119,7 @@
                     const m = child.val();
                     const isMine = m.senderId === myId;
                     const timeStr = new Date(m.timestamp).toLocaleTimeString('uk-UA', {hour: '2-digit', minute:'2-digit'});
+                    
                     area.innerHTML += `
                         <div class="msg-bubble ${isMine ? 'msg-mine' : 'msg-other'}">
                             <div>${m.text}</div>
@@ -162,27 +127,25 @@
                         </div>
                     `;
                 });
-                hasLoadedMessages = true; // Тепер історія прогружена, можна грати звуки
-                area.scrollTop = area.scrollHeight;
+                isChatInitialized = true;
+                setTimeout(() => area.scrollTop = area.scrollHeight, 50);
             });
         }
 
+        // ОНОВЛЕНА ФУНКЦІЯ ВІДПРАВКИ
         async function sendMsg() {
             const input = document.getElementById('msgInput');
             const text = input.value.trim();
             if(!text) return;
-            input.value = '';
             
-            sendSound.play().catch(e => console.log("Чекаю на клік користувача"));
-
+            playAudio(sendSound); // Граємо звук відправки
+            
+            input.value = '';
             const ts = Date.now();
+
             await db.ref(`chats/${activeChatId}/messages`).push({ senderId: myId, text: text, timestamp: ts });
             await db.ref(`chats/${activeChatId}`).update({ lastUpdated: ts, lastSenderId: myId, lastSenderName: myName, lastMessageText: text });
-        }
-
-        if(activeChatId) {
-            activeChatInfo = { /* тут треба підвантажити дані про чат для бота */ };
-            openChatMessages(activeChatId);
+            // ... (далі код сповіщення ботом)
         }
     </script>
 </body>
