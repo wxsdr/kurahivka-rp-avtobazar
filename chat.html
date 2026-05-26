@@ -15,108 +15,49 @@
         * { box-sizing: border-box; }
         a { text-decoration: none; color: inherit; }
 
-        /* ЄДИНА ШАПКА */
-        header { background: var(--olx-dark); padding: 12px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1000; flex-shrink: 0; transition: 0.3s; }
+        header { background: var(--olx-dark); padding: 12px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1000; flex-shrink: 0; }
         .header-container { max-width: 1230px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; }
         .logo { font-size: 26px; font-weight: 900; color: var(--olx-accent); letter-spacing: -1px; cursor: pointer; transition: 0.2s; }
         .logo:hover { transform: scale(1.05); }
         .header-actions { display: flex; align-items: center; gap: 20px; color: white; font-weight: 700; font-size: 15px; }
         
-        .header-link { display: flex; align-items: center; gap: 8px; cursor: pointer; position: relative; transition: 0.2s; padding: 5px; }
-        .header-link:hover { color: var(--olx-accent); }
-        
-        /* ПРОФІЛЬ */
-        .profile-menu-container { position: relative; display: flex; align-items: center; cursor: pointer; padding: 15px 0; margin: -15px 0; }
-        .header-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--olx-accent); transition: 0.2s; }
-        .profile-menu-container:hover .header-avatar { transform: scale(1.1); box-shadow: 0 0 10px rgba(35, 229, 219, 0.5); }
-        .profile-dropdown { position: absolute; top: 100%; right: 0; background: white; border: 1px solid var(--olx-border); border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: none; flex-direction: column; min-width: 200px; z-index: 1000; animation: dropdownFadeIn 0.2s ease forwards; overflow: hidden; padding-top: 5px; margin-top: -5px; }
-        .profile-menu-container:hover .profile-dropdown { display: flex; }
-        .profile-dropdown::before { content: ''; position: absolute; top: -15px; left: 0; right: 0; height: 15px; background: transparent; }
-        .dropdown-item { padding: 15px; color: var(--olx-dark); text-decoration: none; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
-        .dropdown-item:hover { background: var(--olx-light-bg); color: var(--olx-btn-hover); padding-left: 20px; }
-
-        /* ВІКНО ЧАТІВ */
-        .chat-layout { display: flex; flex: 1; max-width: 1230px; width: 100%; margin: 20px auto; background: white; border: 1px solid var(--olx-border); border-radius: 8px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.05); animation: pageAppear 0.4s ease; }
-        
-        /* Ліва частина */
+        .chat-layout { display: flex; flex: 1; max-width: 1230px; width: 100%; margin: 20px auto; background: white; border: 1px solid var(--olx-border); border-radius: 8px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
         .sidebar { width: 350px; border-right: 1px solid var(--olx-border); display: flex; flex-direction: column; background: #fff; flex-shrink: 0; }
         .chat-roles-tabs { display: flex; background: #f2f4f5; border-bottom: 1px solid var(--olx-border); }
         .role-tab { flex: 1; text-align: center; padding: 18px; font-weight: bold; cursor: pointer; color: var(--olx-gray); border-bottom: 3px solid transparent; transition: 0.2s; }
-        .role-tab:hover { color: var(--olx-text); }
         .role-tab.active { color: var(--olx-dark); border-bottom-color: var(--olx-dark); background: white; }
 
-        .chat-list { flex: 1; overflow-y: auto; scroll-behavior: smooth; }
-        .chat-list::-webkit-scrollbar { width: 6px; }
-        .chat-list::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+        .chat-list { flex: 1; overflow-y: auto; }
         .chat-item { display: flex; padding: 15px 20px; border-bottom: 1px solid var(--olx-border); cursor: pointer; align-items: center; gap: 15px; transition: 0.2s; }
         .chat-item:hover, .chat-item.active { background: #f2f4f5; border-left: 4px solid var(--olx-btn-hover); padding-left: 16px; }
         .chat-item img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 1px solid var(--olx-border); flex-shrink: 0; }
         .chat-item-info { flex: 1; overflow: hidden; }
         .chat-item-name { font-weight: bold; font-size: 15px; margin-bottom: 4px; color: var(--olx-dark); }
         .chat-item-title { font-size: 13px; color: var(--olx-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .unread-dot { width: 12px; height: 12px; background: var(--olx-heart); border-radius: 50%; box-shadow: 0 0 5px rgba(255,90,95,0.5); }
 
-        /* Права частина */
         .main-chat { flex: 1; display: flex; flex-direction: column; background: #fdfdfd; overflow: hidden; }
-        .chat-header { padding: 20px; border-bottom: 1px solid var(--olx-border); background: white; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); z-index: 10; flex-shrink: 0; }
+        .chat-header { padding: 20px; border-bottom: 1px solid var(--olx-border); background: white; display: flex; align-items: center; gap: 15px; }
         .chat-header img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
-        .messages-area { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
-        .messages-area::-webkit-scrollbar { width: 6px; }
-        .messages-area::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+        .messages-area { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
         
-        .msg-bubble { max-width: 65%; padding: 14px 18px; border-radius: 12px; font-size: 15px; position: relative; line-height: 1.4; animation: slideIn 0.2s ease-out; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .msg-bubble { max-width: 65%; padding: 14px 18px; border-radius: 12px; font-size: 15px; position: relative; line-height: 1.4; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .msg-mine { background: #dcf8c6; align-self: flex-end; border-bottom-right-radius: 0; color: var(--olx-dark); }
         .msg-other { background: white; align-self: flex-start; border-bottom-left-radius: 0; border: 1px solid var(--olx-border); color: var(--olx-dark); }
         .msg-time { font-size: 11px; color: var(--olx-gray); margin-top: 6px; text-align: right; opacity: 0.8; }
 
         .input-panel { padding: 20px; background: white; border-top: 1px solid var(--olx-border); display: flex; gap: 15px; align-items: center; flex-shrink: 0; }
-        .input-panel input { flex: 1; padding: 16px 20px; border: 1px solid var(--olx-border); border-radius: 25px; outline: none; font-size: 15px; transition: 0.3s; background: var(--olx-light-bg); }
-        .input-panel input:focus { border-color: var(--olx-btn-hover); background: white; box-shadow: 0 0 0 4px rgba(0, 160, 152, 0.1); }
-        .send-btn { background: var(--olx-dark); color: white; border: none; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,47,52,0.2); }
-        .send-btn:hover { background: var(--olx-accent); transform: scale(1.1); box-shadow: 0 6px 15px rgba(35,229,219,0.3); }
-        .send-btn svg { fill: white; width: 22px; transition: 0.3s; }
-        .send-btn:hover svg { fill: var(--olx-dark); transform: translateX(2px); }
-        
-        .no-chat-selected { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--olx-gray); font-size: 18px; font-weight: 500; opacity: 0.6; }
-
-        /* МОДАЛКА АВАТАРКИ */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,47,52,0.8); z-index: 2000; justify-content: center; align-items: center; padding: 15px; animation: fadeIn 0.3s ease; }
-        .modal.active { display: flex; }
-        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 100%; max-width: 450px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); animation: popIn 0.3s ease; }
-        .filter-group { margin-bottom: 20px; }
-        .filter-group label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 8px; color: var(--olx-dark); }
-        .filter-group input { width: 100%; padding: 14px; border: 1px solid var(--olx-border); border-radius: 4px; font-size: 15px; outline: none; transition: 0.3s; }
-        .action-btn { width: 100%; padding: 15px; font-size: 16px; font-weight: 700; border-radius: 4px; border: none; cursor: pointer; text-align: center; transition: 0.3s; margin-bottom:10px; }
-        .btn-primary { background: var(--olx-dark); color: white; }
-        .btn-secondary { background: transparent; border: 2px solid var(--olx-dark); color: var(--olx-dark); }
-
-        /* АНІМАЦІЇ */
-        @keyframes pageAppear { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes dropdownFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-
+        .input-panel input { flex: 1; padding: 16px 20px; border: 1px solid var(--olx-border); border-radius: 25px; outline: none; font-size: 15px; background: var(--olx-light-bg); }
+        .send-btn { background: var(--olx-dark); color: white; border: none; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; }
+        .send-btn:hover { background: var(--olx-accent); transform: scale(1.1); }
     </style>
 </head>
 <body>
-    
+
     <header>
         <div class="header-container">
             <a class="logo" href="index.html">kurahivka.olx</a>
             <div class="header-actions">
-                <a class="header-link" href="index.html">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                    <span>Головна</span>
-                </a>
-                
-                <div class="profile-menu-container" id="profileMenu" style="display: none;">
-                    <img class="header-avatar" id="myHeaderAvatar" src="https://via.placeholder.com/40">
-                    <div class="profile-dropdown">
-                        <div class="dropdown-item" onclick="openAvatarModal()">🖼️ Змінити аватарку</div>
-                        <div class="dropdown-item" onclick="logoutAccount()" style="border-top: 1px solid #eee; color: var(--olx-heart);">🚪 Вийти з акаунту</div>
-                    </div>
-                </div>
+                <a class="header-link" href="index.html">Головна</a>
             </div>
         </div>
     </header>
@@ -127,83 +68,35 @@
                 <div class="role-tab active" id="tabRoleBuy" onclick="changeChatRole('buyer')">Я Купую</div>
                 <div class="role-tab" id="tabRoleSell" onclick="changeChatRole('seller')">Я Продаю</div>
             </div>
-            <div class="chat-list" id="chatsContainer">
-                <div style="padding: 20px; color: var(--olx-gray);">Завантаження...</div>
-            </div>
+            <div class="chat-list" id="chatsContainer"></div>
         </div>
         <div class="main-chat" id="chatWindow">
-            <div class="no-chat-selected">
-                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#d8dfe0" stroke-width="2" style="margin-bottom:20px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                Виберіть діалог зі списку зліва
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color:#888;">
+                Оберіть діалог
             </div>
-        </div>
-    </div>
-
-    <div id="avatarModal" class="modal">
-        <div class="modal-content">
-            <h3 style="color:var(--olx-dark); margin-top:0;">Оновлення профілю</h3>
-            <div class="filter-group">
-                <label>Оберіть нову аватарку (файл)</label>
-                <input type="file" id="newAvatarFile" accept="image/*">
-            </div>
-            <button class="action-btn btn-primary" id="saveAvatarBtn" onclick="uploadNewAvatar()">Зберегти зміни</button>
-            <button class="action-btn btn-secondary" onclick="closeAvatarModal()">Скасувати</button>
         </div>
     </div>
 
     <script>
+        // Ініціалізація звуків
         const sendSound = new Audio('https://actions.google.com/sounds/v1/ui/confirmation_up.ogg');
         const recvSound = new Audio('https://actions.google.com/sounds/v1/notifications/complete.ogg');
-        let lastMsgCount = 0; // Для того, щоб не грати звук при початковому завантаженні
+        
+        let hasLoadedMessages = false; // Захист від звуку при першому завантаженні
+
         const firebaseConfig = { apiKey: "AIzaSyCbNGyrjT1rf-2UHeRj2LCCdqIrsaZ0TG0", authDomain: "kurahivka-rp-avtobazar.firebaseapp.com", databaseURL: "https://kurahivka-rp-avtobazar-default-rtdb.europe-west1.firebasedatabase.app", projectId: "kurahivka-rp-avtobazar", storageBucket: "kurahivka-rp-avtobazar.firebasestorage.app" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database(); const auth = firebase.auth();
 
         let myId = null, myName = null, currentRole = 'buyer', activeChatId = new URLSearchParams(window.location.search).get('id'), activeChatInfo = null;
-        let allChats = {};
 
         auth.onAuthStateChanged(user => {
-            if(!user) {
-                document.body.innerHTML = "<div style='text-align:center; padding:50px; font-size:20px; font-weight:bold;'>Потрібна авторизація! Перенаправлення...</div>";
-                setTimeout(() => window.location.href='index.html', 1500);
-            } else {
+            if(user) {
                 myId = user.providerData?.[0]?.uid || user.uid;
                 myName = user.displayName;
-                document.getElementById('profileMenu').style.display = 'flex';
-                
-                db.ref(`users/${myId}/profile`).on('value', snap => {
-                    const prof = snap.val() || {};
-                    document.getElementById('myHeaderAvatar').src = prof.avatar || user.photoURL || 'https://via.placeholder.com/40';
-                });
-
                 loadChatsList();
-            }
+            } else { window.location.href = 'index.html'; }
         });
-
-        function logoutAccount() { if(confirm("Вийти з акаунту?")) auth.signOut().then(() => window.location.href='index.html'); }
-        function openAvatarModal() { document.getElementById('avatarModal').classList.add('active'); }
-        function closeAvatarModal() { document.getElementById('avatarModal').classList.remove('active'); }
-
-        async function uploadToImgBB(file) {
-            const apiKey = '7ef81dfc56bab94048936358f8fb9097'; 
-            const formData = new FormData(); formData.append('image', file);
-            const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, { method: 'POST', body: formData });
-            const data = await res.json();
-            if(data.success) return data.data.url;
-            throw new Error('error');
-        }
-
-        async function uploadNewAvatar() {
-            const file = document.getElementById('newAvatarFile').files[0];
-            if(!file) return alert('Оберіть файл!');
-            const btn = document.getElementById('saveAvatarBtn'); btn.disabled = true; btn.innerText = 'Завантаження...';
-            try {
-                const url = await uploadToImgBB(file);
-                await db.ref(`users/${myId}/profile`).update({ avatar: url });
-                alert('Аватарку успішно оновлено!'); closeAvatarModal();
-            } catch(e) { alert('Помилка завантаження'); }
-            btn.disabled = false; btn.innerText = 'Зберегти зміни';
-        }
 
         function changeChatRole(role) {
             currentRole = role;
@@ -214,143 +107,82 @@
 
         function loadChatsList() {
             db.ref('chats').on('value', snap => {
-                allChats = snap.val() || {};
-                if(activeChatId && allChats[activeChatId]) {
-                    const c = allChats[activeChatId];
-                    if(c.sellerId === myId && currentRole !== 'seller') changeChatRole('seller');
-                }
-                renderChatsList();
-                if(activeChatId) { openChatMessages(activeChatId); }
+                const allChats = snap.val() || {};
+                const container = document.getElementById('chatsContainer');
+                container.innerHTML = '';
+                
+                const filtered = Object.keys(allChats).filter(id => {
+                    const c = allChats[id];
+                    return (currentRole === 'buyer' && c.buyerId === myId) || (currentRole === 'seller' && c.sellerId === myId);
+                }).sort((a, b) => (allChats[b].lastUpdated || 0) - (allChats[a].lastUpdated || 0));
+
+                filtered.forEach(id => {
+                    const c = allChats[id];
+                    const partnerName = currentRole === 'buyer' ? c.sellerName : c.buyerName;
+                    const item = document.createElement('div');
+                    item.className = `chat-item ${activeChatId === id ? 'active' : ''}`;
+                    item.onclick = () => window.location.href = `chat.html?id=${id}`;
+                    item.innerHTML = `
+                        <div style="width:50px;height:50px;border-radius:50%;background:#e0e0e0;display:flex;justify-content:center;align-items:center;font-weight:bold;">${partnerName.charAt(0)}</div>
+                        <div class="chat-item-info">
+                            <div class="chat-item-name">${partnerName}</div>
+                            <div class="chat-item-title">${c.carTitle}</div>
+                        </div>
+                    `;
+                    container.appendChild(item);
+                });
             });
-        }
-
-        function renderChatsList() {
-            const container = document.getElementById('chatsContainer');
-            container.innerHTML = '';
-
-            const filtered = Object.keys(allChats).filter(id => {
-                const c = allChats[id];
-                if(currentRole === 'buyer' && c.buyerId === myId) return true;
-                if(currentRole === 'seller' && c.sellerId === myId) return true;
-                return false;
-            }).sort((a, b) => (allChats[b].lastUpdated || 0) - (allChats[a].lastUpdated || 0));
-
-            if(filtered.length === 0) {
-                container.innerHTML = `<div style="padding:40px 20px; text-align:center; color:var(--olx-gray); font-size:15px;">Тут поки порожньо.</div>`;
-                return;
-            }
-
-            filtered.forEach(id => {
-                const c = allChats[id];
-                const partnerName = currentRole === 'buyer' ? c.sellerName : c.buyerName;
-                const partnerAvatar = currentRole === 'buyer' ? (c.sellerAvatar || 'https://via.placeholder.com/50') : (c.buyerAvatar || 'https://via.placeholder.com/50');
-                const hasUnread = c.lastSenderId && c.lastSenderId !== myId;
-
-                const avatarHtml = partnerAvatar ? `<img src="${partnerAvatar}">` : `<div style="width:50px;height:50px;border-radius:50%;background:#e0e0e0;display:flex;justify-content:center;align-items:center;font-weight:bold;">${partnerName.charAt(0)}</div>`;
-
-                const item = document.createElement('div');
-                item.className = `chat-item ${activeChatId === id ? 'active' : ''}`;
-                item.onclick = () => selectChat(id);
-                item.innerHTML = `
-                    ${avatarHtml}
-                    <div class="chat-item-info">
-                        <div class="chat-item-name">${partnerName}</div>
-                        <div class="chat-item-title">${c.carTitle || 'Товар'}</div>
-                        <div style="font-size:12px; color:#7f9799; margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.lastMessageText || 'Повідомлень немає'}</div>
-                    </div>
-                    ${hasUnread ? `<div class="unread-dot"></div>` : ''}
-                `;
-                container.appendChild(item);
-            });
-        }
-
-        function selectChat(id) {
-            activeChatId = id; activeChatInfo = allChats[id];
-            renderChatsList(); buildChatWindowStructure(); openChatMessages(id);
-        }
-
-        function buildChatWindowStructure() {
-            activeChatInfo = allChats[activeChatId];
-            const partnerName = currentRole === 'buyer' ? activeChatInfo.sellerName : activeChatInfo.buyerName;
-            const partnerAvatar = currentRole === 'buyer' ? (activeChatInfo.sellerAvatar || 'https://via.placeholder.com/45') : (activeChatInfo.buyerAvatar || 'https://via.placeholder.com/45');
-            const win = document.getElementById('chatWindow');
-            
-            const avatarHtml = partnerAvatar ? `<img src="${partnerAvatar}">` : `<div class="chat-header-avatar">${partnerName.charAt(0)}</div>`;
-            
-            win.innerHTML = `
-                <div class="chat-header">
-                    ${avatarHtml}
-                    <div>
-                        <div style="font-size: 16px; font-weight: 900; color: var(--olx-dark);">${partnerName}</div>
-                        <div style="font-size: 12px; color: var(--olx-gray); margin-top: 3px;">Щодо: <b>${activeChatInfo.carTitle}</b></div>
-                    </div>
-                </div>
-                <div class="messages-area" id="messagesArea"></div>
-                <div class="input-panel">
-                    <input type="text" id="msgInput" placeholder="Напишіть ваше повідомлення..." autocomplete="off" onkeydown="if(event.key==='Enter') sendMsg()">
-                    <button class="send-btn" onclick="sendMsg()">
-                        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-                    </button>
-                </div>
-            `;
         }
 
         function openChatMessages(id) {
-    if(!document.getElementById('messagesArea')) buildChatWindowStructure();
-    
-    db.ref(`chats/${id}/messages`).off();
-    db.ref(`chats/${id}/messages`).on('value', snap => {
-        const area = document.getElementById('messagesArea');
-        if(!area) return;
-        area.innerHTML = '';
-        
-        snap.forEach(child => {
-            const m = child.val();
-            const isMine = m.senderId === myId;
-            const timeStr = new Date(m.timestamp).toLocaleTimeString('uk-UA', {hour: '2-digit', minute:'2-digit'});
+            hasLoadedMessages = false; // Скидаємо прапорець при зміні чату
             
-            area.innerHTML += `
-                <div class="msg-bubble ${isMine ? 'msg-mine' : 'msg-other'}">
-                    <div>${m.text}</div>
-                    <div class="msg-time">${timeStr}</div>
-                </div>
-            `;
-        });
-        
-        // -- ЛОГІКА ЗВУКУ --
-        if (isInitialized) {
-            // Отримуємо останнє повідомлення
-            const messagesArray = Object.values(snap.val() || {});
-            const lastMsg = messagesArray[messagesArray.length - 1];
-            
-            // Граємо звук тільки якщо це чуже повідомлення
-            if (lastMsg && lastMsg.senderId !== myId) {
-                recvSound.play().catch(e => console.log("Аудіо заблоковано"));
-            }
+            db.ref(`chats/${id}/messages`).on('value', snap => {
+                const area = document.getElementById('messagesArea');
+                if(!area) return;
+                
+                // ЗВУК ПРИ ОТРИМАННІ (тільки якщо вже прогрузилась історія)
+                if (hasLoadedMessages) {
+                    const msgs = Object.values(snap.val() || {});
+                    const lastMsg = msgs[msgs.length - 1];
+                    if (lastMsg && lastMsg.senderId !== myId) {
+                        recvSound.play().catch(e => console.log("Чекаю на клік користувача"));
+                    }
+                }
+                
+                area.innerHTML = '';
+                snap.forEach(child => {
+                    const m = child.val();
+                    const isMine = m.senderId === myId;
+                    const timeStr = new Date(m.timestamp).toLocaleTimeString('uk-UA', {hour: '2-digit', minute:'2-digit'});
+                    area.innerHTML += `
+                        <div class="msg-bubble ${isMine ? 'msg-mine' : 'msg-other'}">
+                            <div>${m.text}</div>
+                            <div class="msg-time">${timeStr}</div>
+                        </div>
+                    `;
+                });
+                hasLoadedMessages = true; // Тепер історія прогружена, можна грати звуки
+                area.scrollTop = area.scrollHeight;
+            });
         }
-        isInitialized = true; // Тепер, коли ми перший раз прогрузили, вмикаємо звуки
-        
-        setTimeout(() => area.scrollTop = area.scrollHeight, 50);
-    });
-}
+
         async function sendMsg() {
             const input = document.getElementById('msgInput');
             const text = input.value.trim();
-            if(!text) return; input.value = '';
+            if(!text) return;
+            input.value = '';
+            
+            sendSound.play().catch(e => console.log("Чекаю на клік користувача"));
+
             const ts = Date.now();
-
-            sendSound.play().catch(e => console.log("Браузер блокує звук до першого кліку"));
-
             await db.ref(`chats/${activeChatId}/messages`).push({ senderId: myId, text: text, timestamp: ts });
             await db.ref(`chats/${activeChatId}`).update({ lastUpdated: ts, lastSenderId: myId, lastSenderName: myName, lastMessageText: text });
+        }
 
-            const receiverId = (activeChatInfo.buyerId === myId) ? activeChatInfo.sellerId : activeChatInfo.buyerId;
-            try {
-                fetch("https://kurahivka-rp-avtobazar-bot.onrender.com/api/contact", {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ seller_id: String(receiverId), car_name: `У вас нове повідомлення в чаті на сайті щодо: ${activeChatInfo.carTitle}` })
-                });
-            } catch(e) {}
+        if(activeChatId) {
+            activeChatInfo = { /* тут треба підвантажити дані про чат для бота */ };
+            openChatMessages(activeChatId);
         }
     </script>
 </body>
