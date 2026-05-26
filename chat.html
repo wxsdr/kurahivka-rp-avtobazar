@@ -152,6 +152,9 @@
     </div>
 
     <script>
+        const sendSound = new Audio('https://actions.google.com/sounds/v1/ui/confirmation_up.ogg');
+        const recvSound = new Audio('https://actions.google.com/sounds/v1/notifications/complete.ogg');
+        let lastMsgCount = 0; // Для того, щоб не грати звук при початковому завантаженні
         const firebaseConfig = { apiKey: "AIzaSyCbNGyrjT1rf-2UHeRj2LCCdqIrsaZ0TG0", authDomain: "kurahivka-rp-avtobazar.firebaseapp.com", databaseURL: "https://kurahivka-rp-avtobazar-default-rtdb.europe-west1.firebasedatabase.app", projectId: "kurahivka-rp-avtobazar", storageBucket: "kurahivka-rp-avtobazar.firebasestorage.app" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database(); const auth = firebase.auth();
