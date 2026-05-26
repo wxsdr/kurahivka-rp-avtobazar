@@ -21,547 +21,535 @@
             --olx-accent: #23e5db;
             --olx-heart: #ff5a5f;
         }
+        body { background-color: var(--olx-light-bg); color: var(--olx-text); font-family: 'Roboto', sans-serif; margin: 0; padding: 0; min-height: 100vh; }
+        a { text-decoration: none; color: inherit; }
+        * { box-sizing: border-box; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
-        body { background-color: var(--olx-light-bg); color: var(--olx-text); }
-
-        /* Полноэкранный оверлей авторизации */
-        #loginOverlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, #004f56 0%, #002f34 100%);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 10000; color: white; text-align: center; padding: 20px;
-            transition: opacity 0.3s ease;
-        }
-        #loginOverlay h2 { font-size: 32px; margin-bottom: 15px; font-weight: 900; letter-spacing: 1px; }
-        #loginOverlay p { font-size: 18px; margin-bottom: 30px; color: #cedbda; }
-        #loginOverlay .login-btn {
-            background: #5865F2; color: white; border: none; padding: 15px 35px;
-            font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer;
-            display: flex; align-items: center; gap: 10px; transition: background 0.2s, transform 0.1s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-        #loginOverlay .login-btn:hover { background: #4752c4; transform: translateY(-2px); }
-        #loginOverlay .login-btn:active { transform: translateY(0); }
-
-        .hidden { display: none !important; }
-
-        /* Шапка сайта */
-        header { background: white; border-bottom: 1px solid var(--olx-border); position: sticky; top: 0; z-index: 999; }
-        .header-container { max-width: 1200px; margin: 0 auto; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; }
-        .logo { font-size: 28px; font-weight: 900; color: var(--olx-dark); text-decoration: none; cursor: pointer; }
-
-        .header-controls { display: flex; align-items: center; gap: 25px; }
-        .icon-btn { cursor: pointer; transition: color 0.2s, transform 0.2s; color: var(--olx-dark); display: flex; align-items: center; position: relative; }
-        .icon-btn:hover { color: var(--olx-btn-hover); transform: scale(1.05); }
-        .icon-btn.heart-btn:hover { color: var(--olx-heart); }
-
-        /* Выпадающее меню профиля при наведении */
-        .profile-menu { position: relative; padding: 5px 0; }
-        .profile-trigger { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--olx-dark); cursor: pointer; }
-        .profile-trigger img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--olx-border); }
+        header { background: var(--olx-dark); padding: 15px 0; position: sticky; top: 0; z-index: 100; }
+        .header-container { max-width: 1230px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; }
+        .logo { font-size: 28px; font-weight: 900; color: var(--olx-accent); letter-spacing: -1px; cursor: pointer; }
+        .header-actions { display: flex; align-items: center; gap: 25px; color: white; font-weight: 700; font-size: 15px; }
         
-        .profile-dropdown { 
-            display: none; position: absolute; top: 100%; right: 0; 
-            background: white; border-radius: 8px; box-shadow: 0 5px 25px rgba(0,0,0,0.15); 
-            width: 220px; padding: 10px 0; z-index: 1000; border: 1px solid var(--olx-border);
-            margin-top: 10px;
+        .header-link { display: flex; align-items: center; gap: 8px; cursor: pointer; position: relative; transition: 0.2s; padding: 5px; }
+        .header-link:hover { color: var(--olx-accent); }
+        
+        .chat-badge {
+            position: absolute; top: -5px; right: -8px; background: var(--olx-heart); color: white;
+            font-size: 11px; font-weight: 900; padding: 2px 6px; border-radius: 10px; min-width: 18px;
+            text-align: center; display: none; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
-        .profile-menu:hover .profile-dropdown { display: block; animation: dropdownFade 0.2s ease-in-out; }
+        .chat-badge.active { display: block; }
+
+        .add-btn { background: white; color: var(--olx-dark); font-weight: 700; font-size: 15px; padding: 12px 20px; border-radius: 4px; border: none; cursor: pointer; transition: 0.2s; }
+        .add-btn:hover { background: #e8e8e8; }
+
+        .container { max-width: 1230px; margin: 0 auto; padding: 20px 15px; }
         
-        .dropdown-item { padding: 12px 20px; font-size: 14px; font-weight: 500; color: var(--olx-dark); transition: background 0.2s, color 0.2s; cursor: pointer; display: flex; align-items: center; gap: 10px; }
-        .dropdown-item:hover { background: var(--olx-light-bg); color: var(--olx-btn-hover); }
-        .dropdown-item.logout-item { border-top: 1px solid var(--olx-border); color: #ff4d4f; }
-        .dropdown-item.logout-item:hover { background: #fff1f0; }
+        /* Категорії згідно з 2 скрином */
+        .categories-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0; }
+        .cat-card { background: white; border: 1px solid var(--olx-border); padding: 20px; text-align: center; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .cat-card:hover, .cat-card.active { background: var(--olx-dark); color: white; border-color: var(--olx-dark); }
 
-        @keyframes dropdownFade {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .search-bar { display: flex; margin-bottom: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-radius: 4px; overflow: hidden; }
+        .search-input { flex: 1; padding: 18px; border: none; font-size: 16px; outline: none; }
+        .search-btn { background: var(--olx-dark); color: white; border: none; font-weight: 700; font-size: 16px; padding: 0 30px; cursor: pointer; }
 
-        .add-btn { background: var(--olx-dark); color: white; border: none; padding: 12px 24px; font-size: 15px; font-weight: 700; border-radius: 5px; cursor: pointer; transition: background 0.2s, color 0.2s; border: 2px solid var(--olx-dark); }
-        .add-btn:hover { background: white; color: var(--olx-dark); }
+        .filters-actions { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--olx-border); padding-bottom: 15px; margin-bottom: 25px; }
+        .tabs { display: flex; gap: 20px; font-weight: 700; font-size: 14px; }
+        .tab { cursor: pointer; padding-bottom: 15px; margin-bottom: -16px; border-bottom: 2px solid transparent; color: var(--olx-gray); }
+        .tab.active { border-bottom-color: var(--olx-text); color: var(--olx-text); }
 
-        /* Поиск */
-        .search-section { background: #f2f4f5; padding: 40px 20px; }
-        .search-container { max-width: 1200px; margin: 0 auto; display: flex; gap: 10px; background: white; padding: 10px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .search-input { flex: 1; border: none; padding: 15px; font-size: 16px; outline: none; color: var(--olx-dark); }
-        .search-select { border: none; border-left: 1px solid var(--olx-border); padding: 0 20px; font-size: 16px; outline: none; background: white; color: var(--olx-dark); cursor: pointer; }
-        .search-go-btn { background: var(--olx-dark); color: white; border: none; padding: 0 35px; font-size: 16px; font-weight: 700; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
-        .search-go-btn:hover { background: #001f22; }
-
-        /* Категории */
-        .categories-section { max-width: 1200px; margin: 30px auto; padding: 0 20px; text-align: center; }
-        .categories-section h2 { margin-bottom: 25px; font-size: 24px; color: var(--olx-dark); text-align: left; font-weight: 700; }
-        .categories-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 20px; }
-        .category-card { background: white; padding: 20px 10px; border-radius: 8px; border: 1px solid var(--olx-border); text-align: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; text-decoration: none; color: var(--olx-dark); }
-        .category-card:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.05); border-color: var(--olx-btn-hover); }
-        .category-icon { font-size: 32px; margin-bottom: 10px; display: block; }
-        .category-name { font-size: 14px; font-weight: 500; }
-
-        /* Контент объявлений */
-        .main-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-        .section-title { font-size: 26px; font-weight: 700; margin-bottom: 25px; color: var(--olx-dark); }
-        .ads-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 25px; }
-
-        .ad-card { background: white; border-radius: 8px; border: 1px solid var(--olx-border); overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; position: relative; }
-        .ad-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
-        .ad-img { width: 100%; height: 180px; object-fit: cover; background: #e0e0e0; }
-        .ad-info { padding: 15px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .ad-title { font-size: 16px; font-weight: 500; color: var(--olx-dark); margin-bottom: 8px; line-height: 1.4; height: 44px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-        .ad-price { font-size: 18px; font-weight: 700; color: var(--olx-dark); margin-bottom: 12px; }
-        .ad-meta { font-size: 12px; color: var(--olx-gray); display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
-
-        /* Модалка добавления объявления */
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 47, 52, 0.7); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
-        .modal-content { background: white; border-radius: 8px; max-width: 650px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 30px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-        .close-modal { position: absolute; top: 20px; right: 20px; font-size: 28px; cursor: pointer; color: var(--olx-dark); font-weight: 700; }
-        .modal h2 { margin-bottom: 20px; color: var(--olx-dark); font-size: 22px; font-weight: 700; border-bottom: 2px solid var(--olx-light-bg); padding-bottom: 10px; }
+        .item-list { display: flex; flex-direction: column; gap: 12px; }
+        .item-card { background: white; border-radius: 4px; display: flex; height: 190px; overflow: hidden; cursor: pointer; border: 1px solid var(--olx-border); position: relative; }
+        .item-img-wrapper { width: 250px; background: #e0e0e0; flex-shrink: 0; }
+        .item-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
         
-        .form-group { margin-bottom: 18px; }
-        .form-group label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 6px; color: var(--olx-dark); }
-        .form-control { width: 100%; padding: 12px; border: 1px solid var(--olx-border); border-radius: 4px; font-size: 15px; outline: none; color: var(--olx-dark); background: var(--olx-light-bg); }
-        .form-control:focus { border-color: var(--olx-dark); background: white; }
-        textarea.form-control { height: 100px; resize: vertical; }
+        .item-info { padding: 20px; display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1; }
+        .item-top-row { display: flex; justify-content: space-between; align-items: flex-start; }
+        .item-title { margin: 0; font-size: 19px; font-weight: 500; }
+        .item-price { font-size: 20px; font-weight: 700; }
         
-        /* Уведомления */
-        .notification-toast { position: fixed; bottom: 20px; right: 20px; background: var(--olx-dark); color: white; padding: 15px 25px; border-radius: 4px; z-index: 5000; font-weight: 500; box-shadow: 0 4px 15px rgba(0,0,0,0.2); animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .item-specs { font-size: 13px; color: var(--olx-gray); margin-top: 5px; }
+        .seller-rating { color: #ffb800; font-size: 12px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+        
+        .heart-btn { width: 36px; height: 36px; display: flex; justify-content: center; align-items: center; border-radius: 50%; cursor: pointer; }
+        .heart-icon { width: 24px; height: 24px; fill: none; stroke: var(--olx-text); stroke-width: 2; }
+        .heart-icon.liked { fill: var(--olx-heart); stroke: var(--olx-heart); }
+
+        /* ОКРЕМА СТОРІНКА ПОДАЧІ ОБ'ЯВИ */
+        .full-page-form { display: none; background: white; min-height: 100vh; position: fixed; top: 0; left: 0; width: 100%; z-index: 200; overflow-y: auto; padding: 40px 20px; }
+        .full-page-form.active { display: block; }
+        .form-container { max-width: 800px; margin: 0 auto; }
+        
+        .olx-box { border: 1px solid var(--olx-border); padding: 30px; border-radius: 4px; margin-bottom: 20px; background: white; }
+        .olx-box h3 { margin-top: 0; font-size: 20px; margin-bottom: 20px; color: var(--olx-dark); }
+
+        .filter-group { margin-bottom: 20px; }
+        .filter-group label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 8px; color: var(--olx-dark); }
+        .filter-group input, .filter-group select, .filter-group textarea { width: 100%; padding: 14px; border: 1px solid var(--olx-border); border-radius: 4px; font-size: 16px; outline: none; }
+        .filter-group input:focus { border-color: var(--olx-dark); }
+
+        .photo-uploader { border: 2px dashed var(--olx-border); padding: 40px; text-align: center; cursor: pointer; background: #f8fafb; border-radius: 4px; }
+
+        /* Модалки подій */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,47,52,0.8); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 25px; border-radius: 4px; width: 100%; max-width: 500px; }
+
+        #toastContainer { position: fixed; bottom: 20px; right: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: var(--olx-dark); color: white; padding: 15px 25px; border-radius: 4px; font-weight: bold; opacity: 0; transform: translateY(50px); transition: 0.3s; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.error { background: var(--olx-heart); }
+        
+        .avatar-settings { display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 4px; }
     </style>
 </head>
 <body>
 
-    <div id="loginOverlay">
-        <h2>Ласкаво просимо до Kurahivka OLX</h2>
-        <p>Для отримання повноцінного доступу до сервісу необхідно авторизуватися</p>
-        <button class="login-btn" onclick="loginDiscord()">
-            <svg width="24" height="24" viewBox="0 0 127.14 96.36" fill="white"><path d="M107.7,8.07A105.15,105.15,0,0,0,77.26,0a77.19,77.19,0,0,0-3.3,6.83A96.67,96.67,0,0,0,53.22,6.83,77.19,77.19,0,0,0,49.88,0,105.15,105.15,0,0,0,19.44,8.07C3.66,31.58-1.86,54.65,1,77.53A105.73,105.73,0,0,0,32,96.36a77.7,77.7,0,0,0,6.63-10.85,69.43,69.43,0,0,1-10.5-5c.88-.65,1.72-1.34,2.51-2a75.58,75.58,0,0,0,73,0c.79.7,1.63,1.39,2.51,2a69.68,69.68,0,0,1-10.5,5,78.5,78.5,0,0,0,6.63,10.85,105.38,105.38,0,0,0,31.07-18.83C129.87,49.58,123.77,26.85,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53S36.18,40.36,42.45,40.36,53.83,46,53.83,53,48.72,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.24,60,73.24,53S78.41,40.36,84.69,40.36,96.07,46,96.07,53,91,65.69,84.69,65.69Z"/></svg>
-            Увійти через Discord
-        </button>
-    </div>
+    <div id="toastContainer"></div>
 
-    <div id="mainContent" class="hidden">
-        <header>
-            <div class="header-container">
-                <a class="logo" onclick="resetFilters()">kurahivka olx</a>
+    <header>
+        <div class="header-container">
+            <div class="logo" onclick="window.location.reload()">kurahivka.olx</div>
+            <div class="header-actions">
+                <div class="header-link" onclick="setViewMode('favorites')">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    <span>Обране</span>
+                </div>
                 
-                <div class="header-controls">
-                    <div class="icon-btn heart-btn" onclick="window.location.href='favorites.html'" title="Улюблені оголошення">
-                        <svg viewBox="0 0 24 24" width="26" height="26" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                    </div>
-
-                    <div class="icon-btn" onclick="window.location.href='chat.html'" title="Повідомлення та чати">
-                        <svg viewBox="0 0 24 24" width="26" height="26" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                    </div>
-
-                    <div class="profile-menu">
-                        <div class="profile-trigger">
-                            <img id="headerAvatar" src="https://www.olx.ua/app/static/media/static-minus-sign.e187b5a51.svg" alt="Аватар">
-                            <span id="headerName">Ваш профіль</span>
-                        </div>
-                        <div class="profile-dropdown">
-                            <div class="dropdown-item" onclick="changeProfileName()">✏️ Змінити ім'я</div>
-                            <div class="dropdown-item" onclick="changeProfileAvatar()">🖼️ Змінити аватарку</div>
-                            <div class="dropdown-item logout-item" onclick="logoutUser()">🚪 Вийти з акаунту</div>
-                        </div>
-                    </div>
-
-                    <button class="add-btn" id="btnOpenModal" onclick="openCreationPage()">Додати оголошення</button>
+                <div class="header-link" onclick="window.location.href='chat.html'">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    <span>Повідомлення</span>
+                    <div class="chat-badge" id="globalChatBadge">0</div>
                 </div>
+
+                <div class="avatar-settings" id="profileBlock">
+                    <div id="authBtn" onclick="signInWithDiscord()" style="cursor:pointer;">Увійти</div>
+                </div>
+                
+                <button class="add-btn" onclick="startCreationPage()">Подати оголошення</button>
             </div>
-        </header>
+        </div>
+    </header>
 
-        <section class="search-section">
-            <div class="search-container">
-                <input type="text" id="searchInput" class="search-input" placeholder="Що шукаєте? Наприклад, iPhone, BMW...">
-                <select id="searchCategorySelect" class="search-select">
-                    <option value="all">Усі категорії</option>
-                    <option value="cars">Транспорт / Авто</option>
-                    <option value="realty">Нерухомість</option>
-                    <option value="electronics">Електроніка</option>
-                    <option value="fashion">Мода та стиль</option>
-                </select>
-                <button class="search-go-btn" onclick="executeSearch()">Пошук</button>
+    <div class="container" id="mainPageContent">
+        <div class="search-bar">
+            <input type="text" id="searchInput" class="search-input" placeholder="Шукайте авто, будинки та інше...">
+            <button class="search-btn" onclick="applyFilters()">Пошук</button>
+        </div>
+
+        <div class="categories-container">
+            <div class="cat-card" id="cat-cars" onclick="selectMainCategory('cars')">🚗 Автомобілі</div>
+            <div class="cat-card" id="cat-realty" onclick="selectMainCategory('realty')">🏠 Нерухомість</div>
+            <div class="cat-card" id="cat-other" onclick="selectMainCategory('other')">📦 Інше</div>
+        </div>
+
+        <div class="filters-actions">
+            <div class="tabs">
+                <div class="tab active" id="tab-all" onclick="setTabFilter('all')">Всі оголошення</div>
+                <div class="tab" id="tab-private" onclick="setTabFilter('private')">Приватні</div>
+                <div class="tab" id="tab-business" onclick="setTabFilter('business')">Бізнес</div>
             </div>
-        </section>
+            <div style="cursor:pointer; color:var(--olx-gray);" onclick="resetFilters()">Скинути фільтри</div>
+        </div>
 
-        <section class="categories-section">
-            <h2>Головні категорії</h2>
-            <div class="categories-grid">
-                <div class="category-card" onclick="filterByCategory('cars')">
-                    <span class="category-icon">🚗</span>
-                    <span class="category-name">Авто / Транспорт</span>
-                </div>
-                <div class="category-card" onclick="filterByCategory('realty')">
-                    <span class="category-icon">🏠</span>
-                    <span class="category-name">Нерухомість</span>
-                </div>
-                <div class="category-card" onclick="filterByCategory('electronics')">
-                    <span class="category-icon">💻</span>
-                    <span class="category-name">Електроніка</span>
-                </div>
-                <div class="category-card" onclick="filterByCategory('fashion')">
-                    <span class="category-icon">👕</span>
-                    <span class="category-name">Мода та стиль</span>
-                </div>
-            </div>
-        </section>
-
-        <main class="main-container">
-            <h2 class="section-title" id="gridTitle">Найновіші оголошення</h2>
-            <div class="ads-grid" id="mainAdsGrid">
-                </div>
-        </main>
+        <div class="item-list" id="itemsGrid"></div>
     </div>
 
-    <div id="adModal" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeCreationPage()">&times;</span>
-            <h2>Створення нового оголошення</h2>
+    <div id="addItemPage" class="full-page-form">
+        <div class="form-container">
+            <h2 style="font-size:32px; font-weight:900; margin-bottom:30px;">Поділіться з усіма своїм товаром</h2>
             
-            <div class="form-group">
-                <label>Назва товару/послуги *</label>
-                <input type="text" id="advTitle" class="form-control" placeholder="Введіть коротку назву">
+            <div id="create-step-1">
+                <div class="olx-box">
+                    <h3>Крок 1: З чого почнемо?</h3>
+                    <div class="filter-group">
+                        <label>Введіть назву вашого товару чи послуги *</label>
+                        <input type="text" id="creationTitle" placeholder="Наприклад: Продам BMW X5 або Квартира в центрі">
+                    </div>
+                    <button class="add-btn" style="background:var(--olx-dark); color:white; width:100%; padding:15px;" onclick="processStep1()">Продовжити</button>
+                    <button class="add-btn" style="background:transparent; color:var(--olx-dark); width:100%; margin-top:10px;" onclick="closeCreationPage()">Скасувати</button>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>Категорія *</label>
-                <select id="advCategory" class="form-control" onchange="toggleCategoryFields()">
-                    <option value="electronics">Електроніка</option>
-                    <option value="cars">Транспорт / Авто</option>
-                    <option value="realty">Нерухомість</option>
-                    <option value="fashion">Мода та стиль</option>
+            <div id="create-step-2" style="display:none;">
+                <div class="olx-box">
+                    <h3>Крок 2: Деталі оголошення</h3>
+                    
+                    <div class="filter-group">
+                        <label>Рубрика (Визначено автоматично, можна змінити)</label>
+                        <select id="creationCategory" onchange="toggleFormFields(this.value)">
+                            <option value="cars">🚗 Автомобілі</option>
+                            <option value="realty">🏠 Нерухомість</option>
+                            <option value="other">📦 Інше</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Фотографії (Перша буде головною)</label>
+                        <div id="formPhotosContainer">
+                            <input type="file" class="c-file-input" accept="image/*" style="margin-bottom:10px;">
+                        </div>
+                        <span style="color:var(--olx-btn-hover); cursor:pointer; font-size:14px;" onclick="addMorePhotoInputs()">+ Додати ще фото</span>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Опис товару</label>
+                        <textarea id="creationDesc" rows="5" placeholder="Напишіть деталі..."></textarea>
+                    </div>
+
+                    <div id="formCarOptions" style="display:none; border-left:4px solid var(--olx-dark); padding-left:15px;">
+                        <div class="filter-group"><label>Марка авто</label><input type="text" id="cCarBrand" placeholder="Наприклад: BMW, Audi"></div>
+                        <div class="filter-group"><label>Максимальна швидкість (км/год)</label><input type="number" id="cCarSpeed" value="180"></div>
+                        <div class="filter-group"><label>Об'єм багажника (кг)</label><input type="number" id="cCarTrunk" value="50"></div>
+                    </div>
+
+                    <div id="formRealtyOptions" style="display:none; border-left:4px solid var(--olx-dark); padding-left:15px;">
+                        <div class="filter-group"><label>Кількість кімнат</label><input type="number" id="cRealRooms" value="1"></div>
+                        <div class="filter-group"><label>Загальна площа (м²)</label><input type="number" id="cRealArea" value="40"></div>
+                    </div>
+
+                    <div style="display:flex; gap:15px;">
+                        <div class="filter-group" style="flex:1;">
+                            <label>Ціна ($)</label>
+                            <input type="number" id="creationPrice" placeholder="Сума в USD">
+                        </div>
+                        <div class="filter-group" style="flex:1;">
+                            <label>Стан</label>
+                            <select id="creationCondition">
+                                <option value="used">Вживане</option>
+                                <option value="new">Нове</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Тип продавця</label>
+                        <select id="creationSellerType">
+                            <option value="private">Приватна особа</option>
+                            <option value="business">Бізнес</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Номер телефону зв'язку</label>
+                        <input type="text" id="creationPhone" placeholder="+380...">
+                    </div>
+
+                    <button class="add-btn" id="finalSubmitBtn" style="background:var(--olx-dark); color:white; width:100%; padding:15px;" onclick="publishItem()">Опублікувати оголошення</button>
+                    <button class="add-btn" style="background:transparent; color:var(--olx-gray); width:100%; margin-top:10px;" onclick="goToStep(1)">Назад</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="avatarModal" class="modal">
+        <div class="modal-content">
+            <h3>Оновити аватарку профілю</h3>
+            <div class="filter-group">
+                <label>Оберіть новий файл зображення</label>
+                <input type="file" id="newAvatarFile" accept="image/*">
+            </div>
+            <button class="add-btn" style="background:var(--olx-dark); color:white; width:100%;" id="saveAvatarBtn" onclick="uploadNewAvatar()">Зберегти</button>
+            <button class="add-btn" style="background:transparent; width:100%; margin-top:10px;" onclick="closeAvatarModal()">Скасувати</button>
+        </div>
+    </div>
+
+    <div id="reviewModal" class="modal">
+        <div class="modal-content">
+            <h3>Залишити відгук продавцю</h3>
+            <div class="filter-group">
+                <label>Оцінка (1-5 зірок)</label>
+                <select id="revStars">
+                    <option value="5">⭐️⭐️⭐️⭐️⭐️ (5)</option>
+                    <option value="4">⭐️⭐️⭐️⭐️ (4)</option>
+                    <option value="3">⭐️⭐️⭐️ (3)</option>
+                    <option value="2">⭐️⭐️ (2)</option>
+                    <option value="1">⭐️ (1)</option>
                 </select>
             </div>
-
-            <div id="extraFieldsCars" class="hidden">
-                <div class="form-group">
-                    <label>Марка автомобіля</label>
-                    <input type="text" id="cBrand" class="form-control" placeholder="Наприклад, Audi, VAZ">
-                </div>
-                <div class="form-group">
-                    <label>Максимальна швидкість (км/год)</label>
-                    <input type="number" id="cSpeed" class="form-control" value="180">
-                </div>
-                <div class="form-group">
-                    <label>Місткість багажника (кг)</label>
-                    <input type="number" id="cTrunk" class="form-control" value="50">
-                </div>
+            <div class="filter-group">
+                <label>Ваш коментар</label>
+                <textarea id="revText" rows="3" placeholder="Напишіть враження від угоди..."></textarea>
             </div>
-
-            <div id="extraFieldsRealty" class="hidden">
-                <div class="form-group">
-                    <label>Кількість кімнат</label>
-                    <input type="number" id="rRooms" class="form-control" value="1">
-                </div>
-                <div class="form-group">
-                    <label>Загальна площа (м²)</label>
-                    <input type="number" id="rArea" class="form-control" value="40">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Ціна (грн) *</label>
-                <input type="number" id="advPrice" class="form-control" placeholder="0">
-            </div>
-
-            <div class="form-group">
-                <label>Опис товару *</label>
-                <textarea id="advDescription" class="form-control" placeholder="Опишіть стан, характеристики вашого товару..."></textarea>
-            </div>
-
-            <div class="form-group">
-                <label>Номер телефону зв'язку *</label>
-                <input type="text" id="advPhone" class="form-control" placeholder="+380...">
-            </div>
-
-            <div class="form-group">
-                <label>Фотографії товару (Прямі посилання URL через кому)</label>
-                <input type="text" id="advImages" class="form-control" placeholder="https://site.com/img1.jpg, https://site.com/img2.jpg">
-            </div>
-
-            <button class="add-btn" style="width:100%; margin-top:10px;" onclick="saveAdvertisement()">Опублікувати оголошення</button>
+            <button class="add-btn" style="background:var(--olx-dark); color:white; width:100%;" onclick="submitReview()">Надіслати відгук</button>
+            <button class="add-btn" style="background:transparent; width:100%; margin-top:10px;" onclick="closeReviewModal()">Закрити</button>
         </div>
     </div>
 
     <script>
-        // --- КОНФИГУРАЦИЯ FIREBASE ---
         const firebaseConfig = {
-            apiKey: "ТВОЙ_API_KEY",
-            authDomain: "ТВОЙ_AUTH_DOMAIN",
-            databaseURL: "ТВОЙ_DATABASE_URL",
-            projectId: "ТВОЙ_PROJECT_ID",
-            storageBucket: "ТВОЙ_STORAGE_BUCKET",
-            messagingSenderId: "ТВОЙ_MESSAGING_SENDER_ID",
-            appId: "ТВОЙ_APP_ID"
+            apiKey: "AIzaSyCbNGyrjT1rf-2UHeRj2LCCdqIrsaZ0TG0",
+            authDomain: "kurahivka-rp-avtobazar.firebaseapp.com",
+            databaseURL: "https://kurahivka-rp-avtobazar-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "kurahivka-rp-avtobazar",
+            storageBucket: "kurahivka-rp-avtobazar.firebasestorage.app"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const auth = firebase.auth();
+        const provider = new firebase.auth.OAuthProvider('oidc.discord');
 
-        let currentUser = null;
-        let myId = null;
-        let currentSelectedCategory = 'all';
+        let currentUser = null, myId = null;
+        let itemsData = {}, userFavorites = {}, targetSellerId = null;
+        let filterCategory = 'all', filterTab = 'all', viewMode = 'all';
 
-        // Инициализация Discord Auth Провайдера
-        const discordProvider = new firebase.auth.OAuthProvider('oidc.discord');
-
-        function loginDiscord() {
-            auth.signInWithPopup(discordProvider).catch(err => {
-                notify("Помилка авторизації: " + err.message, "error");
-            });
+        function notify(msg, type='info') {
+            const container = document.getElementById('toastContainer');
+            const t = document.createElement('div'); t.className = `toast ${type}`; t.innerText = msg;
+            container.appendChild(t); setTimeout(() => t.classList.add('show'), 10);
+            setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 4000);
         }
 
-        function logoutUser() {
-            auth.signOut().then(() => {
-                window.location.reload();
-            });
-        }
-
-        // Отслеживание сессии юзера
         auth.onAuthStateChanged(user => {
-            const overlay = document.getElementById('loginOverlay');
-            const mainContent = document.getElementById('mainContent');
-
             if (user) {
                 currentUser = user;
-                myId = user.uid;
-                overlay.classList.add('hidden');
-                mainContent.classList.remove('hidden');
-
-                // Синхронизируем UI профиля
-                document.getElementById('headerName').innerText = user.displayName || "Користувач";
-                if(user.photoURL) {
-                    document.getElementById('headerAvatar').src = user.photoURL;
-                }
-                
-                loadAllAdvertisements();
+                myId = user.providerData?.[0]?.uid || user.uid;
+                loadProfileBlock();
+                db.ref(`users/${myId}/favorites`).on('value', s => { userFavorites = s.val() || {}; applyFilters(); });
+                initGlobalBadge(myId);
             } else {
-                currentUser = null;
-                myId = null;
-                overlay.classList.remove('hidden');
-                mainContent.classList.add('hidden');
+                currentUser = null; myId = null;
+                document.getElementById('profileBlock').innerHTML = `<div id="authBtn" onclick="signInWithDiscord()">Увійти</div>`;
             }
+            fetchItems();
         });
 
-        // Управление профилем через меню наведения
-        function changeProfileName() {
-            const currentName = currentUser.displayName || "";
-            const name = prompt("Введіть ваше нове ім'я користувача:", currentName);
-            if (name && name.trim() !== "") {
-                currentUser.updateProfile({ displayName: name.trim() }).then(() => {
-                    document.getElementById('headerName').innerText = name.trim();
-                    notify("Ім'я профілю успішно оновлено!", "success");
-                }).catch(e => notify("Помилка оновлення імені", "error"));
-            }
+        function signInWithDiscord() { auth.signInWithPopup(provider).catch(e => notify(e.message, 'error')); }
+        
+        async function loadProfileBlock() {
+            const snap = await db.ref(`users/${myId}/profile`).get();
+            const prof = snap.val() || {};
+            const finalAvatar = prof.avatar || currentUser.photoURL || 'https://via.placeholder.com/32';
+            document.getElementById('profileBlock').innerHTML = `
+                <img src="${finalAvatar}" style="width:32px; height:32px; border-radius:50%; object-fit:cover; cursor:pointer;" onclick="openAvatarModal()">
+                <span style="color:white; font-size:13px; cursor:pointer;" onclick="auth.signOut()">Вийти</span>
+            `;
         }
 
-        function changeProfileAvatar() {
-            const currentUrl = currentUser.photoURL || "";
-            const url = prompt("Вставте пряме посилання (URL) на нову аватарку:", currentUrl);
-            if (url && url.trim() !== "") {
-                currentUser.updateProfile({ photoURL: url.trim() }).then(() => {
-                    document.getElementById('headerAvatar').src = url.trim();
-                    notify("Аватарку успішно оновлено!", "success");
-                }).catch(e => notify("Помилка зміни аватарки", "error"));
-            }
+        function openAvatarModal() { document.getElementById('avatarModal').classList.add('active'); }
+        function closeAvatarModal() { document.getElementById('avatarModal').classList.remove('active'); }
+
+        async function uploadNewAvatar() {
+            const file = document.getElementById('newAvatarFile').files[0];
+            if(!file) return notify('Оберіть файл!', 'error');
+            const btn = document.getElementById('saveAvatarBtn');
+            btn.disabled = true; btn.innerText = 'Завантаження...';
+            try {
+                const url = await uploadToImgBB(file);
+                await db.ref(`users/${myId}/profile`).update({ avatar: url });
+                notify('Аватарку успішно змінено!', 'success');
+                closeAvatarModal(); loadProfileBlock();
+            } catch(e) { notify('Помилка завантаження', 'error'); }
+            btn.disabled = false; btn.innerText = 'Зберегти';
         }
 
-        // Показ окон модалки объявления
-        function openCreationPage() {
-            if(!currentUser) {
-                notify("Потрібно увійти в систему!", "error");
-                return;
-            }
-            document.getElementById('adModal').classList.remove('hidden');
-        }
-
-        function closeCreationPage() {
-            document.getElementById('adModal').classList.add('hidden');
-        }
-
-        function toggleCategoryFields() {
-            const cat = document.getElementById('advCategory').value;
-            document.getElementById('extraFieldsCars').classList.add('hidden');
-            document.getElementById('extraFieldsRealty').classList.add('hidden');
-
-            if (cat === 'cars') {
-                document.getElementById('extraFieldsCars').classList.remove('hidden');
-            } else if (cat === 'realty') {
-                document.getElementById('extraFieldsRealty').classList.remove('hidden');
-            }
-        }
-
-        // Сбор данных и отправка объявления в БД
-        function saveAdvertisement() {
-            const title = document.getElementById('advTitle').value.trim();
-            const category = document.getElementById('advCategory').value;
-            const price = parseFloat(document.getElementById('advPrice').value);
-            const description = document.getElementById('advDescription').value.trim();
-            const phone = document.getElementById('advPhone').value.trim();
-            const imgsRaw = document.getElementById('advImages').value.trim();
-
-            if (!title || isNaN(price) || !description || !phone) {
-                notify("Будь ласка, заповніть усі обов'язкові поля!", "error");
-                return;
-            }
-
-            let imagesArr = ["https://www.olx.ua/app/static/media/static-minus-sign.e187b5a51.svg"];
-            if (imgsRaw) {
-                imagesArr = imgsRaw.split(',').map(link => link.trim()).filter(link => link.length > 0);
-            }
-
-            const itemId = 'item_' + Date.now();
-            const payload = {
-                id: itemId,
-                name: title,
-                category: category,
-                price: price,
-                description: description,
-                phone: phone,
-                images: imagesArr,
-                ownerId: myId,
-                ownerName: currentUser.displayName || "Користувач",
-                ownerAvatar: currentUser.photoURL || "",
-                createdAt: Date.now()
-            };
-
-            if (category === 'cars') {
-                payload.brand = document.getElementById('cBrand').value.trim() || 'Не вказано';
-                payload.speed = parseInt(document.getElementById('cSpeed').value) || 150;
-                payload.trunk = parseInt(document.getElementById('cTrunk').value) || 50;
-            } else if (category === 'realty') {
-                payload.rooms = parseInt(document.getElementById('rRooms').value) || 1;
-                payload.area = parseInt(document.getElementById('rArea').value) || 30;
-            }
-
-            db.ref('items/' + itemId).set(payload).then(() => {
-                notify("Оголошення успішно опубліковано!", "success");
-                closeCreationPage();
-                // Сброс полей формы
-                document.getElementById('advTitle').value = '';
-                document.getElementById('advPrice').value = '';
-                document.getElementById('advDescription').value = '';
-                document.getElementById('advPhone').value = '';
-                document.getElementById('advImages').value = '';
-            }).catch(err => {
-                notify("Помилка збереження: " + err.message, "error");
-            });
-        }
-
-        // Загрузка и рендер объявлений
-        function loadAllAdvertisements() {
-            db.ref('items').on('value', snapshot => {
-                const grid = document.getElementById('mainAdsGrid');
-                grid.innerHTML = '';
-
-                if (!snapshot.exists()) {
-                    grid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color: var(--olx-gray);">Оголошень немає.</p>`;
-                    return;
-                }
-
-                let items = [];
-                snapshot.forEach(child => { items.push(child.val()); });
-                items.sort((a, b) => b.createdAt - a.createdAt);
-
-                // Фильтрация по категориям на клиенте
-                if(currentSelectedCategory !== 'all') {
-                    items = items.filter(i => i.category === currentSelectedCategory);
-                }
-
-                if(items.length === 0) {
-                    grid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color: var(--olx-gray);">В цій категорії немає оголошень.</p>`;
-                    return;
-                }
-
-                items.forEach(item => {
-                    const firstImg = item.images && item.images[0] ? item.images[0] : "https://www.olx.ua/app/static/media/static-minus-sign.e187b5a51.svg";
-                    grid.innerHTML += `
-                        <div class="ad-card" onclick="openProductPage('${item.id}')">
-                            <img class="ad-img" src="${firstImg}" alt="photo">
-                            <div class="ad-info">
-                                <div class="ad-title">${item.name}</div>
-                                <div class="ad-price">${item.price} грн</div>
-                                <div class="ad-meta">
-                                    <span>Курахівка</span>
-                                    <span>${new Date(item.createdAt).toLocaleDateString()}</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
+        function initGlobalBadge(uid) {
+            db.ref('chats').on('value', snap => {
+                let unread = 0;
+                Object.values(snap.val() || {}).forEach(c => {
+                    if((c.buyerId === uid || c.sellerId === uid) && c.lastSenderId && c.lastSenderId !== uid) unread++;
                 });
+                const b = document.getElementById('globalChatBadge');
+                b.innerText = unread > 99 ? '99+' : unread;
+                b.style.display = unread > 0 ? 'block' : 'none';
             });
         }
 
-        function openProductPage(id) {
-            window.location.href = `car.html?id=${id}`;
+        function fetchItems() {
+            db.ref('items').on('value', snap => { itemsData = snap.val() || {}; applyFilters(); });
         }
 
-        function filterByCategory(categoryName) {
-            currentSelectedCategory = categoryName;
-            document.getElementById('gridTitle').innerText = `Категорія: ${categoryName.toUpperCase()}`;
-            loadAllAdvertisements();
+        function selectMainCategory(cat) {
+            document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
+            if(filterCategory === cat) { filterCategory = 'all'; } 
+            else { filterCategory = cat; document.getElementById('cat-'+cat).classList.add('active'); }
+            applyFilters();
+        }
+
+        function setTabFilter(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            filterTab = tab; document.getElementById('tab-'+tab).classList.add('active');
+            viewMode = 'all'; applyFilters();
+        }
+
+        function setViewMode(mode) {
+            viewMode = mode; applyFilters();
+        }
+
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = Object.keys(itemsData).filter(id => {
+                const item = itemsData[id];
+                if(viewMode === 'favorites' && !userFavorites[id]) return false;
+                if(filterTab !== 'all' && viewMode !== 'favorites' && item.sellerType !== filterTab) return false;
+                if(filterCategory !== 'all' && item.category !== filterCategory) return false;
+                if(search && !item.name.toLowerCase().includes(search)) return false;
+                return true;
+            });
+            renderItems(filtered.reverse());
         }
 
         function resetFilters() {
-            currentSelectedCategory = 'all';
-            document.getElementById('gridTitle').innerText = "Найновіші оголошення";
-            loadAllAdvertisements();
+            document.getElementById('searchInput').value = '';
+            filterCategory = 'all'; filterTab = 'all'; viewMode = 'all';
+            document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
+            setTabFilter('all');
         }
 
-        function executeSearch() {
-            const query = document.getElementById('searchInput').value.trim().toLowerCase();
-            const catSelect = document.getElementById('searchCategorySelect').value;
+        async function renderItems(ids) {
+            const grid = document.getElementById('itemsGrid');
+            grid.innerHTML = '';
+            for(let id of ids) {
+                const item = itemsData[id];
+                const img = (item.images && item.images.length > 0) ? item.images[0] : 'https://via.placeholder.com/250';
+                const isLiked = !!userFavorites[id];
 
-            db.ref('items').once('value', snapshot => {
-                const grid = document.getElementById('mainAdsGrid');
-                grid.innerHTML = '';
-                let items = [];
-                
-                snapshot.forEach(child => { items.push(child.val()); });
-
-                if(catSelect !== 'all') {
-                    items = items.filter(i => i.category === catSelect);
-                }
-                if(query) {
-                    items = items.filter(i => i.name.toLowerCase().includes(query) || i.description.toLowerCase().includes(query));
+                // Отримання справжнього динамічного рейтингу продавця від гравців
+                const rSnap = await db.ref(`ratings/${item.ownerId}`).get();
+                let starsText = 'Немає відгуків', totalStars = 0, count = 0;
+                if(rSnap.exists()) {
+                    Object.values(rSnap.val()).forEach(r => { totalStars += parseInt(r.stars); count++; });
+                    starsText = `⭐️ ${(totalStars/count).toFixed(1)} (${count} відгуків)`;
                 }
 
-                document.getElementById('gridTitle').innerText = "Результати пошуку";
-
-                if (items.length === 0) {
-                    grid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color: var(--olx-gray);">Нічого не знайдено за вашим запитом.</p>`;
-                    return;
-                }
-
-                items.forEach(item => {
-                    const firstImg = item.images && item.images[0] ? item.images[0] : "https://www.olx.ua/app/static/media/static-minus-sign.e187b5a51.svg";
-                    grid.innerHTML += `
-                        <div class="ad-card" onclick="openProductPage('${item.id}')">
-                            <img class="ad-img" src="${firstImg}" alt="photo">
-                            <div class="ad-info">
-                                <div class="ad-title">${item.name}</div>
-                                <div class="ad-price">${item.price} грн</div>
-                                <div class="ad-meta">
-                                    <span>Курахівка</span>
-                                    <span>${new Date(item.createdAt).toLocaleDateString()}</span>
-                                </div>
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.onclick = () => window.location.href = `car.html?id=${id}`;
+                card.innerHTML = `
+                    <div class="item-img-wrapper"><img src="${img}"></div>
+                    <div class="item-info">
+                        <div class="item-top-row">
+                            <h3 class="item-title">${item.name}</h3>
+                            <div class="item-price">${Number(item.price).toLocaleString()} $</div>
+                        </div>
+                        <div class="item-specs">
+                            <span>Категорія: ${item.category.toUpperCase()}</span> | <span>Стан: ${item.condition === 'new' ? 'Нове' : 'Вживане'}</span>
+                            <br>
+                            <div class="seller-rating" onclick="event.stopPropagation(); openReviewModal('${item.ownerId}')">${starsText}</div>
+                        </div>
+                        <div style="display:flex; justify-content:between; align-items:center; margin-top:auto;">
+                            <span style="font-size:12px; color:var(--olx-gray);">${item.ownerName}</span>
+                            <div class="heart-btn" style="margin-left:auto;" onclick="toggleLike(event, '${id}')">
+                                <svg class="heart-icon ${isLiked ? 'liked' : ''}" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                             </div>
                         </div>
-                    `;
-                });
-            });
+                    </div>
+                `;
+                grid.appendChild(card);
+            }
         }
 
-        // Вспомогательная система тост-уведомлений
-        function notify(text, type = "success") {
-            const toast = document.createElement('div');
-            toast.className = 'notification-toast';
-            toast.innerText = text;
-            if (type === 'error') toast.style.background = '#ff4d4f';
-            document.body.appendChild(toast);
-            setTimeout(() => { toast.remove(); }, 3500);
+        function toggleLike(e, id) {
+            e.stopPropagation(); if(!myId) return notify('Авторизуйтесь!', 'error');
+            if(userFavorites[id]) { db.ref(`users/${myId}/favorites/${id}`).remove(); } 
+            else { db.ref(`users/${myId}/favorites/${id}`).set(true); }
+        }
+
+        function openReviewModal(sellerId) { 
+            if(!myId) return notify('Увійдіть, щоб залишити відгук!', 'error');
+            if(myId === sellerId) return notify('Не можна оцінити самого себе!', 'error');
+            targetSellerId = sellerId; document.getElementById('reviewModal').classList.add('active'); 
+        }
+        function closeReviewModal() { document.getElementById('reviewModal').classList.remove('active'); }
+        async function submitReview() {
+            const stars = document.getElementById('revStars').value;
+            const text = document.getElementById('revText').value.trim();
+            await db.ref(`ratings/${targetSellerId}/${myId}`).set({ stars, text, senderName: currentUser.displayName });
+            notify('Відгук збережено!', 'success'); closeReviewModal(); fetchItems();
+        }
+
+        /* КЕРУВАННЯ СТОРІНКОЮ СТВОРЕННЯ ОБ'ЯВИ */
+        function startCreationPage() {
+            if(!myId) return notify('Спочатку авторизуйтесь через Discord!', 'error');
+            document.getElementById('mainPageContent').style.display = 'none';
+            document.getElementById('addItemPage').classList.add('active');
+            goToStep(1);
+        }
+        function closeCreationPage() {
+            document.getElementById('addItemPage').classList.remove('active');
+            document.getElementById('mainPageContent').style.display = 'block';
+        }
+        function goToStep(s) {
+            document.getElementById('create-step-1').style.display = s === 1 ? 'block' : 'none';
+            document.getElementById('create-step-2').style.display = s === 2 ? 'block' : 'none';
+        }
+
+        function processStep1() {
+            const title = document.getElementById('creationTitle').value.trim();
+            if(title.length < 4) return notify('Введіть нормальну назву!', 'error');
+            
+            // Інтелектуальне автоматичне визначення категорії за назвою
+            let guessed = 'other';
+            const low = title.toLowerCase();
+            if(low.includes('бмв') || low.includes('bmw') || low.includes('авто') || low.includes('машина') || low.includes('ваз') || low.includes('мерс')) guessed = 'cars';
+            else if(low.includes('дім') || low.includes('будинок') || low.includes('квартира') || low.includes('гараж') || low.includes('оренда')) guessed = 'realty';
+            
+            document.getElementById('creationCategory').value = guessed;
+            toggleFormFields(guessed);
+            goToStep(2);
+        }
+
+        function toggleFormFields(cat) {
+            document.getElementById('formCarOptions').style.display = cat === 'cars' ? 'block' : 'none';
+            document.getElementById('formRealtyOptions').style.display = cat === 'realty' ? 'block' : 'none';
+        }
+
+        function addMorePhotoInputs() {
+            const input = document.createElement('input'); input.type = 'file'; input.className = 'c-file-input'; input.style.display = 'block'; input.style.marginBottom = '10px'; input.accept = 'image/*';
+            document.getElementById('formPhotosContainer').appendChild(input);
+        }
+
+        async function uploadToImgBB(file) {
+            const apiKey = 'СЮДА_ВСТАВЬ_СВОЙ_API_КЛЮЧ_IMGBB'; // <-- ВСТАВИТИ СВІЙ API КЛЮЧ ТУТ
+            const formData = new FormData(); formData.append('image', file);
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, { method: 'POST', body: formData });
+            const data = await res.json();
+            if(data.success) return data.data.url;
+            throw new Error('error');
+        }
+
+        async function publishItem() {
+            const name = document.getElementById('creationTitle').value.trim();
+            const description = document.getElementById('creationDesc').value.trim();
+            const price = parseInt(document.getElementById('creationPrice').value);
+            const category = document.getElementById('creationCategory').value;
+            const condition = document.getElementById('creationCondition').value;
+            const sellerType = document.getElementById('creationSellerType').value;
+            const phone = document.getElementById('creationPhone').value.trim();
+
+            const fileInputs = Array.from(document.querySelectorAll('.c-file-input'));
+            const files = fileInputs.map(i => i.files[0]).filter(f => f);
+
+            if(!price || files.length === 0) return notify('Заповніть ціну та додайте хоча б 1 фото!', 'error');
+
+            const btn = document.getElementById('finalSubmitBtn');
+            btn.disabled = true; btn.innerText = 'Завантаження фото на сервери OLX...';
+
+            try {
+                const uploadedUrls = [];
+                for(let f of files) { const url = await uploadToImgBB(f); uploadedUrls.push(url); }
+
+                const itemId = 'item_' + Date.now();
+                const payload = {
+                    name, description, price, category, condition, sellerType, phone,
+                    images: uploadedUrls, ownerId: myId, ownerName: currentUser.displayName, createdAt: Date.now()
+                };
+
+                if(category === 'cars') {
+                    payload.brand = document.getElementById('cCarBrand').value || 'Не вказано';
+                    payload.speed = document.getElementById('cCarSpeed').value || 120;
+                    payload.trunk = document.getElementById('cCarTrunk').value || 40;
+                } else if(category === 'realty') {
+                    payload.rooms = document.getElementById('cRealRooms').value || 1;
+                    payload.area = document.getElementById('cRealArea').value || 30;
+                }
+
+                await db.ref('items/' + itemId).set(payload);
+                notify('Оголошення успішно додано!', 'success');
+                closeCreationPage();
+            } catch(e) { notify('Сталася помилка створення', 'error'); }
+            btn.disabled = false; btn.innerText = 'Опублікувати оголошення';
         }
     </script>
 </body>
