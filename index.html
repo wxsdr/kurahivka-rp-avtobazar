@@ -176,11 +176,10 @@
             
             <div class="filter-group"><label>Назва авто</label><input type="text" id="nName" placeholder="Продам авто Honda Accord 2007"></div>
             
-            <div class="filter-group">
-                <label>Завантажити фото</label>
-                <input type="file" id="fileInput" accept="image/*">
+            <div id="photosContainer">
+                <div class="filter-group"><label>Посилання на фото</label><input type="text" class="c-photo" placeholder="https://..."></div>
             </div>
-            <div id="uploadStatus" style="font-size: 12px; color: var(--olx-gray); margin-bottom: 10px;"></div>
+            <span onclick="addPhotoField()" style="color: var(--olx-gray); cursor: pointer; font-size: 14px; font-weight: bold; display: inline-block; margin-bottom: 20px;">+ Додати ще фото</span>
             
             <div style="display:flex; gap:15px; margin-bottom: 15px;">
                 <div class="filter-group" style="flex:1;"><label>Ціна ($)</label><input type="number" id="nPrice" placeholder="Договірна"></div>
@@ -389,52 +388,27 @@
             document.getElementById('photosContainer').appendChild(div);
         }
 
-        async function submitCar() {
-    const name = document.getElementById('nName').value;
-    const price = parseInt(document.getElementById('nPrice').value);
-    const fileInput = document.getElementById('fileInput'); // Це наш новий інпут
-    
-    // Перевірка, чи все заповнено
-    if(!name || !price || fileInput.files.length === 0) 
-        return notify('Заповніть назву, ціну та виберіть фото!', 'error');
-    
-    // 1. Починаємо процес завантаження
-    document.getElementById('uploadStatus').innerText = "Завантаження фото на сервер...";
-    
-    // Викликаємо функцію з uploader.js
-    const imageUrl = await uploadImageToImgBB(fileInput.files[0]);
-    
-    if(!imageUrl) {
-        document.getElementById('uploadStatus').innerText = "";
-        return notify('Помилка завантаження фото!', 'error');
-    }
-    
-    document.getElementById('uploadStatus').innerText = "Фото завантажено!";
+        function submitCar() {
+            const name = document.getElementById('nName').value;
+            const price = parseInt(document.getElementById('nPrice').value);
+            const imgs = Array.from(document.querySelectorAll('.c-photo')).map(i => i.value).filter(v => v);
+            if(!name || !price || imgs.length === 0) return notify('Заповніть назву, ціну та фото!', 'error');
+            
+            let dId = currentUser?.providerData?.[0]?.uid;
+            if(!dId) return notify('Помилка ID Discord!', 'error');
 
-    // 2. Публікація в Firebase (вже з отриманим посиланням imageUrl)
-    let dId = currentUser?.providerData?.[0]?.uid;
-    const newId = 'car_' + Date.now();
-    
-    db.ref('cars/' + newId).set({
-        name, price, 
-        images: [imageUrl], // Тут тепер зберігається посилання від ImgBB
-        speed: document.getElementById('nSpeed').value || 0,
-        trunk: document.getElementById('nTrunk').value || 0,
-        condition: document.getElementById('nCond').value,
-        brand: document.getElementById('nBrand').value,
-        body: document.getElementById('nBody').value,
-        carClass: document.getElementById('nClass').value,
-        sellerType: document.getElementById('nSellerType').value || 'private',
-        ownerId: dId,
-        ownerName: currentUser.displayName,
-        ownerAvatar: currentUser.photoURL || '',
-        createdAt: Date.now()
-    }).then(() => { 
-        closeAddModal(); 
-        notify('Оголошення додано!', 'success'); 
-        document.getElementById('uploadStatus').innerText = "";
-    });
-}
-    <script src="uploader.js"></script>
+            const newId = 'car_' + Date.now();
+            db.ref('cars/' + newId).set({
+                name, price, images: imgs,
+                speed: document.getElementById('nSpeed').value || 0, trunk: document.getElementById('nTrunk').value || 0,
+                condition: document.getElementById('nCond').value, brand: document.getElementById('nBrand').value,
+                body: document.getElementById('nBody').value, carClass: document.getElementById('nClass').value,
+                sellerType: document.getElementById('nSellerType').value || 'private',
+                ownerId: dId, ownerName: currentUser.displayName,
+                ownerAvatar: currentUser.photoURL || '',
+                createdAt: Date.now()
+            }).then(() => { closeAddModal(); notify('Оголошення додано!', 'success'); });
+        }
+    </script>
 </body>
 </html>
