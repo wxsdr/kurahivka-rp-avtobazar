@@ -3,73 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Оголошення | Kurahivka Автобазар</title>
+    <title>Перегляд оголошення | Kurahivka OLX</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+
     <style>
-        :root { --olx-dark: #002f34; --olx-light-bg: #f2f4f5; --olx-border: #d8dfe0; --olx-text: #002f34; --olx-gray: #406367; --olx-btn-hover: #00a098; }
+        :root { 
+            --olx-dark: #002f34; 
+            --olx-light-bg: #f2f4f5; 
+            --olx-border: #d8dfe0; 
+            --olx-text: #002f34; 
+            --olx-gray: #406367; 
+            --olx-btn-hover: #00a098;
+            --olx-accent: #23e5db;
+            --olx-heart: #ff5a5f;
+        }
         body { background-color: var(--olx-light-bg); color: var(--olx-text); font-family: 'Roboto', sans-serif; margin: 0; padding: 0; min-height: 100vh; }
         * { box-sizing: border-box; }
+        
         header { background: var(--olx-dark); padding: 15px 0; position: sticky; top: 0; z-index: 100; }
         .header-container { max-width: 1230px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; }
-        .logo { font-size: 28px; font-weight: 900; color: #23e5db; letter-spacing: -1px; cursor: pointer; }
-        .header-link { color: white; font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: 0.2s; }
-        .header-link:hover { color: var(--olx-btn-hover); }
-        .container { max-width: 1230px; margin: 20px auto; padding: 0 15px; }
-        .breadcrumbs { font-size: 12px; color: var(--olx-gray); margin-bottom: 20px; }
-        .breadcrumbs span { cursor: pointer; }
-        .breadcrumbs span:hover { text-decoration: underline; color: var(--olx-text); }
-        .layout-grid { display: grid; grid-template-columns: 1.8fr 1fr; gap: 20px; align-items: start; }
-        .box { background: white; border-radius: 4px; padding: 30px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-        
-        .gallery-box { padding: 0; overflow: hidden; }
-        .main-img-wrap { width: 100%; height: 500px; background: #000; display: flex; justify-content: center; align-items: center; }
-        .main-img-wrap img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .thumbs-row { display: flex; gap: 10px; padding: 15px; overflow-x: auto; background: white; }
-        .thumbs-row img { width: 80px; height: 60px; object-fit: cover; border-radius: 4px; cursor: pointer; opacity: 0.6; transition: 0.2s; }
-        .thumbs-row img.active, .thumbs-row img:hover { opacity: 1; border: 2px solid var(--olx-dark); }
-        
-        .section-title { font-size: 24px; font-weight: 700; margin: 0 0 20px 0; text-transform: uppercase; }
-        .tags-container { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; }
-        .tag-item { border: 1px solid var(--olx-border); padding: 10px 15px; border-radius: 4px; font-size: 14px; font-weight: 500; color: var(--olx-text); }
-        .description-text { font-size: 16px; line-height: 1.6; color: var(--olx-text); white-space: pre-wrap; }
-        
-        .time-text { font-size: 12px; color: var(--olx-gray); margin-bottom: 10px; }
-        .price-text { font-size: 40px; font-weight: 700; margin-bottom: 20px; color: var(--olx-text); }
-        .title-text { font-size: 20px; font-weight: 400; color: var(--olx-gray); margin-bottom: 25px; line-height: 1.4; }
-        .msg-btn { background: var(--olx-dark); color: white; width: 100%; padding: 18px; border: none; border-radius: 4px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px;}
-        .msg-btn:hover { background: #001f22; }
-        
-        .user-info-block { display: flex; align-items: center; gap: 15px; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--olx-border); }
-        .avatar { width: 56px; height: 56px; background: #e0e0e0; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; color: var(--olx-gray); overflow: hidden; flex-shrink: 0; }
-        .avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .user-name { font-size: 18px; font-weight: 700; color: var(--olx-text); margin-bottom: 5px; }
-        .user-status { font-size: 12px; color: var(--olx-gray); }
+        .logo { font-size: 24px; font-weight: 900; color: var(--olx-accent); cursor: pointer; text-decoration: none; }
+        .back-btn { color: white; text-decoration: none; font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 5px; }
 
-        #toastContainer { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; }
-        .toast { background: var(--olx-dark); color: white; padding: 15px 20px; border-radius: 4px; font-size: 14px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.15); opacity: 0; transform: translateY(20px); transition: 0.3s; }
-        .toast.show { opacity: 1; transform: translateY(0); }
-        .toast.success { background: #00a098; } .toast.error { background: #ff5a5f; }
+        .container { max-width: 1230px; margin: 25px auto; padding: 0 15px; display: grid; grid-template-columns: 1fr 380px; gap: 25px; }
+        
+        .main-content { display: flex; flex-direction: column; gap: 20px; }
+        .side-content { display: flex; flex-direction: column; gap: 20px; }
 
-        /* МОБІЛЬНА АДАПТАЦІЯ */
-        @media (max-width: 768px) { 
-            .header-container { padding: 0 10px; }
-            .logo { font-size: 22px; }
-            .header-link-text { display: none; }
-            
-            .layout-grid { grid-template-columns: 1fr; gap: 15px; } 
-            .box { padding: 20px; margin-bottom: 0; }
-            .main-img-wrap { height: 250px; } 
-            
-            .price-text { font-size: 30px; }
-            .title-text { font-size: 18px; margin-bottom: 15px; }
-            .section-title { font-size: 20px; }
-            .msg-btn { padding: 15px; font-size: 15px; }
-            .tags-container { gap: 8px; }
-            .tag-item { font-size: 12px; padding: 8px 12px; }
+        .olx-box { background: white; border-radius: 4px; padding: 30px; border: 1px solid var(--olx-border); position: relative; }
+
+        /* СЛАЙДЕР ИЗОБРАЖЕНИЙ СО СТРЕЛОЧКАМИ ПРИ НАВЕДЕНИИ */
+        .slider-container { width: 100%; height: 500px; background: #1a1a1a; position: relative; border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .slider-img { width: 100%; height: 100%; object-fit: contain; }
+        
+        .slider-arrow { 
+            position: absolute; top: 50%; transform: translateY(-50%); 
+            background: rgba(0, 47, 52, 0.7); color: white; border: none; 
+            width: 45px; height: 45px; font-size: 20px; font-weight: bold; 
+            cursor: pointer; display: flex; align-items: center; justify-content: center; 
+            border-radius: 50%; transition: 0.2s; opacity: 0; z-index: 10;
         }
+        .slider-container:hover .slider-arrow { opacity: 1; }
+        .slider-arrow:hover { background: var(--olx-dark); }
+        .slider-arrow.left { left: 15px; }
+        .slider-arrow.right { right: 15px; }
+        
+        .slider-counter { position: absolute; bottom: 15px; right: 15px; background: rgba(0,0,0,0.6); color: white; padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+
+        /* ИНФОРМАЦИЯ И ОПЦИИ */
+        .item-title { font-size: 32px; font-weight: 700; margin: 0 0 15px 0; color: var(--olx-dark); }
+        .item-price { font-size: 36px; font-weight: 900; color: var(--olx-dark); margin-bottom: 20px; }
+        
+        .options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; border-top: 1px solid var(--olx-border); border-bottom: 1px solid var(--olx-border); padding: 20px 0; margin: 20px 0; }
+        .option-item { font-size: 15px; }
+        .option-item span { color: var(--olx-gray); }
+        .option-item b { color: var(--olx-dark); font-weight: 700; margin-left: 5px; }
+
+        .section-title { font-size: 22px; font-weight: 700; margin: 0 0 15px 0; border-bottom: 2px solid var(--olx-light-bg); padding-bottom: 10px; color: var(--olx-dark); }
+        .description-text { font-size: 16px; line-height: 1.6; color: #304d50; white-space: pre-line; }
+
+        /* БЛОК С ПРАВОЙ СТОРОНЫ */
+        .side-price-box { display: flex; flex-direction: column; gap: 15px; }
+        .action-btn { width: 100%; padding: 15px; font-size: 16px; font-weight: 700; border-radius: 4px; border: none; cursor: pointer; transition: 0.2s; text-align: center; }
+        .btn-primary { background: var(--olx-dark); color: white; }
+        .btn-primary:hover { background: #001f22; }
+        .btn-secondary { background: transparent; border: 2px solid var(--olx-dark); color: var(--olx-dark); }
+        .btn-secondary:hover { background: var(--olx-light-bg); }
+
+        .user-profile-card { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .user-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; background: #e0e0e0; }
+        .user-details { display: flex; flex-direction: column; }
+        .user-name { font-weight: 700; font-size: 18px; color: var(--olx-dark); }
+        .user-rating-stars { color: #ffb800; font-size: 14px; font-weight: bold; margin-top: 3px; }
+
+        /* ОТЗЫВЫ ПРОДАВЦА ВНИЗУ */
+        .reviews-list { display: flex; flex-direction: column; gap: 15px; margin-top: 15px; }
+        .review-bubble { background: var(--olx-light-bg); padding: 15px; border-radius: 4px; border-left: 4px solid var(--olx-dark); }
+        .review-header { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 13px; font-weight: bold; }
+
+        /* СВЯЗАННЫЕ / ПОХОЖИЕ ОБЪЯВЛЕНИЯ */
+        .related-section { grid-column: 1 / -1; margin-top: 30px; }
+        .related-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 15px; }
+        .related-card { background: white; border: 1px solid var(--olx-border); border-radius: 4px; overflow: hidden; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; height: 300px; }
+        .related-card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
+        .related-img { width: 100%; height: 160px; object-fit: cover; background: #e0e0e0; }
+        .related-info { padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1; }
+        .related-title { font-size: 15px; font-weight: 500; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--olx-dark); }
+        .related-price { font-size: 16px; font-weight: 700; color: var(--olx-dark); margin-top: 5px; }
+
+        #toastContainer { position: fixed; bottom: 20px; right: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: var(--olx-dark); color: white; padding: 15px 25px; border-radius: 4px; font-weight: bold; opacity: 0; transform: translateY(50px); transition: 0.3s; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.error { background: var(--olx-heart); }
+
+        /* Модалка для отзывов */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,47,52,0.8); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 25px; border-radius: 4px; width: 100%; max-width: 500px; }
+        .filter-group { margin-bottom: 15px; }
+        .filter-group label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 5px; }
+        .filter-group select, .filter-group textarea { width: 100%; padding: 12px; border: 1px solid var(--olx-border); border-radius: 4px; outline: none; }
     </style>
 </head>
 <body>
@@ -78,142 +115,336 @@
 
     <header>
         <div class="header-container">
-            <div class="logo" onclick="window.location.href='index.html'">kurahivka.rp</div>
-            <div class="header-link" onclick="window.location.href='chat.html'">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                <span class="header-link-text">Повідомлення</span>
-            </div>
+            <a class="logo" href="index.html">kurahivka.olx</a>
+            <a class="back-btn" href="index.html">⬅️ Повернутися до пошуку</a>
         </div>
     </header>
 
-    <div class="container">
-        <div class="breadcrumbs" id="breadcrumbs">Головна / Авто / Легкові автомобілі / Завантаження...</div>
-        <div class="layout-grid" id="mainContent">
-            <div style="font-size: 20px; font-weight: bold;">Завантаження даних авто...</div>
+    <div class="container" id="loadingView" style="display: block; text-align: center; grid-column: 1/-1; padding: 50px;">
+        <h2>Завантаження деталей оголошення...</h2>
+    </div>
+
+    <div class="container" id="mainWidget" style="display: none;">
+        <div class="main-content">
+            <div class="slider-container" id="sliderContainer">
+                <button class="slider-arrow left" onclick="changeSlide(-1)">❮</button>
+                <img id="mainProductImg" class="slider-img" src="">
+                <button class="slider-arrow right" onclick="changeSlide(1)">❯</button>
+                <div class="slider-counter" id="imageCounter">1 / 1</div>
+            </div>
+
+            <div class="olx-box">
+                <h1 class="item-title" id="itemTitle">-</h1>
+                <div class="item-price" id="itemPrice">0 $</div>
+                
+                <h2 class="section-title">Характеристики</h2>
+                <div class="options-grid" id="optionsGrid">
+                    </div>
+            </div>
+
+            <div class="olx-box">
+                <h2 class="section-title">Опис</h2>
+                <div class="description-text" id="itemDescription">-</div>
+            </div>
+
+            <div class="olx-box">
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid var(--olx-light-bg); padding-bottom:10px; margin-bottom:15px;">
+                    <h2 class="section-title" style="margin:0; border:none;">Відгуки про продавця</h2>
+                    <button class="action-btn btn-secondary" style="width:auto; padding:8px 15px; font-size:14px;" onclick="openAddReviewModal()">+ Додати свій відгук</button>
+                </div>
+                <div class="reviews-list" id="sellerReviewsContainer">
+                    <p style="color:var(--olx-gray)">Відгуків ще немає. Будьте першим!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="side-content">
+            <div class="olx-box side-price-box">
+                <div class="user-profile-card">
+                    <img class="user-avatar" id="sellerAvatar" src="https://via.placeholder.com/60">
+                    <div class="user-details">
+                        <div class="user-name" id="sellerName">-</div>
+                        <div class="user-rating-stars" id="sellerRatingSummary">⭐️ 0.0 (0 відгуків)</div>
+                    </div>
+                </div>
+
+                <button class="action-btn btn-primary" id="btnOpenChat" onclick="initiateChat()">💬 Написати повідомлення</button>
+                <button class="action-btn btn-secondary" id="btnShowPhone" onclick="revealPhoneNumber()">📞 Показати телефон</button>
+            </div>
+        </div>
+
+        <div class="related-section">
+            <h2 class="section-title" style="font-size:24px;">Схожі оголошення</h2>
+            <div class="related-grid" id="relatedAdsGrid">
+                </div>
+        </div>
+    </div>
+
+    <div id="addReviewModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-top:0; margin-bottom:20px;">Залишити відгук продавцю</h3>
+            <div class="filter-group">
+                <label>Оцінка угоди</label>
+                <select id="newReviewStars">
+                    <option value="5">⭐️⭐️⭐️⭐️⭐️ (5) Відмінно</option>
+                    <option value="4">⭐️⭐️⭐️⭐️ (4) Добре</option>
+                    <option value="3">⭐️⭐️⭐️ (3) Нормально</option>
+                    <option value="2">⭐️⭐️ (2) Погано</option>
+                    <option value="1">⭐️ (1) Жахливо</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Ваш коментар</label>
+                <textarea id="newReviewText" rows="4" placeholder="Опишіть, як пройшла угода, стан товару..."></textarea>
+            </div>
+            <button class="action-btn btn-primary" onclick="saveReviewToFirebase()">Надіслати відгук</button>
+            <button class="action-btn btn-secondary" style="margin-top:10px;" onclick="closeAddReviewModal()">Скасувати</button>
         </div>
     </div>
 
     <script>
-        function notify(msg, type='info') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`; toast.innerText = msg;
-            container.appendChild(toast);
-            setTimeout(() => toast.classList.add('show'), 10);
-            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3500);
-        }
-
-        function formatTime(ts) {
-            if (!ts) return "";
-            const d = new Date(ts);
-            const now = new Date();
-            const time = d.toLocaleTimeString('uk-UA', {hour: '2-digit', minute:'2-digit'});
-            if (d.toDateString() === now.toDateString()) return `Сьогодні о ${time}`;
-            const yest = new Date(now); yest.setDate(now.getDate() - 1);
-            if (d.toDateString() === yest.toDateString()) return `Вчора о ${time}`;
-            return d.toLocaleDateString('uk-UA', {day: 'numeric', month: 'long', year: 'numeric'}) + ` о ${time}`;
-        }
-
         const firebaseConfig = {
-            apiKey: "AIzaSyCbNGyrjT1rf-2UHeRj2LCCdqIrsaZ0TG0", authDomain: "kurahivka-rp-avtobazar.firebaseapp.com", databaseURL: "https://kurahivka-rp-avtobazar-default-rtdb.europe-west1.firebasedatabase.app", projectId: "kurahivka-rp-avtobazar", storageBucket: "kurahivka-rp-avtobazar.firebasestorage.app"
+            apiKey: "AIzaSyCbNGyrjT1rf-2UHeRj2LCCdqIrsaZ0TG0",
+            authDomain: "kurahivka-rp-avtobazar.firebaseapp.com",
+            databaseURL: "https://kurahivka-rp-avtobazar-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "kurahivka-rp-avtobazar",
+            storageBucket: "kurahivka-rp-avtobazar.firebasestorage.app"
         };
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.database(); const auth = firebase.auth();
-        const carId = new URLSearchParams(window.location.search).get('id');
-        let currentUser = null; let carData = null;
+        const db = firebase.database();
+        const auth = firebase.auth();
 
-        let initialLoadDone = false;
-        function initChatListener(myUid) {
-            db.ref('chats').on('child_changed', snap => {
-                if(!initialLoadDone) return;
-                const chat = snap.val();
-                if((chat.buyerId === myUid || chat.sellerId === myUid) && chat.lastSenderId && chat.lastSenderId !== myUid) {
-                    notify(`💬 Нове повідомлення від ${chat.lastSenderName}!`, 'success');
-                }
-            });
-            setTimeout(() => initialLoadDone = true, 3000);
+        const urlParams = new URLSearchParams(window.location.search);
+        const itemId = urlParams.get('id');
+
+        let currentUser = null, myId = null;
+        let itemData = null, itemImages = [], currentImageIdx = 0;
+
+        function notify(msg, type='info') {
+            const container = document.getElementById('toastContainer');
+            const t = document.createElement('div'); t.className = `toast ${type}`; t.innerText = msg;
+            container.appendChild(t); setTimeout(() => t.classList.add('show'), 10);
+            setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 4000);
         }
 
-        auth.onAuthStateChanged(user => { 
-            currentUser = user; 
-            if(user && user.providerData?.[0]?.uid) initChatListener(user.providerData[0].uid);
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                myId = user.providerData?.[0]?.uid || user.uid;
+            }
+            if(itemId) { loadItemDetails(); } 
+            else { window.location.href = 'index.html'; }
         });
 
-        if(!carId) {
-            document.getElementById('mainContent').innerHTML = "Помилка: ID авто не вказано.";
-        } else {
-            db.ref('cars/' + carId).once('value').then(snap => {
-                carData = snap.val();
-                if(carData) renderPage(carData);
-                else document.getElementById('mainContent').innerHTML = "<div class='box'>Оголошення видалено або не існує.</div>";
+        async function loadItemDetails() {
+            // Подгружаем из узла items
+            const snap = await db.ref(`items/${itemId}`).get();
+            if(!snap.exists()) {
+                notify('Оголошення не знайдено або видалено!', 'error');
+                setTimeout(() => window.location.href='index.html', 2000);
+                return;
+            }
+
+            itemData = snap.val();
+            itemImages = itemData.images || ['https://via.placeholder.com/500'];
+            
+            document.getElementById('loadingView').style.display = 'none';
+            document.getElementById('mainWidget').style.display = 'grid';
+
+            // Название и цена
+            document.getElementById('itemTitle').innerText = itemData.name;
+            document.getElementById('itemPrice').innerText = Number(itemData.price).toLocaleString() + ' $';
+            document.getElementById('itemDescription').innerText = itemData.description || 'Опис відсутній.';
+            
+            // Продавец
+            document.getElementById('sellerName').innerText = itemData.ownerName || 'Гравець';
+            
+            // Рендер картинок в слайдер
+            updateSliderUI();
+
+            // Рендер характеристик (опций)
+            renderOptionsGrid();
+
+            // Загрузка отзывов и рейтинга продавца
+            loadSellerReviews(itemData.ownerId);
+
+            // Загрузка похожих объявлений
+            loadRelatedAds(itemData.category);
+        }
+
+        /* УПРАВЛЕНИЕ СЛАЙДЕРОМ ИЗОБРАЖЕНИЙ */
+        function updateSliderUI() {
+            document.getElementById('mainProductImg').src = itemImages[currentImageIdx];
+            document.getElementById('imageCounter').innerText = `${currentImageIdx + 1} / ${itemImages.length}`;
+        }
+
+        function changeSlide(direction) {
+            currentImageIdx += direction;
+            if(currentImageIdx >= itemImages.length) currentImageIdx = 0;
+            if(currentImageIdx < 0) currentImageIdx = itemImages.length - 1;
+            updateSliderUI();
+        }
+
+        /* ВЫВОД ХАРАКТЕРИСТИК В ЗАВИСИМОСТИ ОТ КАТЕГОРИИ */
+        function renderOptionsGrid() {
+            const grid = document.getElementById('optionsGrid');
+            grid.innerHTML = '';
+
+            // Общие опции для всего
+            const common = [
+                { label: 'Стан', value: itemData.condition === 'new' ? 'Нове' : 'Вживане' },
+                { label: 'Тип оголошення', value: itemData.sellerType === 'business' ? 'Бізнес' : 'Приватна особа' }
+            ];
+
+            // Специфические опции категорий
+            if(itemData.category === 'cars') {
+                common.push({ label: 'Марка авто', value: itemData.brand || 'Не вказано' });
+                common.push({ label: 'Макс. швидкість', value: (itemData.speed || 180) + ' км/год' });
+                common.push({ label: 'Місткість багажника', value: (itemData.trunk || 40) + ' кг' });
+            } else if(itemData.category === 'realty') {
+                common.push({ label: 'Кількість кімнат', value: itemData.rooms || '1' });
+                common.push({ label: 'Загальна площа', value: (itemData.area || 40) + ' м²' });
+            }
+
+            common.forEach(opt => {
+                const div = document.createElement('div');
+                div.className = 'option-item';
+                div.innerHTML = `<span>${opt.label}:</span><b>${opt.value}</b>`;
+                grid.appendChild(div);
             });
         }
 
-        window.changeImg = function(src, thumbEl) {
-            document.getElementById('mainImageDisplay').src = src;
-            document.querySelectorAll('.thumbs-row img').forEach(i => i.classList.remove('active'));
-            thumbEl.classList.add('active');
-        }
+        /* ДИНАМИЧЕСКИЕ ОТЗЫВЫ ПРОДАВЦА */
+        function loadSellerReviews(sellerId) {
+            db.ref(`ratings/${sellerId}`).on('value', snap => {
+                const container = document.getElementById('sellerReviewsContainer');
+                const summary = document.getElementById('sellerRatingSummary');
+                
+                if(!snap.exists()) {
+                    summary.innerText = "⭐️ 0.0 (0 відгуків)";
+                    container.innerHTML = `<p style="color:var(--olx-gray)">Відгуків ще немає. Будьте першим!</p>`;
+                    return;
+                }
 
-        function renderPage(c) {
-            document.getElementById('breadcrumbs').innerHTML = `<span onclick="window.location.href='index.html'">Головна</span> / Авто / Легкові автомобілі / ${c.brand}`;
-            const imgs = c.images && c.images.length > 0 ? c.images : ['https://via.placeholder.com/800x500?text=NO+PHOTO'];
-            const thumbsHtml = imgs.map((img, i) => `<img src="${img}" class="${i===0?'active':''}" onclick="changeImg('${img}', this)">`).join('');
-            
-            const dateStr = formatTime(c.createdAt) ? `Опубліковано: ${formatTime(c.createdAt)}` : 'Час публікації невідомий';
-            const avatarHtml = c.ownerAvatar ? `<img src="${c.ownerAvatar}">` : c.ownerName.charAt(0).toUpperCase();
-            const sellerTypeStr = c.sellerType === 'business' ? 'Бізнес' : 'Приватна особа';
+                let totalStars = 0, count = 0, html = '';
+                snap.forEach(child => {
+                    const rev = child.val();
+                    totalStars += parseInt(rev.stars);
+                    count++;
 
-            document.getElementById('mainContent').innerHTML = `
-                <div class="left-col">
-                    <div class="box gallery-box">
-                        <div class="main-img-wrap"><img id="mainImageDisplay" src="${imgs[0]}"></div>
-                        <div class="thumbs-row">${thumbsHtml}</div>
-                    </div>
-                    <div class="box">
-                        <h2 class="section-title">Опис автомобіля</h2>
-                        <div class="tags-container">
-                            <div class="tag-item">${sellerTypeStr}</div>
-                            <div class="tag-item">Марка: <b>${c.brand}</b></div>
-                            <div class="tag-item">Стан: <b>${c.condition === 'new' ? 'З салону' : 'Вживане'}</b></div>
-                            <div class="tag-item">Клас: <b>${c.carClass.toUpperCase()}</b></div>
-                            <div class="tag-item">Кузов: <b>${c.body}</b></div>
-                            <div class="tag-item">Швидкість: <b>${c.speed} км/год</b></div>
-                            <div class="tag-item">Багажник: <b>${c.trunk} кг</b></div>
-                        </div>
-                        <div class="description-text">Продається ${c.name}.\nВідмінний стан, підходить для Kurahivka RP.\nКлас: ${c.carClass}. Максимальна швидкість: ${c.speed} км/год.</div>
-                    </div>
-                </div>
-                <div class="right-col">
-                    <div class="box">
-                        <div class="time-text">${dateStr}</div>
-                        <div class="title-text">${c.name}</div>
-                        <div class="price-text">${Number(c.price).toLocaleString()} $</div>
-                        <button class="msg-btn" onclick="openChat()">Повідомлення</button>
-                        <div class="user-info-block">
-                            <div class="avatar">${avatarHtml}</div>
-                            <div>
-                                <div class="user-name">${c.ownerName}</div>
-                                <div class="user-status">${sellerTypeStr} на Kurahivka RP</div>
+                    let starsLine = '⭐️'.repeat(parseInt(rev.stars));
+                    html += `
+                        <div class="review-bubble">
+                            <div class="review-header">
+                                <span>${rev.senderName || 'Гравець'}</span>
+                                <span style="color:#ffb800;">${starsLine}</span>
                             </div>
+                            <div style="font-size:14px; margin-top:5px; color:var(--olx-dark);">${rev.text || 'Без коментаря.'}</div>
                         </div>
-                    </div>
-                </div>
-            `;
+                    `;
+                });
+
+                summary.innerText = `⭐️ ${(totalStars/count).toFixed(1)} (${count} відгуків)`;
+                container.innerHTML = html;
+            });
         }
 
-        function openChat() {
-            if(!currentUser) { notify('Увійдіть через Discord на головній сторінці!', 'error'); setTimeout(() => window.location.href='index.html', 2000); return; }
-            const myId = currentUser.providerData?.[0]?.uid;
-            if(!myId || !/^\d+$/.test(carData.ownerId)) return notify('Помилка: ID продавця некоректний (стара база).', 'error');
-            if(myId === carData.ownerId) return notify('Це ваше власне авто!', 'error');
+        function openAddReviewModal() {
+            if(!myId) return notify('Будь ласка, авторизуйтесь на головній сторінці!', 'error');
+            if(myId === itemData.ownerId) return notify('Ви не можете залишити відгук самому собі!', 'error');
+            document.getElementById('addReviewModal').classList.add('active');
+        }
 
-            const chatId = `chat_${carId}_${myId}`;
+        function closeAddReviewModal() {
+            document.getElementById('addReviewModal').classList.remove('active');
+        }
+
+        async function saveReviewToFirebase() {
+            const stars = document.getElementById('newReviewStars').value;
+            const text = document.getElementById('newReviewText').value.trim();
+
+            await db.ref(`ratings/${itemData.ownerId}/${myId}`).set({
+                stars: stars,
+                text: text,
+                senderName: currentUser.displayName,
+                timestamp: Date.now()
+            });
+
+            notify('Ваш відгук успішно додано!', 'success');
+            closeAddReviewModal();
+            document.getElementById('newReviewText').value = '';
+        }
+
+        /* БЛОК ПОХОЖИХ ОБЪЯВЛЕНИЙ (Связанные товары) */
+        async function loadRelatedAds(category) {
+            const snap = await db.ref('items').orderByChild('category').equalTo(category).limitToLast(5).get();
+            const grid = document.getElementById('relatedAdsGrid');
+            grid.innerHTML = '';
+
+            let renderedCount = 0;
+            if(snap.exists()) {
+                snap.forEach(child => {
+                    const id = child.key;
+                    const ad = child.val();
+                    
+                    // Не показываем текущее объявление в рекомендациях
+                    if(id === itemId) return;
+                    if(renderedCount >= 4) return;
+
+                    const mainImg = ad.images && ad.images.length > 0 ? ad.images[0] : 'https://via.placeholder.com/250';
+                    
+                    const card = document.createElement('div');
+                    card.className = 'related-card';
+                    card.onclick = () => window.location.href = `car.html?id=${id}`;
+                    card.innerHTML = `
+                        <img class="related-img" src="${mainImg}">
+                        <div class="related-info">
+                            <h3 class="related-title">${ad.name}</h3>
+                            <div class="related-price">${Number(ad.price).toLocaleString()} $</div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                    renderedCount++;
+                });
+            }
+
+            if(renderedCount === 0) {
+                grid.innerHTML = `<p style="color:var(--olx-gray); grid-column:1/-1;">Схожих оголошень поки немає.</p>`;
+            }
+        }
+
+        /* КНОПКИ ДЕЙСТВИЯ */
+        function revealPhoneNumber() {
+            const btn = document.getElementById('btnShowPhone');
+            btn.innerText = itemData.phone ? `📞 ${itemData.phone}` : '📞 Номер не вказано';
+            btn.style.background = '#e8f7f6';
+            btn.disabled = true;
+        }
+
+        function initiateChat() {
+            if(!currentUser) {
+                notify('Увійдіть через Discord на головній сторінці!', 'error');
+                return;
+            }
+            if(myId === itemData.ownerId) {
+                notify('Це ваше власне оголошення!', 'error');
+                return;
+            }
+
+            const chatId = `chat_${itemId}_${myId}`;
             db.ref('chats/' + chatId).update({
-                carId: carId, carTitle: carData.name,
-                buyerId: myId, buyerName: currentUser.displayName, buyerAvatar: currentUser.photoURL || '',
-                sellerId: carData.ownerId, sellerName: carData.ownerName, sellerAvatar: carData.ownerAvatar || '',
-            }).then(() => window.location.href = `chat.html?id=${chatId}`);
+                carId: itemId,
+                carTitle: itemData.name,
+                buyerId: myId,
+                buyerName: currentUser.displayName,
+                buyerAvatar: currentUser.photoURL || '',
+                sellerId: itemData.ownerId,
+                sellerName: itemData.ownerName,
+                sellerAvatar: itemData.ownerAvatar || '',
+                lastUpdated: Date.now()
+            }).then(() => {
+                window.location.href = `chat.html?id=${chatId}`;
+            });
         }
     </script>
 </body>
