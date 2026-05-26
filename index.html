@@ -484,38 +484,61 @@
         }
 
         async function publishItem() {
-            const name = document.getElementById('creationTitle').value.trim();
-            const price = parseInt(document.getElementById('creationPrice').value);
-            const files = Array.from(document.querySelectorAll('.c-file-input')).map(i => i.files[0]).filter(f => f);
+    const name = document.getElementById('creationTitle').value.trim();
+    const price = parseInt(document.getElementById('creationPrice').value);
+    const fileInputs = Array.from(document.querySelectorAll('.c-file-input'));
+    const files = fileInputs.map(i => i.files[0]).filter(f => f);
 
-            if(!price || files.length === 0) return notify('Ціна та мінімум 1 фото є обов\'язковими!', 'error');
+    if(!name || !price || files.length === 0) return notify('Заповніть назву, ціну та додайте хоча б 1 фото!', 'error');
 
-            const btn = document.getElementById('finalSubmitBtn');
-            btn.disabled = true; btn.innerText = 'Завантаження файлів на сервер...';
+    const btn = document.getElementById('finalSubmitBtn');
+    btn.disabled = true; btn.innerText = 'Завантаження...';
 
-            try {
-                const uploadedUrls = [];
-                for(let f of files) { uploadedUrls.push(await uploadToImgBB(f)); }
-
-                const cat = document.getElementById('creationCategory').value;
-                const payload = {
-                    name, price, category: cat,
-                    description: document.getElementById('creationDesc').value.trim(),
-                    condition: document.getElementById('creationCondition').value,
-                    sellerType: document.getElementById('creationSellerType').value,
-                    phone: document.getElementById('creationPhone').value.trim(),
-                    images: uploadedUrls, ownerId: myId, ownerName: currentUser.displayName, 
-                    ownerAvatar: document.getElementById('myHeaderAvatar').src, createdAt: Date.now()
-                };
-
-                if(cat === 'cars') { payload.brand = document.getElementById('cCarBrand').value; payload.speed = document.getElementById('cCarSpeed').value; payload.trunk = document.getElementById('cCarTrunk').value; }
-                
-                await db.ref('cars/' + itemId).set(payload);
-                notify('Оголошення успішно додано!', 'success');
-                closeCreationPage();
-            } catch(e) { notify('Сталася помилка створення', 'error'); }
-            btn.disabled = false; btn.innerText = 'Опублікувати оголошення';
+    try {
+        const uploadedUrls = [];
+        for(let f of files) { 
+            console.log("Завантажую файл:", f.name);
+            const url = await uploadToImgBB(f); 
+            uploadedUrls.push(url); 
         }
+
+        const cat = document.getElementById('creationCategory').value;
+        const itemId = 'car_' + Date.now();
+        
+        const payload = {
+            name,
+            description: document.getElementById('creationDesc').value.trim(),
+            price,
+            category: cat,
+            condition: document.getElementById('creationCondition').value,
+            sellerType: document.getElementById('creationSellerType').value,
+            phone: document.getElementById('creationPhone').value.trim(),
+            images: uploadedUrls,
+            ownerId: myId,
+            ownerName: currentUser.displayName,
+            ownerAvatar: document.getElementById('myHeaderAvatar').src,
+            createdAt: Date.now()
+        };
+
+        if(cat === 'cars') {
+            payload.brand = document.getElementById('cCarBrand').value || 'Не вказано';
+            payload.speed = document.getElementById('cCarSpeed').value || 120;
+            payload.trunk = document.getElementById('cCarTrunk').value || 40;
+        }
+
+        console.log("Відправляю в Firebase:", payload);
+        
+        // Переконайся, що тут правильна гілка (cars або items)
+        await db.ref('cars/' + itemId).set(payload); 
+        
+        notify('Оголошення успішно додано!', 'success');
+        closeCreationPage();
+    } catch(e) {
+        console.error("ПОМИЛКА ПРИ ПУБЛІКАЦІЇ:", e); // ОСЬ ТУТ БУДЕ ПРИЧИНА
+        notify('Помилка: ' + e.message, 'error');
+    }
+    btn.disabled = false; btn.innerText = 'Опублікувати оголошення';
+}
     </script>
 </body>
 </html>
