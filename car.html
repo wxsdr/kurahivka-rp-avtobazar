@@ -5,76 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Оголошення | Kurahivka Автобазар</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
-    
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-
     <style>
-        :root {
-            --olx-dark: #002f34;
-            --olx-light-bg: #f2f4f5;
-            --olx-border: #d8dfe0;
-            --olx-text: #002f34;
-            --olx-gray: #406367;
-            --olx-btn-hover: #00a098;
-        }
-        
+        :root { --olx-dark: #002f34; --olx-light-bg: #f2f4f5; --olx-border: #d8dfe0; --olx-text: #002f34; --olx-gray: #406367; --olx-btn-hover: #00a098; }
         body { background-color: var(--olx-light-bg); color: var(--olx-text); font-family: 'Roboto', sans-serif; margin: 0; padding: 0; min-height: 100vh; }
         * { box-sizing: border-box; }
-
-        /* Шапка */
         header { background: var(--olx-dark); padding: 15px 0; position: sticky; top: 0; z-index: 100; }
         .header-container { max-width: 1230px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; }
         .logo { font-size: 28px; font-weight: 900; color: #23e5db; letter-spacing: -1px; cursor: pointer; }
         .header-link { color: white; font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: 0.2s; }
         .header-link:hover { color: var(--olx-btn-hover); }
-
         .container { max-width: 1230px; margin: 20px auto; padding: 0 15px; }
-        
-        /* Хлібні крихти */
         .breadcrumbs { font-size: 12px; color: var(--olx-gray); margin-bottom: 20px; }
         .breadcrumbs span { cursor: pointer; }
         .breadcrumbs span:hover { text-decoration: underline; color: var(--olx-text); }
-
-        /* Сітка сторінки (як на OLX: зліва контент 65%, справа сайдбар 35%) */
         .layout-grid { display: grid; grid-template-columns: 1.8fr 1fr; gap: 20px; align-items: start; }
-
-        /* Білі блоки */
         .box { background: white; border-radius: 4px; padding: 30px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-
-        /* Галерея */
+        
         .gallery-box { padding: 0; overflow: hidden; }
         .main-img-wrap { width: 100%; height: 500px; background: #000; display: flex; justify-content: center; align-items: center; }
         .main-img-wrap img { max-width: 100%; max-height: 100%; object-fit: contain; }
         .thumbs-row { display: flex; gap: 10px; padding: 15px; overflow-x: auto; background: white; }
         .thumbs-row img { width: 80px; height: 60px; object-fit: cover; border-radius: 4px; cursor: pointer; opacity: 0.6; transition: 0.2s; }
         .thumbs-row img.active, .thumbs-row img:hover { opacity: 1; border: 2px solid var(--olx-dark); }
-
-        /* Теги та опис */
+        
         .section-title { font-size: 24px; font-weight: 700; margin: 0 0 20px 0; text-transform: uppercase; }
         .tags-container { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; }
         .tag-item { border: 1px solid var(--olx-border); padding: 10px 15px; border-radius: 4px; font-size: 14px; font-weight: 500; color: var(--olx-text); }
         .description-text { font-size: 16px; line-height: 1.6; color: var(--olx-text); white-space: pre-wrap; }
-
-        /* Сайдбар (Справа) */
+        
+        .time-text { font-size: 12px; color: var(--olx-gray); margin-bottom: 10px; }
         .price-text { font-size: 40px; font-weight: 700; margin-bottom: 20px; color: var(--olx-text); }
         .title-text { font-size: 20px; font-weight: 400; color: var(--olx-gray); margin-bottom: 25px; line-height: 1.4; }
-        
         .msg-btn { background: var(--olx-dark); color: white; width: 100%; padding: 18px; border: none; border-radius: 4px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px;}
         .msg-btn:hover { background: #001f22; }
         
         .user-info-block { display: flex; align-items: center; gap: 15px; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--olx-border); }
-        .avatar { width: 56px; height: 56px; background: #e0e0e0; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; color: var(--olx-gray); }
+        .avatar { width: 56px; height: 56px; background: #e0e0e0; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; color: var(--olx-gray); overflow: hidden; flex-shrink: 0; }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
         .user-name { font-size: 18px; font-weight: 700; color: var(--olx-text); margin-bottom: 5px; }
         .user-status { font-size: 12px; color: var(--olx-gray); }
 
-        #toastContainer { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background: var(--olx-dark); color: white; padding: 15px 25px; border-radius: 4px; font-size: 14px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.15); opacity: 0; transform: translateY(20px); transition: 0.3s; }
+        #toastContainer { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; }
+        .toast { background: var(--olx-dark); color: white; padding: 15px 20px; border-radius: 4px; font-size: 14px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.15); opacity: 0; transform: translateY(20px); transition: 0.3s; }
         .toast.show { opacity: 1; transform: translateY(0); }
-        .toast.error { background: #ff5a5f; }
+        .toast.success { background: #00a098; } .toast.error { background: #ff5a5f; }
 
-        @media (max-width: 992px) { .layout-grid { grid-template-columns: 1fr; } .main-img-wrap { height: 350px; } }
+        /* МОБІЛЬНА АДАПТАЦІЯ */
+        @media (max-width: 768px) { 
+            .header-container { padding: 0 10px; }
+            .logo { font-size: 22px; }
+            .header-link-text { display: none; }
+            
+            .layout-grid { grid-template-columns: 1fr; gap: 15px; } 
+            .box { padding: 20px; margin-bottom: 0; }
+            .main-img-wrap { height: 250px; } 
+            
+            .price-text { font-size: 30px; }
+            .title-text { font-size: 18px; margin-bottom: 15px; }
+            .section-title { font-size: 20px; }
+            .msg-btn { padding: 15px; font-size: 15px; }
+            .tags-container { gap: 8px; }
+            .tag-item { font-size: 12px; padding: 8px 12px; }
+        }
     </style>
 </head>
 <body>
@@ -86,14 +81,13 @@
             <div class="logo" onclick="window.location.href='index.html'">kurahivka.rp</div>
             <div class="header-link" onclick="window.location.href='chat.html'">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                Повідомлення
+                <span class="header-link-text">Повідомлення</span>
             </div>
         </div>
     </header>
 
     <div class="container">
         <div class="breadcrumbs" id="breadcrumbs">Головна / Авто / Легкові автомобілі / Завантаження...</div>
-        
         <div class="layout-grid" id="mainContent">
             <div style="font-size: 20px; font-weight: bold;">Завантаження даних авто...</div>
         </div>
@@ -106,25 +100,44 @@
             toast.className = `toast ${type}`; toast.innerText = msg;
             container.appendChild(toast);
             setTimeout(() => toast.classList.add('show'), 10);
-            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
+            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3500);
+        }
+
+        function formatTime(ts) {
+            if (!ts) return "";
+            const d = new Date(ts);
+            const now = new Date();
+            const time = d.toLocaleTimeString('uk-UA', {hour: '2-digit', minute:'2-digit'});
+            if (d.toDateString() === now.toDateString()) return `Сьогодні о ${time}`;
+            const yest = new Date(now); yest.setDate(now.getDate() - 1);
+            if (d.toDateString() === yest.toDateString()) return `Вчора о ${time}`;
+            return d.toLocaleDateString('uk-UA', {day: 'numeric', month: 'long', year: 'numeric'}) + ` о ${time}`;
         }
 
         const firebaseConfig = {
-            apiKey: "AIzaSyCbNGyrjT1rf-2UHeRj2LCCdqIrsaZ0TG0",
-            authDomain: "kurahivka-rp-avtobazar.firebaseapp.com",
-            databaseURL: "https://kurahivka-rp-avtobazar-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "kurahivka-rp-avtobazar",
-            storageBucket: "kurahivka-rp-avtobazar.firebasestorage.app"
+            apiKey: "AIzaSyCbNGyrjT1rf-2UHeRj2LCCdqIrsaZ0TG0", authDomain: "kurahivka-rp-avtobazar.firebaseapp.com", databaseURL: "https://kurahivka-rp-avtobazar-default-rtdb.europe-west1.firebasedatabase.app", projectId: "kurahivka-rp-avtobazar", storageBucket: "kurahivka-rp-avtobazar.firebasestorage.app"
         };
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const auth = firebase.auth();
-
+        const db = firebase.database(); const auth = firebase.auth();
         const carId = new URLSearchParams(window.location.search).get('id');
-        let currentUser = null;
-        let carData = null;
+        let currentUser = null; let carData = null;
 
-        auth.onAuthStateChanged(user => currentUser = user);
+        let initialLoadDone = false;
+        function initChatListener(myUid) {
+            db.ref('chats').on('child_changed', snap => {
+                if(!initialLoadDone) return;
+                const chat = snap.val();
+                if((chat.buyerId === myUid || chat.sellerId === myUid) && chat.lastSenderId && chat.lastSenderId !== myUid) {
+                    notify(`💬 Нове повідомлення від ${chat.lastSenderName}!`, 'success');
+                }
+            });
+            setTimeout(() => initialLoadDone = true, 3000);
+        }
+
+        auth.onAuthStateChanged(user => { 
+            currentUser = user; 
+            if(user && user.providerData?.[0]?.uid) initChatListener(user.providerData[0].uid);
+        });
 
         if(!carId) {
             document.getElementById('mainContent').innerHTML = "Помилка: ID авто не вказано.";
@@ -144,83 +157,63 @@
 
         function renderPage(c) {
             document.getElementById('breadcrumbs').innerHTML = `<span onclick="window.location.href='index.html'">Головна</span> / Авто / Легкові автомобілі / ${c.brand}`;
-            
             const imgs = c.images && c.images.length > 0 ? c.images : ['https://via.placeholder.com/800x500?text=NO+PHOTO'];
             const thumbsHtml = imgs.map((img, i) => `<img src="${img}" class="${i===0?'active':''}" onclick="changeImg('${img}', this)">`).join('');
+            
+            const dateStr = formatTime(c.createdAt) ? `Опубліковано: ${formatTime(c.createdAt)}` : 'Час публікації невідомий';
+            const avatarHtml = c.ownerAvatar ? `<img src="${c.ownerAvatar}">` : c.ownerName.charAt(0).toUpperCase();
+            const sellerTypeStr = c.sellerType === 'business' ? 'Бізнес' : 'Приватна особа';
 
             document.getElementById('mainContent').innerHTML = `
                 <div class="left-col">
                     <div class="box gallery-box">
-                        <div class="main-img-wrap">
-                            <img id="mainImageDisplay" src="${imgs[0]}">
-                        </div>
+                        <div class="main-img-wrap"><img id="mainImageDisplay" src="${imgs[0]}"></div>
                         <div class="thumbs-row">${thumbsHtml}</div>
                     </div>
-
                     <div class="box">
                         <h2 class="section-title">Опис автомобіля</h2>
                         <div class="tags-container">
-                            <div class="tag-item">Приватна особа</div>
+                            <div class="tag-item">${sellerTypeStr}</div>
                             <div class="tag-item">Марка: <b>${c.brand}</b></div>
                             <div class="tag-item">Стан: <b>${c.condition === 'new' ? 'З салону' : 'Вживане'}</b></div>
                             <div class="tag-item">Клас: <b>${c.carClass.toUpperCase()}</b></div>
                             <div class="tag-item">Кузов: <b>${c.body}</b></div>
                             <div class="tag-item">Швидкість: <b>${c.speed} км/год</b></div>
-                            <div class="tag-item">Місткість багажника: <b>${c.trunk} кг</b></div>
+                            <div class="tag-item">Багажник: <b>${c.trunk} кг</b></div>
                         </div>
-                        
-                        <div class="description-text">Продається ${c.name}.<br>Відмінний стан, підходить для Kurahivka RP.<br>Клас: ${c.carClass}. Максимальна швидкість: ${c.speed} км/год.</div>
+                        <div class="description-text">Продається ${c.name}.\nВідмінний стан, підходить для Kurahivka RP.\nКлас: ${c.carClass}. Максимальна швидкість: ${c.speed} км/год.</div>
                     </div>
                 </div>
-
                 <div class="right-col">
                     <div class="box">
+                        <div class="time-text">${dateStr}</div>
                         <div class="title-text">${c.name}</div>
                         <div class="price-text">${Number(c.price).toLocaleString()} $</div>
-                        
                         <button class="msg-btn" onclick="openChat()">Повідомлення</button>
-
                         <div class="user-info-block">
-                            <div class="avatar">${c.ownerName.charAt(0).toUpperCase()}</div>
+                            <div class="avatar">${avatarHtml}</div>
                             <div>
                                 <div class="user-name">${c.ownerName}</div>
-                                <div class="user-status">на Kurahivka RP з 2026 р.</div>
+                                <div class="user-status">${sellerTypeStr} на Kurahivka RP</div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="box" style="text-align: center; color: var(--olx-gray); font-size: 12px;">
-                        Оголошення ID: ${carId.replace('car_', '')}
                     </div>
                 </div>
             `;
         }
 
-        async function openChat() {
-            if(!currentUser) {
-                notify('Увійдіть через Discord на головній сторінці!', 'error');
-                setTimeout(() => window.location.href='index.html', 2000);
-                return;
-            }
-
+        function openChat() {
+            if(!currentUser) { notify('Увійдіть через Discord на головній сторінці!', 'error'); setTimeout(() => window.location.href='index.html', 2000); return; }
             const myId = currentUser.providerData?.[0]?.uid;
             if(!myId || !/^\d+$/.test(carData.ownerId)) return notify('Помилка: ID продавця некоректний (стара база).', 'error');
             if(myId === carData.ownerId) return notify('Це ваше власне авто!', 'error');
 
             const chatId = `chat_${carId}_${myId}`;
-
-            // Створюємо або оновлюємо чат у Firebase
             db.ref('chats/' + chatId).update({
-                carId: carId,
-                carTitle: carData.name,
-                buyerId: myId,
-                buyerName: currentUser.displayName,
-                sellerId: carData.ownerId,
-                sellerName: carData.ownerName,
-                lastUpdated: Date.now()
-            }).then(() => {
-                window.location.href = `chat.html?id=${chatId}`;
-            });
+                carId: carId, carTitle: carData.name,
+                buyerId: myId, buyerName: currentUser.displayName, buyerAvatar: currentUser.photoURL || '',
+                sellerId: carData.ownerId, sellerName: carData.ownerName, sellerAvatar: carData.ownerAvatar || '',
+            }).then(() => window.location.href = `chat.html?id=${chatId}`);
         }
     </script>
 </body>
