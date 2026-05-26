@@ -5,46 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Повідомлення | Kurahivka</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-
     <style>
-        :root {
-            --olx-dark: #002f34; --olx-light-bg: #f2f4f5; --olx-border: #d8dfe0; 
-            --olx-text: #002f34; --olx-gray: #406367;
-        }
+        :root { --olx-dark: #002f34; --olx-light-bg: #f2f4f5; --olx-border: #d8dfe0; --olx-text: #002f34; --olx-gray: #406367; }
         body { background: var(--olx-light-bg); color: var(--olx-text); font-family: 'Roboto', sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
         * { box-sizing: border-box; }
-
-        header { background: var(--olx-dark); padding: 15px 20px; color: white; display: flex; align-items: center; gap: 20px; }
+        
+        header { background: var(--olx-dark); padding: 15px 20px; color: white; display: flex; align-items: center; justify-content: space-between; }
+        .header-left { display: flex; align-items: center; gap: 20px; }
         .logo { font-size: 24px; font-weight: 900; color: #23e5db; cursor: pointer; }
         .back-link { font-weight: bold; cursor: pointer; font-size: 14px; opacity: 0.8; transition: 0.2s; }
         .back-link:hover { opacity: 1; }
 
         .chat-container { display: flex; flex: 1; max-width: 1200px; width: 100%; margin: 20px auto; background: white; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); overflow: hidden; }
         
-        /* Ліва панель (Список чатів) */
-        .sidebar { width: 350px; border-right: 1px solid var(--olx-border); display: flex; flex-direction: column; background: white; }
+        .sidebar { width: 350px; border-right: 1px solid var(--olx-border); display: flex; flex-direction: column; background: white; flex-shrink: 0; }
         .sidebar-header { padding: 20px; font-size: 18px; font-weight: 700; border-bottom: 1px solid var(--olx-border); }
         .chat-list { flex: 1; overflow-y: auto; }
-        .chat-item { padding: 15px 20px; border-bottom: 1px solid var(--olx-border); cursor: pointer; display: flex; flex-direction: column; gap: 5px; transition: 0.2s; }
+        .chat-item { padding: 15px 20px; border-bottom: 1px solid var(--olx-border); cursor: pointer; display: flex; align-items: center; gap: 15px; transition: 0.2s; }
         .chat-item:hover, .chat-item.active { background: #f7f9f9; }
-        .chat-item-title { font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chat-item-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: #e0e0e0; flex-shrink: 0; display: flex; justify-content: center; align-items: center; font-weight: bold; color: var(--olx-gray); }
+        .chat-item-content { overflow: hidden; flex: 1; }
+        .chat-item-title { font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
         .chat-item-user { font-size: 12px; color: var(--olx-gray); }
 
-        /* Права панель (Вікно чату) */
         .main-chat { flex: 1; display: flex; flex-direction: column; background: white; }
         .chat-header { padding: 20px; border-bottom: 1px solid var(--olx-border); display: flex; align-items: center; gap: 15px; }
-        .chat-header-avatar { width: 40px; height: 40px; background: #e0e0e0; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; color: var(--olx-gray); }
+        .chat-header-avatar { width: 44px; height: 44px; background: #e0e0e0; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; color: var(--olx-gray); object-fit: cover; }
         .chat-header-info h3 { margin: 0 0 4px 0; font-size: 16px; }
         .chat-header-info span { font-size: 12px; color: var(--olx-gray); }
         
         .messages-area { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; background: #f2f4f5; }
-        .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--olx-gray); font-size: 16px; font-weight: 500; }
-        
-        .msg-bubble { max-width: 65%; padding: 12px 16px; border-radius: 8px; font-size: 14px; line-height: 1.4; position: relative; }
+        .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--olx-gray); font-size: 16px; font-weight: 500; text-align: center; padding: 20px; }
+        .msg-bubble { max-width: 75%; padding: 12px 16px; border-radius: 8px; font-size: 14px; line-height: 1.4; position: relative; }
         .msg-mine { background: #dcf8c6; align-self: flex-end; border-bottom-right-radius: 0; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
         .msg-other { background: white; align-self: flex-start; border-bottom-left-radius: 0; border: 1px solid var(--olx-border); }
         .msg-time { font-size: 10px; color: #888; text-align: right; margin-top: 5px; }
@@ -55,48 +50,75 @@
         .send-btn { background: var(--olx-dark); color: white; border: none; padding: 0 30px; font-weight: 700; border-radius: 4px; cursor: pointer; transition: 0.2s; }
         .send-btn:hover { background: #001f22; }
 
-        @media (max-width: 768px) { .chat-container { flex-direction: column; margin: 0; border-radius: 0; height: calc(100vh - 60px); } .sidebar { width: 100%; height: 30%; border-right: none; border-bottom: 2px solid var(--olx-dark); } }
+        #toastContainer { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; }
+        .toast { background: var(--olx-dark); color: white; padding: 15px 20px; border-radius: 4px; font-size: 14px; font-weight: bold; opacity: 0; transform: translateY(20px); transition: 0.3s; }
+        .toast.show { opacity: 1; transform: translateY(0); } .toast.success { background: #00a098; }
+
+        /* МОБІЛЬНА АДАПТАЦІЯ */
+        @media (max-width: 768px) { 
+            header { padding: 10px 15px; }
+            .logo { font-size: 22px; }
+            .chat-container { flex-direction: column; margin: 0; border-radius: 0; height: calc(100vh - 54px); } 
+            .sidebar { width: 100%; height: 35vh; border-right: none; border-bottom: 2px solid var(--olx-dark); } 
+            .main-chat { height: 65vh; }
+            .input-area { padding: 15px; }
+            .send-btn { padding: 0 20px; }
+            .msg-bubble { max-width: 85%; }
+        }
     </style>
 </head>
 <body>
-
+    <div id="toastContainer"></div>
     <header>
-        <div class="logo" onclick="window.location.href='index.html'">kurahivka.rp</div>
-        <div class="back-link" onclick="window.location.href='index.html'">Оголошення</div>
+        <div class="header-left">
+            <div class="logo" onclick="window.location.href='index.html'">kurahivka.rp</div>
+            <div class="back-link" onclick="window.location.href='index.html'">Оголошення</div>
+        </div>
     </header>
-
     <div class="chat-container">
         <div class="sidebar">
-            <div class="sidebar-header">Повідомлення</div>
-            <div class="chat-list" id="chatList">
-                <div style="padding: 20px; color: var(--olx-gray);">Завантаження...</div>
-            </div>
+            <div class="sidebar-header">Ваші діалоги</div>
+            <div class="chat-list" id="chatList"><div style="padding: 20px; color: var(--olx-gray);">Завантаження...</div></div>
         </div>
-        
         <div class="main-chat" id="chatWindow">
             <div class="empty-state">
-                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#d8dfe0" stroke-width="2" style="margin-bottom:20px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                Виберіть повідомлення, щоб прочитати його
+                <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#d8dfe0" stroke-width="2" style="margin-bottom:15px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                Виберіть діалог зі списку,<br>щоб почати спілкування
             </div>
         </div>
     </div>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCbNGyrjT1rf-2UHeRj2LCCdqIrsaZ0TG0",
-            authDomain: "kurahivka-rp-avtobazar.firebaseapp.com",
-            databaseURL: "https://kurahivka-rp-avtobazar-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "kurahivka-rp-avtobazar",
-            storageBucket: "kurahivka-rp-avtobazar.firebasestorage.app"
-        };
+        function notify(msg, type='info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`; toast.innerText = msg;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 4000);
+        }
+
+        const firebaseConfig = { apiKey: "AIzaSyCbNGyrjT1rf-2UHeRj2LCCdqIrsaZ0TG0", authDomain: "kurahivka-rp-avtobazar.firebaseapp.com", databaseURL: "https://kurahivka-rp-avtobazar-default-rtdb.europe-west1.firebasedatabase.app", projectId: "kurahivka-rp-avtobazar", storageBucket: "kurahivka-rp-avtobazar.firebasestorage.app" };
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const auth = firebase.auth();
+        const db = firebase.database(); const auth = firebase.auth();
 
         const urlParams = new URLSearchParams(window.location.search);
         const activeChatId = urlParams.get('id');
-        let myId = null;
-        let activeChatInfo = null;
+        let myId = null; let myName = null; let activeChatInfo = null;
+
+        let initialLoadDone = false;
+        function initChatListener() {
+            db.ref('chats').on('child_changed', snap => {
+                if(!initialLoadDone) return;
+                const chat = snap.val();
+                if((chat.buyerId === myId || chat.sellerId === myId) && chat.lastSenderId && chat.lastSenderId !== myId) {
+                    if (snap.key !== activeChatId) {
+                        notify(`💬 Нове повідомлення від ${chat.lastSenderName}`, 'success');
+                    }
+                }
+            });
+            setTimeout(() => initialLoadDone = true, 3000);
+        }
 
         auth.onAuthStateChanged(user => {
             if (!user || !user.providerData.length) {
@@ -104,6 +126,8 @@
                 setTimeout(() => window.location.href='index.html', 2000);
             } else {
                 myId = user.providerData[0].uid;
+                myName = user.displayName;
+                initChatListener();
                 loadChatList();
             }
         });
@@ -115,7 +139,6 @@
                 listEl.innerHTML = '';
                 let hasAny = false;
 
-                // Сортування (нові зверху)
                 const sorted = Object.entries(allChats).sort((a,b) => (b[1].lastUpdated || 0) - (a[1].lastUpdated || 0));
 
                 for(const [cId, data] of sorted) {
@@ -123,34 +146,41 @@
                         hasAny = true;
                         const isBuyer = (data.buyerId === myId);
                         const partnerName = isBuyer ? data.sellerName : data.buyerName;
+                        const partnerAvatar = isBuyer ? data.sellerAvatar : data.buyerAvatar;
                         const activeClass = cId === activeChatId ? 'active' : '';
+
+                        const avatarHtml = partnerAvatar ? `<img src="${partnerAvatar}" class="chat-item-avatar">` : `<div class="chat-item-avatar">${partnerName.charAt(0)}</div>`;
 
                         listEl.innerHTML += `
                             <div class="chat-item ${activeClass}" onclick="window.location.href='chat.html?id=${cId}'">
-                                <div class="chat-item-title">${data.carTitle}</div>
-                                <div class="chat-item-user">${partnerName}</div>
+                                ${avatarHtml}
+                                <div class="chat-item-content">
+                                    <div class="chat-item-title">${data.carTitle}</div>
+                                    <div class="chat-item-user">${partnerName}</div>
+                                </div>
                             </div>
                         `;
 
                         if(cId === activeChatId) {
                             activeChatInfo = data;
-                            renderChatWindow(cId, data, partnerName);
+                            renderChatWindow(cId, data, partnerName, partnerAvatar);
                         }
                     }
                 }
-                
                 if(!hasAny) listEl.innerHTML = '<div style="padding: 20px; color: var(--olx-gray);">У вас ще немає повідомлень</div>';
             });
         }
 
-        function renderChatWindow(chatId, data, partnerName) {
+        function renderChatWindow(chatId, data, partnerName, partnerAvatar) {
             const chatWin = document.getElementById('chatWindow');
+            const avatarHtml = partnerAvatar ? `<img src="${partnerAvatar}" class="chat-header-avatar">` : `<div class="chat-header-avatar">${partnerName.charAt(0)}</div>`;
+            
             chatWin.innerHTML = `
                 <div class="chat-header">
-                    <div class="chat-header-avatar">${partnerName.charAt(0).toUpperCase()}</div>
+                    ${avatarHtml}
                     <div class="chat-header-info">
                         <h3>${partnerName}</h3>
-                        <span>Щодо оголошення: <b>${data.carTitle}</b></span>
+                        <span>Щодо: <b>${data.carTitle}</b></span>
                     </div>
                 </div>
                 <div class="messages-area" id="msgArea"></div>
@@ -160,7 +190,6 @@
                 </div>
             `;
 
-            // Слухач повідомлень у реальному часі
             db.ref(`chats/${chatId}/messages`).on('value', snap => {
                 const msgs = snap.val() || {};
                 const area = document.getElementById('msgArea');
@@ -168,8 +197,7 @@
                 
                 Object.values(msgs).forEach(m => {
                     const isMine = m.senderId === myId;
-                    const date = new Date(m.timestamp);
-                    const timeStr = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    const timeStr = new Date(m.timestamp).toLocaleTimeString('uk-UA', {hour: '2-digit', minute:'2-digit'});
                     
                     area.innerHTML += `
                         <div class="msg-bubble ${isMine ? 'msg-mine' : 'msg-other'}">
@@ -178,7 +206,8 @@
                         </div>
                     `;
                 });
-                area.scrollTop = area.scrollHeight;
+                // Затримка для плавного скролу
+                setTimeout(() => area.scrollTop = area.scrollHeight, 50);
             });
         }
 
@@ -190,28 +219,16 @@
 
             const timestamp = Date.now();
 
-            // Зберігаємо повідомлення в БД
-            db.ref(`chats/${activeChatId}/messages`).push({
-                senderId: myId, text: text, timestamp: timestamp
-            });
-            
-            // Оновлюємо час останнього повідомлення для сортування
-            db.ref(`chats/${activeChatId}`).update({ lastUpdated: timestamp });
+            db.ref(`chats/${activeChatId}/messages`).push({ senderId: myId, text: text, timestamp: timestamp });
+            db.ref(`chats/${activeChatId}`).update({ lastUpdated: timestamp, lastSenderId: myId, lastSenderName: myName, lastMessageText: text });
 
-            // ІНТЕГРАЦІЯ З DISCORD БОТОМ
-            // Відправляємо пуш-сповіщення співрозмовнику через твого бота на Render
             const receiverId = (activeChatInfo.buyerId === myId) ? activeChatInfo.sellerId : activeChatInfo.buyerId;
-            
             try {
                 fetch("https://kurahivka-rp-avtobazar-bot.onrender.com/api/contact", {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        seller_id: String(receiverId),
-                        car_name: `У вас нове повідомлення в чаті на сайті щодо: ${activeChatInfo.carTitle}`
-                    })
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ seller_id: String(receiverId), car_name: `У вас нове повідомлення в чаті на сайті щодо: ${activeChatInfo.carTitle}` })
                 });
-            } catch(e) { console.log("Помилка сповіщення бота", e); }
+            } catch(e) { console.log(e); }
         }
     </script>
 </body>
