@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подати оголошення | Kurahivka OLX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+
+    <style>
+        :root { 
+            --olx-dark: #002f34; --olx-light-bg: #f2f4f5; --olx-border: #d8dfe0; 
+            --olx-text: #002f34; --olx-gray: #406367; --olx-btn-hover: #00a098;
+            --olx-accent: #23e5db; --olx-heart: #ff5a5f;
+        }
+        
+        body { background-color: var(--olx-light-bg); color: var(--olx-text); font-family: 'Roboto', sans-serif; margin: 0; padding: 0; min-height: 100vh; overflow-y: auto; overflow-x: hidden; }
+        a { text-decoration: none; color: inherit; }
+        * { box-sizing: border-box; }
+
+        header { background: var(--olx-dark); padding: 12px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .header-container { max-width: 800px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; }
+        .logo { font-size: 26px; font-weight: 900; color: var(--olx-accent); letter-spacing: -1px; cursor: pointer; transition: 0.2s; }
+        .header-link { color: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+        .header-link:hover { color: var(--olx-accent); }
+
+        .container { max-width: 800px; margin: 40px auto; padding: 0 20px; animation: pageAppear 0.5s ease-out; }
+        .olx-box { border: 1px solid var(--olx-border); padding: 40px; border-radius: 8px; margin-bottom: 20px; background: white; box-shadow: 0 5px 20px rgba(0,0,0,0.03); }
+        .olx-box h3 { margin-top: 0; font-size: 24px; margin-bottom: 25px; color: var(--olx-dark); }
+
+        .filter-group { margin-bottom: 20px; }
+        .filter-group label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 8px; color: var(--olx-dark); }
+        .filter-group input, .filter-group select, .filter-group textarea { width: 100%; padding: 14px; border: 1px solid var(--olx-border); border-radius: 4px; font-size: 15px; outline: none; transition: 0.3s; font-family: 'Roboto'; }
+        .filter-group input:focus, .filter-group select:focus, .filter-group textarea:focus { border-color: var(--olx-btn-hover); box-shadow: 0 0 0 3px rgba(0, 160, 152, 0.1); }
+
+        .add-btn { background: var(--olx-dark); color: white; font-weight: 700; font-size: 16px; padding: 15px; border-radius: 4px; border: none; cursor: pointer; transition: 0.3s; width: 100%; display: block; text-align: center; }
+        .add-btn:hover { background: #001f22; }
+        .btn-secondary { background: transparent; color: var(--olx-gray); border: 1px solid var(--olx-border); margin-top: 10px; }
+        .btn-secondary:hover { background: var(--olx-light-bg); }
+
+        #toastContainer { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: var(--olx-dark); color: white; padding: 16px 24px; border-radius: 8px; font-weight: bold; opacity: 0; transform: translateX(50px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .toast.show { opacity: 1; transform: translateX(0); } .toast.error { background: var(--olx-heart); }
+
+        @keyframes pageAppear { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div id="toastContainer"></div>
+
+    <header>
+        <div class="header-container">
+            <a class="logo" href="index.html">kurahivka.olx</a>
+            <div class="header-link" onclick="window.location.href='index.html'">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                <span>Назад на головну</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <h2 style="font-size:36px; font-weight:900; margin-bottom:30px; text-align:center;">Поділіться своїм товаром</h2>
+        
+        <div id="create-step-1">
+            <div class="olx-box">
+                <h3>Крок 1: З чого почнемо?</h3>
+                <div class="filter-group">
+                    <label>Введіть назву вашого товару чи послуги *</label>
+                    <input type="text" id="creationTitle" placeholder="Наприклад: Продам BMW X5, Квартира в центрі або Шукаю водія">
+                </div>
+                <button class="add-btn" onclick="processStep1()">Продовжити</button>
+            </div>
+        </div>
+
+        <div id="create-step-2" style="display:none;">
+            <div class="olx-box">
+                <h3>Крок 2: Деталі оголошення</h3>
+                <div class="filter-group">
+                    <label>Рубрика</label>
+                    <select id="creationCategory" onchange="toggleFormFields(this.value)">
+                        <option value="cars">🚗 Автомобілі</option>
+                        <option value="realty">🏠 Нерухомість</option>
+                        <option value="jobs">💼 Робота</option>
+                        <option value="other">📦 Інше</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Фотографії (Оберіть файли з пристрою)</label>
+                    <div id="formPhotosContainer">
+                        <input type="file" class="c-file-input" accept="image/*" style="margin-bottom:10px;">
+                    </div>
+                    <span style="color:var(--olx-btn-hover); cursor:pointer; font-weight:bold;" onclick="addMorePhotoInputs()">+ Додати ще файл</span>
+                </div>
+
+                <div class="filter-group"><label>Опис</label><textarea id="creationDesc" rows="5"></textarea></div>
+
+                <div id="formCarOptions" style="display:none; border-left:4px solid var(--olx-accent); padding-left:20px;">
+                    <div class="filter-group"><label>Марка</label><input type="text" id="cCarBrand" placeholder="BMW, Audi"></div>
+                    <div class="filter-group"><label>Швидкість (км/год)</label><input type="number" id="cCarSpeed" value="180"></div>
+                    <div class="filter-group"><label>Багажник (кг)</label><input type="number" id="cCarTrunk" value="50"></div>
+                </div>
+                
+                <div id="formRealtyOptions" style="display:none; border-left:4px solid var(--olx-accent); padding-left:20px;">
+                    <div class="filter-group"><label>Кімнати</label><input type="number" id="cRealRooms" value="1"></div>
+                    <div class="filter-group"><label>Площа (м²)</label><input type="number" id="cRealArea" value="40"></div>
+                </div>
+
+                <div id="formJobOptions" style="display:none; border-left:4px solid var(--olx-accent); padding-left:20px;">
+                    <div class="filter-group">
+                        <label>Графік роботи</label>
+                        <select id="cJobSchedule">
+                            <option value="Повний день">Повний день</option>
+                            <option value="Часткова зайнятість">Часткова зайнятість</option>
+                            <option value="Віддалена робота">Віддалена робота</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Досвід роботи</label>
+                        <select id="cJobExperience">
+                            <option value="Не потрібен">Не потрібен</option>
+                            <option value="До 1 року">До 1 року</option>
+                            <option value="Більше 1 року">Більше 1 року</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:15px;">
+                    <div class="filter-group" style="flex:1;"><label>Ціна / Зарплата ($)</label><input type="number" id="creationPrice"></div>
+                    <div class="filter-group" style="flex:1;"><label>Стан</label><select id="creationCondition"><option value="used">Вживане</option><option value="new">Нове</option></select></div>
+                </div>
+
+                <div style="display:flex; gap:15px;">
+                    <div class="filter-group" style="flex:1;"><label>Продавець / Роботодавець</label><select id="creationSellerType"><option value="private">Приватна особа</option><option value="business">Бізнес</option></select></div>
+                    <div class="filter-group" style="flex:1;"><label>Телефон</label><input type="text" id="creationPhone" placeholder="+380..."></div>
+                </div>
+
+                <button class="add-btn" id="finalSubmitBtn" onclick="publishItem()">Опублікувати оголошення</button>
+                <button class="add-btn btn-secondary" onclick="goToStep(1)">Назад до кроку 1</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyCbNGyrjT1rf-2UHeRj2LCCdqIrsaZ0TG0", authDomain: "kurahivka-rp-avtobazar.firebaseapp.com", databaseURL: "https://kurahivka-rp-avtobazar-default-rtdb.europe-west1.firebasedatabase.app", projectId: "kurahivka-rp-avtobazar", storageBucket: "kurahivka-rp-avtobazar.firebasestorage.app" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database(); const auth = firebase.auth();
+
+        let currentUser = null, myId = null;
+
+        function notify(msg, type='info') {
+            const container = document.getElementById('toastContainer');
+            const t = document.createElement('div'); t.className = `toast ${type}`; t.innerText = msg;
+            container.appendChild(t); setTimeout(() => t.classList.add('show'), 10);
+            setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 3500);
+        }
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user; myId = user.providerData?.[0]?.uid || user.uid;
+            } else {
+                // Якщо не авторизований, викидаємо на головну
+                window.location.href = 'index.html';
+            }
+        });
+
+        function goToStep(s) { 
+            document.getElementById('create-step-1').style.display = s === 1 ? 'block' : 'none'; 
+            document.getElementById('create-step-2').style.display = s === 2 ? 'block' : 'none'; 
+        }
+
+        function processStep1() {
+            const title = document.getElementById('creationTitle').value.trim();
+            if(title.length < 4) return notify('Введіть нормальну назву!', 'error');
+            let guessed = 'other'; const low = title.toLowerCase();
+            if(low.includes('авто') || low.includes('bmw') || low.includes('ваз')) guessed = 'cars';
+            else if(low.includes('дім') || low.includes('квартира')) guessed = 'realty';
+            else if(low.includes('робота') || low.includes('работа') || low.includes('вакансія') || low.includes('потрібен')) guessed = 'jobs';
+            
+            document.getElementById('creationCategory').value = guessed; toggleFormFields(guessed); goToStep(2);
+        }
+
+        function toggleFormFields(cat) {
+            document.getElementById('formCarOptions').style.display = cat === 'cars' ? 'block' : 'none';
+            document.getElementById('formRealtyOptions').style.display = cat === 'realty' ? 'block' : 'none';
+            document.getElementById('formJobOptions').style.display = cat === 'jobs' ? 'block' : 'none';
+        }
+
+        function addMorePhotoInputs() {
+            const input = document.createElement('input'); input.type = 'file'; input.className = 'c-file-input'; input.style.display = 'block'; input.style.marginBottom = '10px'; input.accept = 'image/*';
+            document.getElementById('formPhotosContainer').appendChild(input);
+        }
+
+        async function uploadToImgBB(file) {
+            const apiKey = '7ef81dfc56bab94048936358f8fb9097'; 
+            const formData = new FormData(); formData.append('image', file);
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, { method: 'POST', body: formData });
+            const data = await res.json();
+            if(data.success) return data.data.url;
+            throw new Error('Upload failed');
+        }
+
+        async function publishItem() {
+            const name = document.getElementById('creationTitle').value.trim();
+            const price = parseInt(document.getElementById('creationPrice').value);
+            const fileInputs = Array.from(document.querySelectorAll('.c-file-input'));
+            const files = fileInputs.map(i => i.files[0]).filter(f => f);
+
+            if(!name || !price || files.length === 0) return notify('Заповніть назву, ціну та додайте хоча б 1 фото!', 'error');
+
+            const btn = document.getElementById('finalSubmitBtn');
+            btn.disabled = true; btn.innerText = 'Завантаження...';
+
+            try {
+                const uploadedUrls = [];
+                for(let f of files) { 
+                    const url = await uploadToImgBB(f); 
+                    uploadedUrls.push(url); 
+                }
+
+                const cat = document.getElementById('creationCategory').value;
+                const itemId = 'car_' + Date.now();
+                
+                const payload = {
+                    name,
+                    description: document.getElementById('creationDesc').value.trim(),
+                    price,
+                    category: cat,
+                    condition: document.getElementById('creationCondition').value,
+                    sellerType: document.getElementById('creationSellerType').value,
+                    phone: document.getElementById('creationPhone').value.trim(),
+                    images: uploadedUrls,
+                    ownerId: myId,
+                    ownerName: currentUser.displayName,
+                    ownerAvatar: currentUser.photoURL || 'https://via.placeholder.com/40',
+                    createdAt: Date.now()
+                };
+
+                if(cat === 'cars') {
+                    payload.brand = document.getElementById('cCarBrand').value || 'Не вказано';
+                    payload.speed = document.getElementById('cCarSpeed').value || 120;
+                    payload.trunk = document.getElementById('cCarTrunk').value || 40;
+                } else if(cat === 'realty') {
+                    payload.rooms = document.getElementById('cRealRooms').value || 1;
+                    payload.area = document.getElementById('cRealArea').value || 40;
+                } else if(cat === 'jobs') {
+                    payload.schedule = document.getElementById('cJobSchedule').value;
+                    payload.experience = document.getElementById('cJobExperience').value;
+                }
+
+                await db.ref('cars/' + itemId).set(payload); 
+                
+                notify('Оголошення успішно додано! Перехід...', 'success');
+                setTimeout(() => window.location.href = 'index.html', 1500); // Повертаємось на головну
+            } catch(e) {
+                notify('Помилка: ' + e.message, 'error');
+            }
+            btn.disabled = false; btn.innerText = 'Опублікувати оголошення';
+        }
+    </script>
+</body>
+</html>
