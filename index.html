@@ -389,27 +389,52 @@
             document.getElementById('photosContainer').appendChild(div);
         }
 
-        function submitCar() {
-            const name = document.getElementById('nName').value;
-            const price = parseInt(document.getElementById('nPrice').value);
-            const imgs = Array.from(document.querySelectorAll('.c-photo')).map(i => i.value).filter(v => v);
-            if(!name || !price || imgs.length === 0) return notify('Заповніть назву, ціну та фото!', 'error');
-            
-            let dId = currentUser?.providerData?.[0]?.uid;
-            if(!dId) return notify('Помилка ID Discord!', 'error');
+        async function submitCar() {
+    const name = document.getElementById('nName').value;
+    const price = parseInt(document.getElementById('nPrice').value);
+    const fileInput = document.getElementById('fileInput'); // Це наш новий інпут
+    
+    // Перевірка, чи все заповнено
+    if(!name || !price || fileInput.files.length === 0) 
+        return notify('Заповніть назву, ціну та виберіть фото!', 'error');
+    
+    // 1. Починаємо процес завантаження
+    document.getElementById('uploadStatus').innerText = "Завантаження фото на сервер...";
+    
+    // Викликаємо функцію з uploader.js
+    const imageUrl = await uploadImageToImgBB(fileInput.files[0]);
+    
+    if(!imageUrl) {
+        document.getElementById('uploadStatus').innerText = "";
+        return notify('Помилка завантаження фото!', 'error');
+    }
+    
+    document.getElementById('uploadStatus').innerText = "Фото завантажено!";
 
-            const newId = 'car_' + Date.now();
-            db.ref('cars/' + newId).set({
-                name, price, images: imgs,
-                speed: document.getElementById('nSpeed').value || 0, trunk: document.getElementById('nTrunk').value || 0,
-                condition: document.getElementById('nCond').value, brand: document.getElementById('nBrand').value,
-                body: document.getElementById('nBody').value, carClass: document.getElementById('nClass').value,
-                sellerType: document.getElementById('nSellerType').value || 'private',
-                ownerId: dId, ownerName: currentUser.displayName,
-                ownerAvatar: currentUser.photoURL || '',
-                createdAt: Date.now()
-            }).then(() => { closeAddModal(); notify('Оголошення додано!', 'success'); });
-        }
+    // 2. Публікація в Firebase (вже з отриманим посиланням imageUrl)
+    let dId = currentUser?.providerData?.[0]?.uid;
+    const newId = 'car_' + Date.now();
+    
+    db.ref('cars/' + newId).set({
+        name, price, 
+        images: [imageUrl], // Тут тепер зберігається посилання від ImgBB
+        speed: document.getElementById('nSpeed').value || 0,
+        trunk: document.getElementById('nTrunk').value || 0,
+        condition: document.getElementById('nCond').value,
+        brand: document.getElementById('nBrand').value,
+        body: document.getElementById('nBody').value,
+        carClass: document.getElementById('nClass').value,
+        sellerType: document.getElementById('nSellerType').value || 'private',
+        ownerId: dId,
+        ownerName: currentUser.displayName,
+        ownerAvatar: currentUser.photoURL || '',
+        createdAt: Date.now()
+    }).then(() => { 
+        closeAddModal(); 
+        notify('Оголошення додано!', 'success'); 
+        document.getElementById('uploadStatus').innerText = "";
+    });
+}
     </script>
 </body>
 </html>
