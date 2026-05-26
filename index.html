@@ -400,11 +400,15 @@
 
         function renderItems(ids) {
             const grid = document.getElementById('itemsGrid');
+            const countEl = document.getElementById('countNum');
+            if (!grid) return; // Защита от ошибки
+    
             grid.innerHTML = '';
-            document.getElementById('countNum').innerText = ids.length;
+            if (countEl) countEl.innerText = ids.length; // Безопасное обновление текста
 
             ids.forEach((id, index) => {
                 const item = itemsData[id];
+        // ... (весь остальной код отрисовки остается прежним)
                 const img = (item.images && item.images.length > 0) ? item.images[0] : 'https://via.placeholder.com/250';
                 const isLiked = !!userFavorites[id];
                 const delay = index * 0.05; 
