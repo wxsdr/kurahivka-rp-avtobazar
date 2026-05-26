@@ -3,294 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Повідомлення | Kurahivka OLX</title>
+    <title>Повідомлення | Kurahivka</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-
     <style>
-        :root { 
-            --olx-dark: #002f34; 
-            --olx-light-bg: #f2f4f5; 
-            --olx-border: #d8dfe0; 
-            --olx-text: #002f34; 
-            --olx-gray: #406367; 
-            --olx-accent: #23e5db;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
-        body { background: var(--olx-light-bg); color: var(--olx-text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-
-        header { background: white; border-bottom: 1px solid var(--olx-border); flex-shrink: 0; }
-        .header-container { max-width: 1200px; margin: 0 auto; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; }
-        .logo { font-size: 28px; font-weight: 900; color: var(--olx-dark); text-decoration: none; cursor: pointer; }
-
-        .chat-main-wrapper { display: flex; flex: 1; max-width: 1200px; width: 100%; margin: 20px auto; background: white; border-radius: 6px; border: 1px solid var(--olx-border); overflow: hidden; }
-
-        /* Левая часть: список диалогов */
-        .threads-sidebar { width: 350px; border-right: 1px solid var(--olx-border); display: flex; flex-direction: column; background: #fafafa; }
-        .sidebar-title { padding: 20px; font-size: 18px; font-weight: 700; border-bottom: 1px solid var(--olx-border); background: white; color: var(--olx-dark); }
-        .threads-list { flex: 1; overflow-y: auto; }
+        :root { --olx-dark: #002f34; --olx-light-bg: #f2f4f5; --olx-border: #d8dfe0; --olx-text: #002f34; --olx-gray: #406367; }
+        body { background: var(--olx-light-bg); color: var(--olx-text); font-family: 'Roboto', sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
+        * { box-sizing: border-box; }
         
-        .thread-item { display: flex; align-items: center; gap: 12px; padding: 15px; border-bottom: 1px solid #f0f2f2; cursor: pointer; transition: background 0.2s; }
-        .thread-item:hover { background: #f0f5f5; }
-        .thread-item.active-thread { background: #e6f2f2; border-left: 4px solid var(--olx-dark); }
-        .thread-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background: #ccc; }
-        .thread-details { flex: 1; min-width: 0; }
-        .thread-username { font-weight: 700; font-size: 14px; color: var(--olx-dark); margin-bottom: 3px; display: flex; justify-content: space-between; }
-        .thread-ad-title { font-size: 12px; color: var(--olx-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
-        .thread-last-msg { font-size: 13px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        header { background: var(--olx-dark); padding: 15px; color: white; display: flex; align-items: center; justify-content: space-between; }
+        .back-link { color: #23e5db; font-weight: bold; cursor: pointer; text-decoration: none; }
 
-        /* Правая часть: открытое окно сообщений */
-        .chat-room-container { flex: 1; display: flex; flex-direction: column; background: #f2f4f5; }
-        .chat-room-header { background: white; padding: 15px 20px; border-bottom: 1px solid var(--olx-border); display: flex; align-items: center; gap: 15px; }
-        .chat-room-header h3 { font-size: 16px; font-weight: 700; color: var(--olx-dark); }
-        .chat-room-header p { font-size: 13px; color: var(--olx-gray); }
-
-        .messages-scroll-area { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #f7f9fa; }
+        .chat-layout { display: flex; flex: 1; overflow: hidden; max-width: 1200px; width: 100%; margin: 0 auto; background: white; border: 1px solid var(--olx-border); }
         
-        /* Пузыри сообщений */
-        .msg-row { display: flex; width: 100%; }
-        .msg-row.my-msg-row { justify-content: flex-end; }
-        
-        .msg-bubble { max-width: 60%; padding: 12px 16px; border-radius: 8px; font-size: 15px; line-height: 1.4; position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .msg-row.my-msg-row .msg-bubble { background: #cbeeed; color: var(--olx-dark); border-top-right-radius: 0; }
-        .msg-row.other-msg-row .msg-bubble { background: white; color: var(--olx-dark); border-top-left-radius: 0; border: 1px solid var(--olx-border); }
-        
-        .msg-time { font-size: 10px; color: var(--olx-gray); text-align: right; margin-top: 5px; }
+        /* Ліва частина - список діалогів */
+        .sidebar { width: 350px; border-right: 1px solid var(--olx-border); display: flex; flex-direction: column; background: #fff; }
+        .chat-roles-tabs { display: flex; background: #f2f4f5; border-bottom: 1px solid var(--olx-border); }
+        .role-tab { flex: 1; text-align: center; padding: 15px; font-weight: bold; cursor: pointer; color: var(--olx-gray); border-bottom: 3px solid transparent; }
+        .role-tab.active { color: var(--olx-dark); border-bottom-color: var(--olx-dark); background: white; }
 
-        /* Панель ввода сообщения */
-        .chat-input-bar { background: white; padding: 15px 20px; border-top: 1px solid var(--olx-border); display: flex; gap: 15px; align-items: center; }
-        .chat-textarea { flex: 1; border: 1px solid var(--olx-border); border-radius: 4px; padding: 12px; font-size: 15px; outline: none; resize: none; height: 45px; color: var(--olx-dark); }
-        .chat-textarea:focus { border-color: var(--olx-dark); }
-        .btn-send-msg { background: var(--olx-dark); color: white; border: none; padding: 0 25px; height: 45px; font-size: 15px; font-weight: 700; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
-        .btn-send-msg:hover { background: #001f22; }
+        .chat-list { flex: 1; overflow-y: auto; }
+        .chat-item { display: flex; padding: 15px; border-bottom: 1px solid var(--olx-border); cursor: pointer; align-items: center; gap: 12px; }
+        .chat-item:hover, .chat-item.active { background: #f2f4f5; }
+        .chat-item img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
+        .chat-item-info { flex: 1; overflow: hidden; }
+        .chat-item-name { font-weight: bold; font-size: 14px; margin-bottom: 3px; }
+        .chat-item-title { font-size: 12px; color: var(--olx-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .unread-dot { width: 10px; height: 10px; background: #ff5a5f; border-radius: 50%; }
 
-        .no-chats-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--olx-gray); font-size: 16px; }
+        /* Права частина - Вікно листування */
+        .main-chat { flex: 1; display: flex; flex-direction: column; background: #f8fafb; }
+        .chat-header { padding: 15px; border-bottom: 1px solid var(--olx-border); background: white; font-weight: bold; display: flex; align-items: center; justify-content: space-between; }
+        .messages-area { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        
+        .msg-bubble { max-width: 60%; padding: 12px 16px; border-radius: 8px; font-size: 15px; position: relative; line-height: 1.4; }
+        .msg-mine { background: #c6f7f4; align-self: flex-end; border-bottom-right-radius: 0; color: var(--olx-text); }
+        .msg-other { background: white; align-self: flex-start; border-bottom-left-radius: 0; border: 1px solid var(--olx-border); }
+        .msg-time { font-size: 10px; color: var(--olx-gray); margin-top: 4px; text-align: right; }
+
+        .input-panel { padding: 15px; background: white; border-top: 1px solid var(--olx-border); display: flex; gap: 10px; }
+        .input-panel input { flex: 1; padding: 14px; border: 1px solid var(--olx-border); border-radius: 4px; outline: none; font-size: 15px; }
+        .send-btn { background: var(--olx-dark); color: white; border: none; padding: 0 25px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        
+        .no-chat-selected { flex: 1; display: flex; justify-content: center; align-items: center; color: var(--olx-gray); font-size: 16px; font-weight: 500; }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="header-container">
-            <a class="logo" onclick="window.location.href='index.html'">kurahivka olx</a>
-            <div style="font-weight: 700; font-size: 15px; color: var(--olx-dark);" id="userNameDisplay">Чат-центр</div>
-        </div>
+        <div style="font-size: 20px; font-weight: 900;">Мої повідомлення Kurahivka</div>
+        <div class="back-link" onclick="window.location.href='index.html'"> повернутися на OLX</div>
     </header>
 
-    <div class="chat-main-wrapper">
-        <div class="threads-sidebar">
-            <div class="sidebar-title">Ваші діалоги</div>
-            <div class="threads-list" id="dialogsList">
-                </div>
+    <div class="chat-layout">
+        <div class="sidebar">
+            <div class="chat-roles-tabs">
+                <div class="role-tab active" id="tabRoleBuy" onclick="changeChatRole('buyer')">Купую</div>
+                <div class="role-tab" id="tabRoleSell" onclick="changeChatRole('seller')">Продаю</div>
+            </div>
+            <div class="chat-list" id="chatsContainer"></div>
         </div>
 
-        <div class="chat-room-container" id="chatRoomArea">
-            <div class="no-chats-placeholder" id="placeholderSelectChat">
-                <p>💬 Виберіть діалог зі списку зліва, щоб почати спілкування</p>
-            </div>
-
-            <div id="activeChatContent" class="hidden" style="display:flex; flex-direction:column; flex:1;">
-                <div class="chat-room-header">
-                    <img class="thread-avatar" id="activeChatPartnerAvatar" src="" alt="avatar">
-                    <div>
-                        <h3 id="activeChatPartnerName">Завантаження...</h3>
-                        <p id="activeChatProductTitle">Товар: ...</p>
-                    </div>
-                </div>
-
-                <div class="messages-scroll-area" id="messagesContainerBox">
-                    </div>
-
-                <div class="chat-input-bar">
-                    <textarea class="chat-textarea" id="messageInputField" placeholder="Напишіть ваше повідомлення тут..."></textarea>
-                    <button class="btn-send-msg" onclick="performSendMessage()">Надіслати</button>
-                </div>
-            </div>
+        <div class="main-chat" id="chatWindow">
+            <div class="no-chat-selected">Оберіть чат зі списку зліва, щоб почати діалог</div>
         </div>
     </div>
 
     <script>
         const firebaseConfig = {
-            apiKey: "ТВОЙ_API_KEY",
-            authDomain: "ТВОЙ_AUTH_DOMAIN",
-            databaseURL: "ТВОЙ_DATABASE_URL",
-            projectId: "ТВОЙ_PROJECT_ID",
-            storageBucket: "ТВОЙ_STORAGE_BUCKET",
-            messagingSenderId: "ТВОЙ_MESSAGING_SENDER_ID",
-            appId: "ТВОЙ_APP_ID"
+            apiKey: "AIzaSyCbNGyrjT1rf-2UHeRj2LCCdqIrsaZ0TG0",
+            authDomain: "kurahivka-rp-avtobazar.firebaseapp.com",
+            databaseURL: "https://kurahivka-rp-avtobazar-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "kurahivka-rp-avtobazar",
+            storageBucket: "kurahivka-rp-avtobazar.firebasestorage.app"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const auth = firebase.auth();
 
-        let myId = null;
-        let myName = "";
-        let activeChatId = new URLSearchParams(window.location.search).get('id');
+        let myId = null, myName = null, currentRole = 'buyer', activeChatId = null, activeChatInfo = null;
+        let allChats = {};
 
         auth.onAuthStateChanged(user => {
-            if (!user) {
-                alert("Доступ заборонено! Будь ласка, авторизуйтеся на головній сторінці маркетплейса.");
+            if(user) {
+                myId = user.providerData?.[0]?.uid || user.uid;
+                myName = user.displayName;
+                loadChatsList();
+            } else {
                 window.location.href = 'index.html';
-                return;
-            }
-            myId = user.uid;
-            myName = user.displayName || "Користувач";
-            document.getElementById('userNameDisplay').innerText = `Чат: ${myName}`;
-            
-            syncUserDialogsList();
-
-            if (activeChatId) {
-                openTargetDialog(activeChatId);
             }
         });
 
-        // Синхронизация и вывод всех диалогов текущего пользователя
-        function syncUserDialogsList() {
-            db.ref('chats').on('value', snapshot => {
-                const listContainer = document.getElementById('dialogsList');
-                listContainer.innerHTML = '';
+        function changeChatRole(role) {
+            currentRole = role;
+            document.getElementById('tabRoleBuy').classList.toggle('active', role === 'buyer');
+            document.getElementById('tabRoleSell').classList.toggle('active', role === 'seller');
+            renderChatsList();
+        }
 
-                if (!snapshot.exists()) {
-                    listContainer.innerHTML = '<p style="padding:20px; color:gray; text-align:center;">У вас немає активних чатів.</p>';
-                    return;
-                }
+        function loadChatsList() {
+            db.ref('chats').on('value', snap => {
+                allChats = snap.val() || {};
+                renderChatsList();
+                if(activeChatId) { openChatMessages(activeChatId); }
+            });
+        }
 
-                let chatThreads = [];
-                snapshot.forEach(child => {
-                    const data = child.val();
-                    // Проверяем, участвует ли текущий пользователь в этом чате (как продавец или покупатель)
-                    if (data.buyerId === myId || data.sellerId === myId) {
-                        chatThreads.push(data);
-                    }
-                });
+        function renderChatsList() {
+            const container = document.getElementById('chatsContainer');
+            container.innerHTML = '';
 
-                if(chatThreads.length === 0) {
-                    listContainer.innerHTML = '<p style="padding:20px; color:gray; text-align:center;">У вас немає активних чатів.</p>';
-                    return;
-                }
+            const filtered = Object.keys(allChats).filter(id => {
+                const c = allChats[id];
+                if(currentRole === 'buyer' && c.buyerId === myId) return true;
+                if(currentRole === 'seller' && c.sellerId === myId) return true;
+                return false;
+            });
 
-                // Сортируем по времени последнего сообщения
-                chatThreads.sort((a,b) => b.lastUpdated - a.lastUpdated);
+            if(filtered.length === 0) {
+                container.innerHTML = `<div style="padding:20px; text-align:center; color:var(--olx-gray);">Немає діалогів у цій вкладці</div>`;
+                return;
+            }
 
-                chatThreads.forEach(thread => {
-                    // Вычисляем данные собеседника
-                    const isImBuyer = (thread.buyerId === myId);
-                    const partnerName = isImBuyer ? thread.sellerName : thread.buyerName;
-                    const partnerAvatar = isImBuyer ? (thread.sellerAvatar || 'https://www.olx.ua/app/static/media/static-minus-sign.e187b5a51.svg') : (thread.buyerAvatar || 'https://www.olx.ua/app/static/media/static-minus-sign.e187b5a51.svg');
-                    const lastText = thread.lastMessageText || 'Немає повідомлень';
+            filtered.forEach(id => {
+                const c = allChats[id];
+                // Визначаємо з ким ведеться діалог
+                const partnerName = currentRole === 'buyer' ? c.sellerName : c.buyerName;
+                const partnerAvatar = currentRole === 'buyer' ? (c.sellerAvatar || 'https://via.placeholder.com/45') : (c.buyerAvatar || 'https://via.placeholder.com/45');
+                const hasUnread = c.lastSenderId && c.lastSenderId !== myId;
 
-                    const isActiveClass = (activeChatId === thread.id) ? 'active-thread' : '';
+                const item = document.createElement('div');
+                item.className = `chat-item ${activeChatId === id ? 'active' : ''}`;
+                item.onclick = () => selectChat(id);
+                item.innerHTML = `
+                    <img src="${partnerAvatar}">
+                    <div class="chat-item-info">
+                        <div class="chat-item-name">${partnerName}</div>
+                        <div class="chat-item-title">${c.carTitle || 'Товар'}</div>
+                        <div style="font-size:11px; color:#a0a0a0; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.lastMessageText || 'Повідомлень немає'}</div>
+                    </div>
+                    ${hasUnread ? `<div class="unread-dot"></div>` : ''}
+                `;
+                container.appendChild(item);
+            });
+        }
 
-                    listContainer.innerHTML += `
-                        <div class="thread-item ${isActiveClass}" onclick="openTargetDialog('${thread.id}')">
-                            <img class="thread-avatar" src="${partnerAvatar}" alt="avatar">
-                            <div class="thread-details">
-                                <div class="thread-username">
-                                    <span>${partnerName}</span>
-                                </div>
-                                <div class="thread-ad-title">${thread.carTitle}</div>
-                                <div class="thread-last-msg">${lastText}</div>
-                            </div>
+        function selectChat(id) {
+            activeChatId = id;
+            activeChatInfo = allChats[id];
+            renderChatsList();
+            buildChatWindowStructure();
+            openChatMessages(id);
+        }
+
+        function buildChatWindowStructure() {
+            const partnerName = currentRole === 'buyer' ? activeChatInfo.sellerName : activeChatInfo.buyerName;
+            const win = document.getElementById('chatWindow');
+            win.innerHTML = `
+                <div class="chat-header">
+                    <div>
+                        <span>Чат з <b>${partnerName}</b></span>
+                        <div style="font-size:12px; color:var(--olx-gray); font-weight:normal; margin-top:2px;">Тема: ${activeChatInfo.carTitle}</div>
+                    </div>
+                </div>
+                <div class="messages-area" id="messagesArea"></div>
+                <div class="input-panel">
+                    <input type="text" id="msgInput" placeholder="Напишіть ваше повідомлення..." onkeydown="if(event.key==='Enter') sendMsg()">
+                    <button class="send-btn" onclick="sendMsg()">Надіслати</button>
+                </div>
+            `;
+        }
+
+        function openChatMessages(id) {
+            db.ref(`chats/${id}/messages`).off();
+            db.ref(`chats/${id}/messages`).on('value', snap => {
+                const area = document.getElementById('messagesArea');
+                if(!area) return;
+                area.innerHTML = '';
+                
+                snap.forEach(child => {
+                    const m = child.val();
+                    const isMine = m.senderId === myId;
+                    const timeStr = new Date(m.timestamp).toLocaleTimeString('uk-UA', {hour: '2-digit', minute:'2-digit'});
+                    
+                    area.innerHTML += `
+                        <div class="msg-bubble ${isMine ? 'msg-mine' : 'msg-other'}">
+                            <div>${m.text}</div>
+                            <div class="msg-time">${timeStr}</div>
                         </div>
                     `;
                 });
+                setTimeout(() => area.scrollTop = area.scrollHeight, 40);
             });
         }
 
-        // Открытие конкретного диалога и загрузка сообщений переписки
-        function openTargetDialog(chatId) {
-            activeChatId = chatId;
-            
-            // Обновляем URL в строке браузера без перезагрузки
-            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?id=' + chatId;
-            window.history.pushState({path:newUrl}, '', newUrl);
+        async function sendMsg() {
+            const input = document.getElementById('msgInput');
+            const text = input.value.trim();
+            if(!text) return; input.value = '';
+            const ts = Date.now();
 
-            document.getElementById('placeholderSelectChat').classList.add('hidden');
-            document.getElementById('activeChatContent').classList.remove('hidden');
-
-            // Получаем метаданные чата
-            db.ref('chats/' + chatId).once('value', snapshot => {
-                if(!snapshot.exists()) return;
-                const thread = snapshot.val();
-
-                const isImBuyer = (thread.buyerId === myId);
-                const partnerName = isImBuyer ? thread.sellerName : thread.buyerName;
-                const partnerAvatar = isImBuyer ? (thread.sellerAvatar || 'https://www.olx.ua/app/static/media/static-minus-sign.e187b5a51.svg') : (thread.buyerAvatar || 'https://www.olx.ua/app/static/media/static-minus-sign.e187b5a51.svg');
-
-                document.getElementById('activeChatPartnerName').innerText = partnerName;
-                document.getElementById('activeChatPartnerAvatar').src = partnerAvatar;
-                document.getElementById('activeChatProductTitle').innerText = `Оголошення: ${thread.carTitle}`;
-
-                // Включаем прослушку сообщений
-                subscribeToMessages(chatId);
-            });
-
-            // Перерисуем список, чтобы подсветить активный
-            syncUserDialogsList();
-        }
-
-        // Подписка на сообщения в реальном времени
-        function subscribeToMessages(chatId) {
-            const container = document.getElementById('messagesContainerBox');
-            
-            db.ref(`chats/${chatId}/messages`).off(); // Отключаем старые подписки
-            db.ref(`chats/${chatId}/messages`).on('value', snapshot => {
-                container.innerHTML = '';
-
-                if (!snapshot.exists()) {
-                    container.innerHTML = '<p style="text-align:center; color:gray; margin-top:20px;">Історія повідомлень порожня. Напишіть щось першим!</p>';
-                    return;
-                }
-
-                snapshot.forEach(child => {
-                    const msg = child.val();
-                    const isMyMsg = (msg.senderId === myId);
-                    const formattedTime = new Date(msg.timestamp).toLocaleTimeString('uk-UA', {hour: '2-digit', minute:'2-digit'});
-
-                    container.innerHTML += `
-                        <div class="msg-row ${isMyMsg ? 'my-msg-row' : 'other-msg-row'}">
-                            <div class="msg-bubble">
-                                <div>${msg.text}</div>
-                                <div class="msg-time">${formattedTime}</div>
-                            </div>
-                        </div>
-                    `;
-                });
-
-                // Скроллим чат вниз до упора
-                setTimeout(() => { container.scrollTop = container.scrollHeight; }, 50);
-            });
-        }
-
-        // Отправка текстового сообщения
-        function performSendMessage() {
-            const inputElement = document.getElementById('messageInputField');
-            const messageText = inputElement.value.trim();
-            
-            if (!messageText || !activeChatId) return;
-            
-            inputElement.value = ''; // Мгновенно очищаем поле ввода
-            const currentTimestamp = Date.now();
-
-            const messagePayload = {
-                senderId: myId,
-                text: messageText,
-                timestamp: currentTimestamp
-            };
-
-            // 1. Добавляем сообщение в ветку сообщений
-            db.ref(`chats/${activeChatId}/messages`).push(messagePayload).then(() => {
-                // 2. Обновляем метаданные самого чата для отображения в списке последних сообщений
-                db.ref(`chats/${activeChatId}`).update({
-                    lastUpdated: currentTimestamp,
-                    lastSenderId: myId,
-                    lastMessageText: messageText
-                });
-            }).catch(e => alert("Помилка відправки повідомлення. Спробуйте ще раз."));
+            await db.ref(`chats/${activeChatId}/messages`).push({ senderId: myId, text: text, timestamp: ts });
+            await db.ref(`chats/${activeChatId}`).update({ lastUpdated: ts, lastSenderId: myId, lastSenderName: myName, lastMessageText: text });
         }
     </script>
 </body>
