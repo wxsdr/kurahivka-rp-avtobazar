@@ -77,19 +77,14 @@
         .modal-content h3 { margin-top: 0; font-size: 22px; margin-bottom: 20px;}
         .modal-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
         .btn-primary { background: var(--olx-dark); color: white; width: 100%; padding: 15px; border: none; border-radius: 4px; font-weight: bold; font-size: 16px; cursor: pointer; }
+        .btn-primary:disabled { background: var(--olx-gray); cursor: not-allowed; }
         .btn-secondary { background: transparent; border: 1px solid var(--olx-dark); color: var(--olx-dark); width: 100%; padding: 15px; border-radius: 4px; font-weight: bold; cursor: pointer; }
-
-        #toastContainer { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; }
-        .toast { background: var(--olx-dark); color: white; padding: 15px 20px; border-radius: 4px; font-size: 14px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.15); opacity: 0; transform: translateY(20px); transition: 0.3s; }
-        .toast.show { opacity: 1; transform: translateY(0); }
-        .toast.error { background: #ff5a5f; }
-        .toast.success { background: #00a098; }
 
         /* МОБІЛЬНА АДАПТАЦІЯ */
         @media (max-width: 768px) {
             .header-container { padding: 0 10px; }
             .logo { font-size: 22px; }
-            .header-link-text { display: none; } /* Ховаємо текст в шапці, лишаємо іконки */
+            .header-link-text { display: none; }
             .header-actions { gap: 15px; }
             .add-btn { padding: 10px 15px; font-size: 13px; }
             
@@ -177,7 +172,7 @@
             <div class="filter-group"><label>Назва авто</label><input type="text" id="nName" placeholder="Продам авто Honda Accord 2007"></div>
             
             <div id="photosContainer">
-                <div class="filter-group"><label>Посилання на фото</label><input type="text" class="c-photo" placeholder="https://..."></div>
+                <div class="filter-group"><label>Фото авто (Оберіть файл)</label><input type="file" class="c-photo-file" accept="image/*"></div>
             </div>
             <span onclick="addPhotoField()" style="color: var(--olx-gray); cursor: pointer; font-size: 14px; font-weight: bold; display: inline-block; margin-bottom: 20px;">+ Додати ще фото</span>
             
@@ -202,7 +197,7 @@
             </div>
 
             <div class="modal-actions">
-                <button class="btn-primary" onclick="submitCar()">Опублікувати</button>
+                <button class="btn-primary" id="submitBtn" onclick="submitCar()">Опублікувати</button>
                 <button class="btn-secondary" onclick="closeAddModal()">Скасувати</button>
             </div>
         </div>
@@ -382,32 +377,82 @@
             document.getElementById('addCarModal').classList.add('active'); 
         }
         function closeAddModal() { document.getElementById('addCarModal').classList.remove('active'); }
+        
+        // Функция загрузки одного изображения на ImgBB
+        async function uploadToImgBB(file) {
+            const apiKey = 'СЮДА_ВСТАВЬ_СВОЙ_API_КЛЮЧ_IMGBB'; // <-- ТВОЙ API КЛЮЧ
+            const formData = new FormData();
+            formData.append('image', file);
+
+            const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                return data.data.url;
+            } else {
+                throw new Error('Помилка завантаження на ImgBB');
+            }
+        }
+
         function addPhotoField() {
-            const div = document.createElement('div'); div.className = 'filter-group'; div.style.marginBottom = '15px';
-            div.innerHTML = '<input type="text" class="c-photo" placeholder="Додаткове фото">';
+            const div = document.createElement('div'); 
+            div.className = 'filter-group'; 
+            div.style.marginBottom = '15px';
+            div.innerHTML = '<input type="file" class="c-photo-file" accept="image/*">';
             document.getElementById('photosContainer').appendChild(div);
         }
 
-        function submitCar() {
+        async function submitCar() {
             const name = document.getElementById('nName').value;
             const price = parseInt(document.getElementById('nPrice').value);
-            const imgs = Array.from(document.querySelectorAll('.c-photo')).map(i => i.value).filter(v => v);
-            if(!name || !price || imgs.length === 0) return notify('Заповніть назву, ціну та фото!', 'error');
+            
+            // Находим все инпуты с файлами и берем из них выбранные изображения
+            const fileInputs = Array.from(document.querySelectorAll('.c-photo-file'));
+            const files = fileInputs.map(input => input.files[0]).filter(file => file !== undefined);
+
+            if(!name || !price || files.length === 0) return notify('Заповніть назву, ціну та додайте хоча б одне фото!', 'error');
             
             let dId = currentUser?.providerData?.[0]?.uid;
             if(!dId) return notify('Помилка ID Discord!', 'error');
 
-            const newId = 'car_' + Date.now();
-            db.ref('cars/' + newId).set({
-                name, price, images: imgs,
-                speed: document.getElementById('nSpeed').value || 0, trunk: document.getElementById('nTrunk').value || 0,
-                condition: document.getElementById('nCond').value, brand: document.getElementById('nBrand').value,
-                body: document.getElementById('nBody').value, carClass: document.getElementById('nClass').value,
-                sellerType: document.getElementById('nSellerType').value || 'private',
-                ownerId: dId, ownerName: currentUser.displayName,
-                ownerAvatar: currentUser.photoURL || '',
-                createdAt: Date.now()
-            }).then(() => { closeAddModal(); notify('Оголошення додано!', 'success'); });
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Завантаження фото...';
+            notify('Завантажуємо фото, зачекайте...', 'info');
+
+            try {
+                const uploadedImagesUrls = [];
+                // Загружаем файлы по очереди на ImgBB
+                for (const file of files) {
+                    const url = await uploadToImgBB(file);
+                    uploadedImagesUrls.push(url);
+                }
+
+                // Записываем объявление в базу данных Firebase
+                const newId = 'car_' + Date.now();
+                await db.ref('cars/' + newId).set({
+                    name, price, images: uploadedImagesUrls,
+                    speed: document.getElementById('nSpeed').value || 0, trunk: document.getElementById('nTrunk').value || 0,
+                    condition: document.getElementById('nCond').value, brand: document.getElementById('nBrand').value,
+                    body: document.getElementById('nBody').value, carClass: document.getElementById('nClass').value,
+                    sellerType: document.getElementById('nSellerType').value || 'private',
+                    ownerId: dId, ownerName: currentUser.displayName,
+                    ownerAvatar: currentUser.photoURL || '',
+                    createdAt: Date.now()
+                });
+
+                closeAddModal(); 
+                notify('Оголошення додано!', 'success');
+            } catch (error) {
+                console.error(error);
+                notify('Сталася помилка при завантаженні фото.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Опублікувати';
+            }
         }
     </script>
 </body>
