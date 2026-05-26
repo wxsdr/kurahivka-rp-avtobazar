@@ -21,301 +21,422 @@
             --olx-accent: #23e5db;
             --olx-heart: #ff5a5f;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
-        body { background: var(--olx-light-bg); color: var(--olx-text); }
-
-        header { background: white; border-bottom: 1px solid var(--olx-border); }
-        .header-container { max-width: 1200px; margin: 0 auto; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; }
-        .logo { font-size: 28px; font-weight: 900; color: var(--olx-dark); text-decoration: none; cursor: pointer; }
-
-        .header-controls { display: flex; align-items: center; gap: 25px; }
-        .icon-btn { cursor: pointer; transition: color 0.2s; color: var(--olx-dark); display: flex; align-items: center; }
-        .icon-btn:hover { color: var(--olx-btn-hover); }
-        .icon-btn.heart-btn:hover { color: var(--olx-heart); }
-
-        /* Профиль при наведении */
-        .profile-menu { position: relative; padding: 5px 0; }
-        .profile-trigger { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--olx-dark); cursor: pointer; }
-        .profile-trigger img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--olx-border); }
+        body { background-color: var(--olx-light-bg); color: var(--olx-text); font-family: 'Roboto', sans-serif; margin: 0; padding: 0; min-height: 100vh; }
+        * { box-sizing: border-box; }
         
-        .profile-dropdown { 
-            display: none; position: absolute; top: 100%; right: 0; 
-            background: white; border-radius: 8px; box-shadow: 0 5px 25px rgba(0,0,0,0.15); 
-            width: 220px; padding: 10px 0; z-index: 1000; border: 1px solid var(--olx-border); margin-top: 10px;
+        header { background: var(--olx-dark); padding: 15px 0; position: sticky; top: 0; z-index: 100; }
+        .header-container { max-width: 1230px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; }
+        .logo { font-size: 24px; font-weight: 900; color: var(--olx-accent); cursor: pointer; text-decoration: none; }
+        .back-btn { color: white; text-decoration: none; font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 5px; }
+
+        .container { max-width: 1230px; margin: 25px auto; padding: 0 15px; display: grid; grid-template-columns: 1fr 380px; gap: 25px; }
+        
+        .main-content { display: flex; flex-direction: column; gap: 20px; }
+        .side-content { display: flex; flex-direction: column; gap: 20px; }
+
+        .olx-box { background: white; border-radius: 4px; padding: 30px; border: 1px solid var(--olx-border); position: relative; }
+
+        /* СЛАЙДЕР ИЗОБРАЖЕНИЙ СО СТРЕЛОЧКАМИ ПРИ НАВЕДЕНИИ */
+        .slider-container { width: 100%; height: 500px; background: #1a1a1a; position: relative; border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .slider-img { width: 100%; height: 100%; object-fit: contain; }
+        
+        .slider-arrow { 
+            position: absolute; top: 50%; transform: translateY(-50%); 
+            background: rgba(0, 47, 52, 0.7); color: white; border: none; 
+            width: 45px; height: 45px; font-size: 20px; font-weight: bold; 
+            cursor: pointer; display: flex; align-items: center; justify-content: center; 
+            border-radius: 50%; transition: 0.2s; opacity: 0; z-index: 10;
         }
-        .profile-menu:hover .profile-dropdown { display: block; }
-        .dropdown-item { padding: 12px 20px; font-size: 14px; font-weight: 500; color: var(--olx-dark); transition: background 0.2s; cursor: pointer; }
-        .dropdown-item:hover { background: var(--olx-light-bg); color: var(--olx-btn-hover); }
-
-        .add-btn { background: var(--olx-dark); color: white; border: none; padding: 12px 24px; font-size: 15px; font-weight: 700; border-radius: 5px; cursor: pointer; border: 2px solid var(--olx-dark); }
-        .add-btn:hover { background: white; color: var(--olx-dark); }
-
-        /* Контент страницы объявления */
-        .item-layout { max-width: 1200px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 2fr 1fr; gap: 25px; }
+        .slider-container:hover .slider-arrow { opacity: 1; }
+        .slider-arrow:hover { background: var(--olx-dark); }
+        .slider-arrow.left { left: 15px; }
+        .slider-arrow.right { right: 15px; }
         
-        .left-panel { display: flex; flex-direction: column; gap: 25px; }
-        .main-box { background: white; border-radius: 4px; padding: 25px; border: 1px solid var(--olx-border); }
+        .slider-counter { position: absolute; bottom: 15px; right: 15px; background: rgba(0,0,0,0.6); color: white; padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+
+        /* ИНФОРМАЦИЯ И ОПЦИИ */
+        .item-title { font-size: 32px; font-weight: 700; margin: 0 0 15px 0; color: var(--olx-dark); }
+        .item-price { font-size: 36px; font-weight: 900; color: var(--olx-dark); margin-bottom: 20px; }
         
-        /* Слайдер картинок */
-        .gallery-viewport { background: #1a1a1a; position: relative; border-radius: 4px; overflow: hidden; height: 450px; display: flex; align-items: center; justify-content: center; }
-        .gallery-viewport img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; font-size: 24px; width: 45px; height: 45px; cursor: pointer; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
-        .nav-arrow:hover { background: var(--olx-dark); }
-        .arrow-left { left: 15px; }
-        .arrow-right { right: 15px; }
+        .options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; border-top: 1px solid var(--olx-border); border-bottom: 1px solid var(--olx-border); padding: 20px 0; margin: 20px 0; }
+        .option-item { font-size: 15px; }
+        .option-item span { color: var(--olx-gray); }
+        .option-item b { color: var(--olx-dark); font-weight: 700; margin-left: 5px; }
 
-        .price-badge { font-size: 36px; font-weight: 900; margin: 15px 0; color: var(--olx-dark); }
-        .item-title { font-size: 24px; font-weight: 700; line-height: 1.3; color: var(--olx-dark); margin-bottom: 20px; }
-        
-        /* Характеристики авто */
-        .params-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin: 20px 0; padding: 15px 0; border-top: 1px solid var(--olx-border); border-bottom: 1px solid var(--olx-border); }
-        .param-item { background: var(--olx-light-bg); padding: 12px; border-radius: 4px; font-size: 14px; color: var(--olx-dark); }
-        .param-item strong { display: block; font-size: 12px; color: var(--olx-gray); margin-bottom: 4px; text-transform: uppercase; }
+        .section-title { font-size: 22px; font-weight: 700; margin: 0 0 15px 0; border-bottom: 2px solid var(--olx-light-bg); padding-bottom: 10px; color: var(--olx-dark); }
+        .description-text { font-size: 16px; line-height: 1.6; color: #304d50; white-space: pre-line; }
 
-        .description-box h3 { margin-bottom: 15px; font-size: 20px; }
-        .description-text { font-size: 16px; line-height: 1.6; color: #222; white-space: pre-wrap; }
+        /* БЛОК С ПРАВОЙ СТОРОНЫ */
+        .side-price-box { display: flex; flex-direction: column; gap: 15px; }
+        .action-btn { width: 100%; padding: 15px; font-size: 16px; font-weight: 700; border-radius: 4px; border: none; cursor: pointer; transition: 0.2s; text-align: center; }
+        .btn-primary { background: var(--olx-dark); color: white; }
+        .btn-primary:hover { background: #001f22; }
+        .btn-secondary { background: transparent; border: 2px solid var(--olx-dark); color: var(--olx-dark); }
+        .btn-secondary:hover { background: var(--olx-light-bg); }
 
-        /* Правая колонка: Продавец */
-        .right-panel { display: flex; flex-direction: column; gap: 25px; }
-        .seller-card { background: white; border-radius: 4px; padding: 25px; border: 1px solid var(--olx-border); text-align: center; }
-        .seller-header { display: flex; align-items: center; gap: 15px; text-align: left; margin-bottom: 20px; }
-        .seller-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 1px solid var(--olx-border); }
-        .seller-name { font-size: 18px; font-weight: 700; color: var(--olx-dark); }
-        
-        .action-block-btn { width: 100%; padding: 14px; font-size: 16px; font-weight: 700; border-radius: 4px; cursor: pointer; margin-bottom: 12px; transition: all 0.2s; border: none; }
-        .btn-phone { background: white; color: var(--olx-dark); border: 2px solid var(--olx-dark); }
-        .btn-phone:hover { background: #f4fcfc; }
-        .btn-chat { background: var(--olx-dark); color: white; }
-        .btn-chat:hover { background: #001f22; }
+        .user-profile-card { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .user-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; background: #e0e0e0; }
+        .user-details { display: flex; flex-direction: column; }
+        .user-name { font-weight: 700; font-size: 18px; color: var(--olx-dark); }
+        .user-rating-stars { color: #ffb800; font-size: 14px; font-weight: bold; margin-top: 3px; }
 
-        /* Блок Отзывов и Рейтингов */
-        .reviews-section { background: white; border-radius: 4px; padding: 25px; border: 1px solid var(--olx-border); }
-        .reviews-section h3 { font-size: 20px; font-weight: 700; margin-bottom: 20px; border-bottom: 1px solid var(--olx-border); padding-bottom: 10px; }
-        .review-card { padding: 15px 0; border-bottom: 1px solid var(--olx-light-bg); }
-        .review-card:last-child { border-bottom: none; }
-        .review-meta { display: flex; justify-content: space-between; font-size: 13px; color: var(--olx-gray); margin-bottom: 5px; }
-        .review-stars { color: #fadb14; font-size: 16px; margin-bottom: 5px; }
-        .review-text { font-size: 14px; color: var(--olx-text); line-height: 1.5; }
+        /* ОТЗЫВЫ ПРОДАВЦА ВНИЗУ */
+        .reviews-list { display: flex; flex-direction: column; gap: 15px; margin-top: 15px; }
+        .review-bubble { background: var(--olx-light-bg); padding: 15px; border-radius: 4px; border-left: 4px solid var(--olx-dark); }
+        .review-header { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 13px; font-weight: bold; }
 
-        .write-review-box { margin-top: 25px; background: var(--olx-light-bg); padding: 15px; border-radius: 6px; }
-        .write-review-box h4 { margin-bottom: 12px; font-size: 16px; }
-        .review-select-stars { padding: 8px; border-radius: 4px; border: 1px solid var(--olx-border); margin-bottom: 10px; width: 100%; font-size: 14px; outline: none; background: white; }
-        .review-textarea { width: 100%; height: 80px; padding: 10px; border-radius: 4px; border: 1px solid var(--olx-border); font-size: 14px; outline: none; resize: vertical; margin-bottom: 10px; }
+        /* СВЯЗАННЫЕ / ПОХОЖИЕ ОБЪЯВЛЕНИЯ */
+        .related-section { grid-column: 1 / -1; margin-top: 30px; }
+        .related-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 15px; }
+        .related-card { background: white; border: 1px solid var(--olx-border); border-radius: 4px; overflow: hidden; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; height: 300px; }
+        .related-card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
+        .related-img { width: 100%; height: 160px; object-fit: cover; background: #e0e0e0; }
+        .related-info { padding: 15px; display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1; }
+        .related-title { font-size: 15px; font-weight: 500; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--olx-dark); }
+        .related-price { font-size: 16px; font-weight: 700; color: var(--olx-dark); margin-top: 5px; }
 
-        .toast-notify { position: fixed; bottom: 20px; right: 20px; background: var(--olx-dark); color: white; padding: 14px 24px; border-radius: 4px; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999; }
+        #toastContainer { position: fixed; bottom: 20px; right: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: var(--olx-dark); color: white; padding: 15px 25px; border-radius: 4px; font-weight: bold; opacity: 0; transform: translateY(50px); transition: 0.3s; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.error { background: var(--olx-heart); }
+
+        /* Модалка для отзывов */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,47,52,0.8); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 25px; border-radius: 4px; width: 100%; max-width: 500px; }
+        .filter-group { margin-bottom: 15px; }
+        .filter-group label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 5px; }
+        .filter-group select, .filter-group textarea { width: 100%; padding: 12px; border: 1px solid var(--olx-border); border-radius: 4px; outline: none; }
     </style>
 </head>
 <body>
 
+    <div id="toastContainer"></div>
+
     <header>
         <div class="header-container">
-            <a class="logo" onclick="window.location.href='index.html'">kurahivka olx</a>
-            
-            <div class="header-controls">
-                <div class="icon-btn heart-btn" onclick="window.location.href='favorites.html'" title="Улюблені">
-                    <svg viewBox="0 0 24 24" width="26" height="26" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                </div>
-                <div class="icon-btn" onclick="window.location.href='chat.html'" title="Чат">
-                    <svg viewBox="0 0 24 24" width="26" height="26" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                </div>
-                <div class="profile-menu">
-                    <div class="profile-trigger">
-                        <img id="headerAvatar" src="https://www.olx.ua/app/static/media/static-minus-sign.e187b5a51.svg" alt="Avatar">
-                        <span id="headerName">Ваш профіль</span>
-                    </div>
-                    <div class="profile-dropdown">
-                        <div class="dropdown-item" onclick="window.location.href='index.html'">На головну</div>
-                    </div>
-                </div>
-                <button class="add-btn" onclick="window.location.href='index.html?open=modal'">Додати оголошення</button>
-            </div>
+            <a class="logo" href="index.html">kurahivka.olx</a>
+            <a class="back-btn" href="index.html">⬅️ Повернутися до пошуку</a>
         </div>
     </header>
 
-    <div class="item-layout">
-        <div class="left-panel">
-            <div class="main-box">
-                <div class="gallery-viewport">
-                    <button class="nav-arrow arrow-left" onclick="slidePhoto(-1)">&#10094;</button>
-                    <img id="productImage" src="" alt="Зображення товару">
-                    <button class="nav-arrow arrow-right" onclick="slidePhoto(1)">&#10095;</button>
-                </div>
+    <div class="container" id="loadingView" style="display: block; text-align: center; grid-column: 1/-1; padding: 50px;">
+        <h2>Завантаження деталей оголошення...</h2>
+    </div>
 
-                <div class="price-badge" id="productPrice">0 грн</div>
-                <h1 class="item-title" id="productTitle">Завантаження...</h1>
-
-                <div class="params-grid id-hidden" id="productParams">
-                    </div>
-
-                <div class="description-box">
-                    <h3>Опис</h3>
-                    <div class="description-text" id="productDescription">Почекайте, дані завантажуються...</div>
-                </div>
+    <div class="container" id="mainWidget" style="display: none;">
+        <div class="main-content">
+            <div class="slider-container" id="sliderContainer">
+                <button class="slider-arrow left" onclick="changeSlide(-1)">❮</button>
+                <img id="mainProductImg" class="slider-img" src="">
+                <button class="slider-arrow right" onclick="changeSlide(1)">❯</button>
+                <div class="slider-counter" id="imageCounter">1 / 1</div>
             </div>
 
-            <div class="reviews-section">
-                <h3>Відгуки про продавця <span id="sellerAvgRating" style="color:#fadb14; font-weight:700;"></span></h3>
-                <div id="reviewsContainer">
-                    <p style="color:var(--olx-gray);">Завантаження відгуків...</p>
-                </div>
+            <div class="olx-box">
+                <h1 class="item-title" id="itemTitle">-</h1>
+                <div class="item-price" id="itemPrice">0 $</div>
+                
+                <h2 class="section-title">Характеристики</h2>
+                <div class="options-grid" id="optionsGrid">
+                    </div>
+            </div>
 
-                <div id="reviewFormBlock" class="write-review-box hidden">
-                    <h4>Залишити відгук про цього продавця</h4>
-                    <select id="newReviewRating" class="review-select-stars">
-                        <option value="5">⭐⭐⭐⭐⭐ (5) - Відмінно</option>
-                        <option value="4">⭐⭐⭐⭐ (4) - Добре</option>
-                        <option value="3">⭐⭐⭐ (3) - Нормально</option>
-                        <option value="2">⭐⭐ (2) - Погано</option>
-                        <option value="1">⭐ (1) - Жахливо</option>
-                    </select>
-                    <textarea id="newReviewText" class="review-textarea" placeholder="Поділіться враженнями від транзакції чи спілкування..."></textarea>
-                    <button class="add-btn" style="width: 100%;" onclick="publishReview()">Надіслати відгук</button>
+            <div class="olx-box">
+                <h2 class="section-title">Опис</h2>
+                <div class="description-text" id="itemDescription">-</div>
+            </div>
+
+            <div class="olx-box">
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid var(--olx-light-bg); padding-bottom:10px; margin-bottom:15px;">
+                    <h2 class="section-title" style="margin:0; border:none;">Відгуки про продавця</h2>
+                    <button class="action-btn btn-secondary" style="width:auto; padding:8px 15px; font-size:14px;" onclick="openAddReviewModal()">+ Додати свій відгук</button>
+                </div>
+                <div class="reviews-list" id="sellerReviewsContainer">
+                    <p style="color:var(--olx-gray)">Відгуків ще немає. Будьте першим!</p>
                 </div>
             </div>
         </div>
 
-        <div class="right-panel">
-            <div class="seller-card">
-                <div class="seller-header">
-                    <img class="seller-avatar" id="sellerPhoto" src="https://www.olx.ua/app/static/media/static-minus-sign.e187b5a51.svg" alt="avatar">
-                    <div>
-                        <div class="seller-name" id="sellerName">Продавець</div>
-                        <div style="font-size:12px; color:gray; margin-top:3px;">На OLX з Курахівки</div>
+        <div class="side-content">
+            <div class="olx-box side-price-box">
+                <div class="user-profile-card">
+                    <img class="user-avatar" id="sellerAvatar" src="https://via.placeholder.com/60">
+                    <div class="user-details">
+                        <div class="user-name" id="sellerName">-</div>
+                        <div class="user-rating-stars" id="sellerRatingSummary">⭐️ 0.0 (0 відгуків)</div>
                     </div>
                 </div>
 
-                <button class="action-block-btn btn-phone" id="btnShowPhone" onclick="revealSellerPhone()">📞 Показати телефон</button>
-                <button class="action-block-btn btn-chat" onclick="startDirectChat()">💬 Написати автору</button>
+                <button class="action-btn btn-primary" id="btnOpenChat" onclick="initiateChat()">💬 Написати повідомлення</button>
+                <button class="action-btn btn-secondary" id="btnShowPhone" onclick="revealPhoneNumber()">📞 Показати телефон</button>
             </div>
+        </div>
+
+        <div class="related-section">
+            <h2 class="section-title" style="font-size:24px;">Схожі оголошення</h2>
+            <div class="related-grid" id="relatedAdsGrid">
+                </div>
+        </div>
+    </div>
+
+    <div id="addReviewModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-top:0; margin-bottom:20px;">Залишити відгук продавцю</h3>
+            <div class="filter-group">
+                <label>Оцінка угоди</label>
+                <select id="newReviewStars">
+                    <option value="5">⭐️⭐️⭐️⭐️⭐️ (5) Відмінно</option>
+                    <option value="4">⭐️⭐️⭐️⭐️ (4) Добре</option>
+                    <option value="3">⭐️⭐️⭐️ (3) Нормально</option>
+                    <option value="2">⭐️⭐️ (2) Погано</option>
+                    <option value="1">⭐️ (1) Жахливо</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Ваш коментар</label>
+                <textarea id="newReviewText" rows="4" placeholder="Опишіть, як пройшла угода, стан товару..."></textarea>
+            </div>
+            <button class="action-btn btn-primary" onclick="saveReviewToFirebase()">Надіслати відгук</button>
+            <button class="action-btn btn-secondary" style="margin-top:10px;" onclick="closeAddReviewModal()">Скасувати</button>
         </div>
     </div>
 
     <script>
         const firebaseConfig = {
-            apiKey: "ТВОЙ_API_KEY",
-            authDomain: "ТВОЙ_AUTH_DOMAIN",
-            databaseURL: "ТВОЙ_DATABASE_URL",
-            projectId: "ТВОЙ_PROJECT_ID",
-            storageBucket: "ТВОЙ_STORAGE_BUCKET",
-            messagingSenderId: "ТВОЙ_MESSAGING_SENDER_ID",
-            appId: "ТВОЙ_APP_ID"
+            apiKey: "AIzaSyCbNGyrjT1rf-2UHeRj2LCCdqIrsaZ0TG0",
+            authDomain: "kurahivka-rp-avtobazar.firebaseapp.com",
+            databaseURL: "https://kurahivka-rp-avtobazar-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "kurahivka-rp-avtobazar",
+            storageBucket: "kurahivka-rp-avtobazar.firebasestorage.app"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const auth = firebase.auth();
 
-        let myId = null;
-        let currentUser = null;
-        let itemId = new URLSearchParams(window.location.search).get('id');
-        let itemData = null;
-        let photoIndex = 0;
+        const urlParams = new URLSearchParams(window.location.search);
+        const itemId = urlParams.get('id');
+
+        let currentUser = null, myId = null;
+        let itemData = null, itemImages = [], currentImageIdx = 0;
+
+        function notify(msg, type='info') {
+            const container = document.getElementById('toastContainer');
+            const t = document.createElement('div'); t.className = `toast ${type}`; t.innerText = msg;
+            container.appendChild(t); setTimeout(() => t.classList.add('show'), 10);
+            setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 4000);
+        }
 
         auth.onAuthStateChanged(user => {
             if (user) {
                 currentUser = user;
-                myId = user.uid;
-                document.getElementById('headerName').innerText = user.displayName || "Профіль";
-                if(user.photoURL) document.getElementById('headerAvatar').src = user.photoURL;
+                myId = user.providerData?.[0]?.uid || user.uid;
             }
-            loadAdvertisementData();
+            if(itemId) { loadItemDetails(); } 
+            else { window.location.href = 'index.html'; }
         });
 
-        function loadAdvertisementData() {
-            if (!itemId) {
-                alert("Помилка: ID оголошення не знайдено.");
-                window.location.href = 'index.html';
+        async function loadItemDetails() {
+            // Подгружаем из узла items
+            const snap = await db.ref(`items/${itemId}`).get();
+            if(!snap.exists()) {
+                notify('Оголошення не знайдено або видалено!', 'error');
+                setTimeout(() => window.location.href='index.html', 2000);
                 return;
             }
 
-            db.ref('items/' + itemId).once('value', snapshot => {
-                if (!snapshot.exists()) {
-                    document.getElementById('productTitle').innerText = "Оголошення видалено або не існує";
-                    return;
-                }
+            itemData = snap.val();
+            itemImages = itemData.images || ['https://via.placeholder.com/500'];
+            
+            document.getElementById('loadingView').style.display = 'none';
+            document.getElementById('mainWidget').style.display = 'grid';
 
-                itemData = snapshot.val();
-                
-                // Отрисовка текстовых блоков
-                document.getElementById('productTitle').innerText = itemData.name;
-                document.getElementById('productPrice').innerText = `${itemData.price} грн`;
-                document.getElementById('productDescription').innerText = itemData.description;
-                document.getElementById('sellerName').innerText = itemData.ownerName;
-                
-                if (itemData.ownerAvatar) {
-                    document.getElementById('sellerPhoto').src = itemData.ownerAvatar;
-                }
+            // Название и цена
+            document.getElementById('itemTitle').innerText = itemData.name;
+            document.getElementById('itemPrice').innerText = Number(itemData.price).toLocaleString() + ' $';
+            document.getElementById('itemDescription').innerText = itemData.description || 'Опис відсутній.';
+            
+            // Продавец
+            document.getElementById('sellerName').innerText = itemData.ownerName || 'Гравець';
+            
+            // Рендер картинок в слайдер
+            updateSliderUI();
 
-                // Галерея изображений
-                if (itemData.images && itemData.images.length > 0) {
-                    document.getElementById('productImage').src = itemData.images[0];
-                }
+            // Рендер характеристик (опций)
+            renderOptionsGrid();
 
-                // Отрисовка доп. параметров категории
-                const paramsGrid = document.getElementById('productParams');
-                paramsGrid.innerHTML = '';
-                
-                if (itemData.category === 'cars') {
-                    paramsGrid.innerHTML = `
-                        <div class="param-item"><strong>Марка</strong>${itemData.brand || 'Не вказано'}</div>
-                        <div class="param-item"><strong>Швидкість</strong>${itemData.speed || 150} км/год</div>
-                        <div class="param-item"><strong>Багажник</strong>${itemData.trunk || 40} кг</div>
-                    `;
-                } else if (itemData.category === 'realty') {
-                    paramsGrid.innerHTML = `
-                        <div class="param-item"><strong>Кімнати</strong>${itemData.rooms || 1}</div>
-                        <div class="param-item"><strong>Площа</strong>${itemData.area || 30} м²</div>
-                    `;
-                } else {
-                    paramsGrid.innerHTML = `<div class="param-item"><strong>Категорія</strong>${itemData.category || 'Інше'}</div>`;
-                }
+            // Загрузка отзывов и рейтинга продавца
+            loadSellerReviews(itemData.ownerId);
 
-                // Загружаем отзывы о продавце
-                fetchSellerReviews(itemData.ownerId);
+            // Загрузка похожих объявлений
+            loadRelatedAds(itemData.category);
+        }
 
-                // Если авторизован и это не собственное объявление — открываем форму отзывов
-                if (myId && myId !== itemData.ownerId) {
-                    document.getElementById('reviewFormBlock').classList.remove('hidden');
-                }
+        /* УПРАВЛЕНИЕ СЛАЙДЕРОМ ИЗОБРАЖЕНИЙ */
+        function updateSliderUI() {
+            document.getElementById('mainProductImg').src = itemImages[currentImageIdx];
+            document.getElementById('imageCounter').innerText = `${currentImageIdx + 1} / ${itemImages.length}`;
+        }
+
+        function changeSlide(direction) {
+            currentImageIdx += direction;
+            if(currentImageIdx >= itemImages.length) currentImageIdx = 0;
+            if(currentImageIdx < 0) currentImageIdx = itemImages.length - 1;
+            updateSliderUI();
+        }
+
+        /* ВЫВОД ХАРАКТЕРИСТИК В ЗАВИСИМОСТИ ОТ КАТЕГОРИИ */
+        function renderOptionsGrid() {
+            const grid = document.getElementById('optionsGrid');
+            grid.innerHTML = '';
+
+            // Общие опции для всего
+            const common = [
+                { label: 'Стан', value: itemData.condition === 'new' ? 'Нове' : 'Вживане' },
+                { label: 'Тип оголошення', value: itemData.sellerType === 'business' ? 'Бізнес' : 'Приватна особа' }
+            ];
+
+            // Специфические опции категорий
+            if(itemData.category === 'cars') {
+                common.push({ label: 'Марка авто', value: itemData.brand || 'Не вказано' });
+                common.push({ label: 'Макс. швидкість', value: (itemData.speed || 180) + ' км/год' });
+                common.push({ label: 'Місткість багажника', value: (itemData.trunk || 40) + ' кг' });
+            } else if(itemData.category === 'realty') {
+                common.push({ label: 'Кількість кімнат', value: itemData.rooms || '1' });
+                common.push({ label: 'Загальна площа', value: (itemData.area || 40) + ' м²' });
+            }
+
+            common.forEach(opt => {
+                const div = document.createElement('div');
+                div.className = 'option-item';
+                div.innerHTML = `<span>${opt.label}:</span><b>${opt.value}</b>`;
+                grid.appendChild(div);
             });
         }
 
-        // Логика слайдера фото
-        function slidePhoto(dir) {
-            if (!itemData || !itemData.images || itemData.images.length <= 1) return;
-            photoIndex += dir;
-            if (photoIndex < 0) photoIndex = itemData.images.length - 1;
-            if (photoIndex >= itemData.images.length) photoIndex = 0;
-            document.getElementById('productImage').src = itemData.images[photoIndex];
+        /* ДИНАМИЧЕСКИЕ ОТЗЫВЫ ПРОДАВЦА */
+        function loadSellerReviews(sellerId) {
+            db.ref(`ratings/${sellerId}`).on('value', snap => {
+                const container = document.getElementById('sellerReviewsContainer');
+                const summary = document.getElementById('sellerRatingSummary');
+                
+                if(!snap.exists()) {
+                    summary.innerText = "⭐️ 0.0 (0 відгуків)";
+                    container.innerHTML = `<p style="color:var(--olx-gray)">Відгуків ще немає. Будьте першим!</p>`;
+                    return;
+                }
+
+                let totalStars = 0, count = 0, html = '';
+                snap.forEach(child => {
+                    const rev = child.val();
+                    totalStars += parseInt(rev.stars);
+                    count++;
+
+                    let starsLine = '⭐️'.repeat(parseInt(rev.stars));
+                    html += `
+                        <div class="review-bubble">
+                            <div class="review-header">
+                                <span>${rev.senderName || 'Гравець'}</span>
+                                <span style="color:#ffb800;">${starsLine}</span>
+                            </div>
+                            <div style="font-size:14px; margin-top:5px; color:var(--olx-dark);">${rev.text || 'Без коментаря.'}</div>
+                        </div>
+                    `;
+                });
+
+                summary.innerText = `⭐️ ${(totalStars/count).toFixed(1)} (${count} відгуків)`;
+                container.innerHTML = html;
+            });
         }
 
-        // Показать скрытый номер телефона
-        function revealSellerPhone() {
-            if(!itemData) return;
+        function openAddReviewModal() {
+            if(!myId) return notify('Будь ласка, авторизуйтесь на головній сторінці!', 'error');
+            if(myId === itemData.ownerId) return notify('Ви не можете залишити відгук самому собі!', 'error');
+            document.getElementById('addReviewModal').classList.add('active');
+        }
+
+        function closeAddReviewModal() {
+            document.getElementById('addReviewModal').classList.remove('active');
+        }
+
+        async function saveReviewToFirebase() {
+            const stars = document.getElementById('newReviewStars').value;
+            const text = document.getElementById('newReviewText').value.trim();
+
+            await db.ref(`ratings/${itemData.ownerId}/${myId}`).set({
+                stars: stars,
+                text: text,
+                senderName: currentUser.displayName,
+                timestamp: Date.now()
+            });
+
+            notify('Ваш відгук успішно додано!', 'success');
+            closeAddReviewModal();
+            document.getElementById('newReviewText').value = '';
+        }
+
+        /* БЛОК ПОХОЖИХ ОБЪЯВЛЕНИЙ (Связанные товары) */
+        async function loadRelatedAds(category) {
+            const snap = await db.ref('items').orderByChild('category').equalTo(category).limitToLast(5).get();
+            const grid = document.getElementById('relatedAdsGrid');
+            grid.innerHTML = '';
+
+            let renderedCount = 0;
+            if(snap.exists()) {
+                snap.forEach(child => {
+                    const id = child.key;
+                    const ad = child.val();
+                    
+                    // Не показываем текущее объявление в рекомендациях
+                    if(id === itemId) return;
+                    if(renderedCount >= 4) return;
+
+                    const mainImg = ad.images && ad.images.length > 0 ? ad.images[0] : 'https://via.placeholder.com/250';
+                    
+                    const card = document.createElement('div');
+                    card.className = 'related-card';
+                    card.onclick = () => window.location.href = `car.html?id=${id}`;
+                    card.innerHTML = `
+                        <img class="related-img" src="${mainImg}">
+                        <div class="related-info">
+                            <h3 class="related-title">${ad.name}</h3>
+                            <div class="related-price">${Number(ad.price).toLocaleString()} $</div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                    renderedCount++;
+                });
+            }
+
+            if(renderedCount === 0) {
+                grid.innerHTML = `<p style="color:var(--olx-gray); grid-column:1/-1;">Схожих оголошень поки немає.</p>`;
+            }
+        }
+
+        /* КНОПКИ ДЕЙСТВИЯ */
+        function revealPhoneNumber() {
             const btn = document.getElementById('btnShowPhone');
             btn.innerText = itemData.phone ? `📞 ${itemData.phone}` : '📞 Номер не вказано';
             btn.style.background = '#e8f7f6';
             btn.disabled = true;
         }
 
-        // Кнопка написать автору — создание или переход в чат
-        function startDirectChat() {
-            if (!currentUser) {
-                showToast("Будь ласка, авторизуйтеся через Discord на головній сторінці!");
+        function initiateChat() {
+            if(!currentUser) {
+                notify('Увійдіть через Discord на головній сторінці!', 'error');
                 return;
             }
-            if (myId === itemData.ownerId) {
-                showToast("Це ваше власне оголошение!");
+            if(myId === itemData.ownerId) {
+                notify('Це ваше власне оголошення!', 'error');
                 return;
             }
 
             const chatId = `chat_${itemId}_${myId}`;
             db.ref('chats/' + chatId).update({
-                id: chatId,
                 carId: itemId,
                 carTitle: itemData.name,
                 buyerId: myId,
-                buyerName: currentUser.displayName || "Користувач",
+                buyerName: currentUser.displayName,
                 buyerAvatar: currentUser.photoURL || '',
                 sellerId: itemData.ownerId,
                 sellerName: itemData.ownerName,
@@ -324,81 +445,6 @@
             }).then(() => {
                 window.location.href = `chat.html?id=${chatId}`;
             });
-        }
-
-        // Получение отзывов продавца
-        function fetchSellerReviews(sellerId) {
-            db.ref('users/' + sellerId + '/reviews').on('value', snapshot => {
-                const container = document.getElementById('reviewsContainer');
-                container.innerHTML = '';
-
-                if (!snapshot.exists()) {
-                    container.innerHTML = '<p style="color:gray;">Про цього продавця поки що немає відгуків.</p>';
-                    document.getElementById('sellerAvgRating').innerText = '';
-                    return;
-                }
-
-                let totalStars = 0;
-                let count = 0;
-
-                snapshot.forEach(child => {
-                    const rev = child.val();
-                    totalStars += rev.rating;
-                    count++;
-
-                    const starString = '⭐'.repeat(rev.rating);
-                    const revDate = new Date(rev.timestamp).toLocaleDateString('uk-UA');
-                    
-                    container.innerHTML += `
-                        <div class="review-card">
-                            <div class="review-meta">
-                                <strong style="color: var(--olx-dark);">${rev.authorName}</strong>
-                                <span>${revDate}</span>
-                            </div>
-                            <div class="review-stars">${starString}</div>
-                            <p class="review-text">${rev.text}</p>
-                        </div>
-                    `;
-                });
-
-                const avg = (totalStars / count).toFixed(1);
-                document.getElementById('sellerAvgRating').innerText = `⭐ ${avg} (${count})`;
-            });
-        }
-
-        // Публикация отзыва
-        function publishReview() {
-            if(!myId || !currentUser) return;
-            const rating = parseInt(document.getElementById('newReviewRating').value);
-            const text = document.getElementById('newReviewText').value.trim();
-
-            if (!text) {
-                showToast("Будь ласка, введіть текст вашого відгуку");
-                return;
-            }
-
-            const reviewPayload = {
-                authorId: myId,
-                authorName: currentUser.displayName || "Користувач",
-                rating: rating,
-                text: text,
-                timestamp: Date.now()
-            };
-
-            db.ref('users/' + itemData.ownerId + '/reviews').push(reviewPayload).then(() => {
-                document.getElementById('newReviewText').value = '';
-                showToast("Дякуємо! Відгук опубліковано.");
-            }).catch(e => {
-                showToast("Помилка відправки відгуку");
-            });
-        }
-
-        function showToast(txt) {
-            const el = document.createElement('div');
-            el.className = 'toast-notify';
-            el.innerText = txt;
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 3000);
         }
     </script>
 </body>
