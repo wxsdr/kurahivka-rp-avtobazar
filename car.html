@@ -13,75 +13,125 @@
     <style>
         :root {
             --neon-gold: #ffb703; --neon-red: #d90429; --neon-green: #00f5d4; --discord-color: #5865F2; 
-            --dark-bg: #0b0c10; --glass-bg: rgba(31, 33, 40, 0.6); --glass-border: rgba(255, 255, 255, 0.08);
+            --dark-bg: #0b0c10; --glass-bg: rgba(20, 22, 28, 0.75); --glass-border: rgba(255, 255, 255, 0.1);
         }
         body {
             background-color: var(--dark-bg);
             background-image: radial-gradient(circle at 50% 0%, rgba(255, 183, 3, 0.15) 0%, transparent 50%);
-            color: #ffffff; font-family: 'Montserrat', sans-serif; margin: 0; padding: 20px;
+            color: #ffffff; font-family: 'Montserrat', sans-serif; margin: 0; padding: 20px; min-height: 100vh;
         }
-        .container { max-width: 1000px; margin: 0 auto; padding-top: 40px; }
+
+        /* --- КРУТЫЕ УВЕДОМЛЕНИЯ (TOASTS) --- */
+        .toast-container { position: fixed; top: 30px; right: 30px; z-index: 9999; display: flex; flex-direction: column; gap: 15px; pointer-events: none; }
+        .toast {
+            background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border);
+            color: white; padding: 18px 25px; border-radius: 16px; font-weight: 700; font-family: 'Montserrat', sans-serif;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6); transform: translateX(120%); opacity: 0; 
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 15px; 
+            min-width: 320px; border-left: 6px solid transparent; pointer-events: auto;
+        }
+        .toast.show { transform: translateX(0); opacity: 1; }
+        .toast.error { border-left-color: var(--neon-red); box-shadow: 0 10px 30px rgba(217, 4, 41, 0.3); }
+        .toast.success { border-left-color: var(--neon-green); box-shadow: 0 10px 30px rgba(0, 245, 212, 0.3); }
+        .toast.warning { border-left-color: var(--neon-gold); box-shadow: 0 10px 30px rgba(255, 183, 3, 0.3); }
+        .toast-icon { font-size: 24px; text-shadow: 0 0 10px currentColor; }
+        .toast-text { font-size: 14px; line-height: 1.4; }
+
+        .container { max-width: 1100px; margin: 0 auto; padding-top: 20px; }
         .back-btn {
-            background: transparent; color: var(--neon-gold); border: 1px solid var(--neon-gold);
-            padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: bold;
-            text-decoration: none; display: inline-block; margin-bottom: 20px; transition: 0.3s;
+            background: transparent; color: var(--neon-gold); border: 2px solid var(--neon-gold);
+            padding: 12px 25px; border-radius: 12px; cursor: pointer; font-weight: 900;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 10px; margin-bottom: 30px; transition: 0.3s;
+            text-transform: uppercase; font-size: 14px;
         }
-        .back-btn:hover { background: var(--neon-gold); color: black; }
+        .back-btn:hover { background: var(--neon-gold); color: black; box-shadow: 0 0 25px rgba(255, 183, 3, 0.4); transform: translateX(-5px); }
         
         .car-details {
-            background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border);
-            border-radius: 20px; padding: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px;
+            background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border);
+            border-radius: 24px; padding: 40px; display: grid; grid-template-columns: 1.2fr 1fr; gap: 50px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
         }
         
         .car-img { display: flex; flex-direction: column; gap: 15px; }
         .main-photo-container { 
-            width: 100%; height: 350px; border-radius: 15px; overflow: hidden; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); background: #111;
+            width: 100%; height: 400px; border-radius: 18px; overflow: hidden; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6); background: #000; border: 1px solid rgba(255,255,255,0.05);
         }
-        .main-photo-container img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s ease; }
+        .main-photo-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .main-photo-container img:hover { transform: scale(1.05); }
         
-        .thumbnails { 
-            display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; 
-        }
+        .thumbnails { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; margin-top: 5px; }
         .thumbnails img { 
-            width: 80px; height: 60px; object-fit: cover; border-radius: 8px; cursor: pointer; 
-            border: 2px solid transparent; transition: 0.3s; opacity: 0.6;
+            width: 90px; height: 65px; object-fit: cover; border-radius: 10px; cursor: pointer; 
+            border: 2px solid transparent; transition: 0.3s; opacity: 0.5; box-shadow: 0 5px 15px rgba(0,0,0,0.4);
         }
-        .thumbnails img:hover { opacity: 1; }
-        .thumbnails img.active { border-color: var(--neon-gold); opacity: 1; transform: scale(1.05); }
+        .thumbnails img:hover { opacity: 1; transform: translateY(-2px); }
+        .thumbnails img.active { border-color: var(--neon-gold); opacity: 1; transform: scale(1.05); box-shadow: 0 0 15px rgba(255, 183, 3, 0.3); }
         
         .thumbnails::-webkit-scrollbar { height: 6px; }
         .thumbnails::-webkit-scrollbar-thumb { background: var(--neon-gold); border-radius: 10px; }
-        .thumbnails::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+        .thumbnails::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 10px; }
 
-        .car-info h1 { margin-top: 0; font-size: 2.5em; color: var(--neon-gold); text-transform: uppercase; }
-        .price { font-size: 2em; color: var(--neon-green); font-weight: 900; margin: 20px 0; }
-        .specs { background: rgba(0,0,0,0.4); padding: 20px; border-radius: 15px; margin-bottom: 30px; }
-        .specs p { margin: 10px 0; font-size: 1.1em; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; }
-        .specs span { color: var(--neon-gold); font-weight: bold; }
+        .car-info { display: flex; flex-direction: column; }
+        .car-info h1 { margin: 0 0 10px 0; font-size: 3em; color: white; text-transform: uppercase; font-weight: 900; line-height: 1.1; text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .price { font-size: 2.5em; color: var(--neon-green); font-weight: 900; margin: 10px 0 30px 0; text-shadow: 0 0 20px rgba(0, 245, 212, 0.4); }
+        
+        .specs { background: rgba(0,0,0,0.5); padding: 25px; border-radius: 18px; margin-bottom: 40px; border: 1px solid rgba(255,255,255,0.05); box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
+        .specs p { margin: 12px 0; font-size: 1.1em; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; display: flex; justify-content: space-between; align-items: center; color: #ccc;}
+        .specs p:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+        .specs span { color: white; font-weight: 900; font-size: 1.1em; text-align: right; }
+        .specs .gold-text { color: var(--neon-gold); text-shadow: 0 0 10px rgba(255, 183, 3, 0.3); }
         
         .contact-btn {
-            background: var(--discord-color); color: white; border: none; padding: 15px 30px;
-            border-radius: 15px; font-size: 1.2em; font-weight: 900; cursor: pointer;
-            width: 100%; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px;
+            background: linear-gradient(45deg, var(--discord-color), #4752c4); color: white; border: none; padding: 20px 30px;
+            border-radius: 16px; font-size: 1.3em; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
+            width: 100%; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 15px;
+            box-shadow: 0 15px 30px rgba(88, 101, 242, 0.3); margin-top: auto;
         }
-        .contact-btn:hover { background: #4752c4; box-shadow: 0 0 20px rgba(88, 101, 242, 0.5); transform: translateY(-3px); }
-        .loading { text-align: center; font-size: 2em; margin-top: 100px; color: var(--neon-gold); }
+        .contact-btn:hover { box-shadow: 0 20px 40px rgba(88, 101, 242, 0.6); transform: translateY(-3px); }
+        .contact-btn:disabled { background: #555; cursor: not-allowed; box-shadow: none; transform: none; color: #888; }
+        
+        .loading { text-align: center; font-size: 2.5em; margin-top: 150px; color: var(--neon-gold); font-weight: 900; text-transform: uppercase; letter-spacing: 2px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; text-shadow: 0 0 20px var(--neon-gold); } 100% { opacity: 0.5; } }
 
-        @media (max-width: 768px) {
-            .car-details { grid-template-columns: 1fr; }
-            .main-photo-container { height: 250px; }
+        @media (max-width: 900px) {
+            .car-details { grid-template-columns: 1fr; gap: 30px; padding: 25px; }
+            .main-photo-container { height: 300px; }
+            .car-info h1 { font-size: 2.2em; }
         }
     </style>
 </head>
 <body>
 
+    <div class="toast-container" id="toastContainer"></div>
+
     <div class="container">
-        <a href="index.html" class="back-btn">⬅ НАЗАД В КАТАЛОГ</a>
+        <a href="index.html" class="back-btn">⬅ ПОВЕРНУТИСЯ ДО КАТАЛОГУ</a>
         <div id="content" class="loading">Завантаження інформації про авто...</div>
     </div>
 
     <script>
+        // Премиальная система уведомлений (Toasts)
+        function showNotification(message, type = 'error') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            let icon = '❌';
+            if (type === 'success') icon = '✅';
+            if (type === 'warning') icon = '⚠️';
+            if (type === 'info') icon = '💡';
+
+            toast.innerHTML = `
+                <div class="toast-icon">${icon}</div>
+                <div class="toast-text">${message}</div>
+            `;
+            container.appendChild(toast);
+            
+            requestAnimationFrame(() => { setTimeout(() => toast.classList.add('show'), 10); });
+            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 500); }, 4500);
+        }
+
         const firebaseConfig = {
             apiKey: "AIzaSyCbNGyrjT1rf-2UHeRj2LCCdqIrsaZ0TG0",
             authDomain: "kurahivka-rp-avtobazar.firebaseapp.com",
@@ -110,7 +160,7 @@
                 if (currentCarData) {
                     renderPage(currentCarData);
                 } else {
-                    document.getElementById('content').innerHTML = "Оголошення було видалено або не існує.";
+                    document.getElementById('content').innerHTML = "<div style='text-align:center; color: #888;'><h2>Оголошення було видалено або не існує.</h2></div>";
                 }
             });
         }
@@ -126,7 +176,6 @@
             content.classList.remove('loading');
             
             const conditionText = car.condition === 'new' ? 'З салону' : 'Вживана (Б/У)';
-            
             const images = (car.images && car.images.length > 0) ? car.images : [car.image || 'https://via.placeholder.com/800x600?text=Немає+фото'];
             const mainImageUrl = images[0];
 
@@ -153,16 +202,19 @@
                         <div class="price">$${Number(car.price).toLocaleString()}</div>
                         
                         <div class="specs">
-                            <p>Стан: <span>${conditionText}</span></p>
+                            <p>Стан: <span class="gold-text">${conditionText}</span></p>
                             <p>Клас: <span>${car.carClass.toUpperCase()}</span></p>
-                            <p>Тип кузова: <span>${car.body}</span></p>
+                            <p>Тип кузова: <span>${car.body.toUpperCase()}</span></p>
                             <p>Макс. швидкість: <span>${car.speed} км/год</span></p>
                             <p>Багажник: <span>${car.trunk} кг</span></p>
-                            <p>Продавець: <span>${car.ownerName}</span></p>
+                            <p>Продавець: <span style="color: #fff;">${car.ownerName}</span></p>
                         </div>
 
                         <button class="contact-btn" onclick="contactSeller('${car.ownerId}', '${car.name}')">
-                            💬 Написати продавцю
+                            <svg style="width:24px; fill:white;" viewBox="0 0 127.14 96.36">
+                                <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14c2.64-27.38-4.51-51.11-18.9-72.15ZM42.56,65.36c-5.36,0-9.72-4.86-9.72-10.82s4.25-10.82,9.72-10.82c5.49,0,9.79,4.89,9.72,10.82C52.28,60.5,48.05,65.36,42.56,65.36Zm42.24,0c-5.36,0-9.72-4.86-9.72-10.82s4.25-10.82,9.72-10.82c5.49,0,9.79,4.89,9.72,10.82C84.8,60.5,80.57,65.36,84.8,65.36Z"/>
+                            </svg>
+                            Написати продавцю
                         </button>
                     </div>
                 </div>
@@ -171,33 +223,31 @@
 
         async function contactSeller(sellerDiscordId, carName) {
             if (!currentUser) {
-                alert("Спочатку авторизуйся на головній сторінці!");
-                window.location.href = 'index.html';
+                showNotification("Спочатку авторизуйся на головній сторінці!", "warning");
+                setTimeout(() => window.location.href = 'index.html', 1500);
                 return;
             }
 
             // ПРОВЕРКА НА БАГОВАННЫЕ МАШИНЫ
             const isNumeric = /^\d+$/.test(sellerDiscordId);
             if (!isNumeric) {
-                alert("❌ Ця машина була додана зі старим кодом (ID продавця зламаний). Зв'язатися неможливо, видаліть її та створіть нову!");
+                showNotification("Ця машина була додана зі старим кодом (ID зламаний). Зв'язатися неможливо!", "error");
                 return;
             }
 
             let myDiscordId = null;
             if (currentUser.providerData && currentUser.providerData.length > 0) {
-                const discordProvider = currentUser.providerData.find(p => p.providerId === 'discord.com');
-                if (discordProvider && discordProvider.uid) {
-                    myDiscordId = discordProvider.uid;
-                }
+                myDiscordId = currentUser.providerData[0].uid;
             }
 
             if (myDiscordId === sellerDiscordId) {
-                alert("Ти не можеш написати сам собі!");
+                showNotification("Ти не можеш написати сам собі!", "warning");
                 return;
             }
 
             const btn = document.querySelector('.contact-btn');
-            btn.innerText = "Відправка...";
+            const originalText = btn.innerHTML;
+            btn.innerHTML = "⏳ ВІДПРАВКА...";
             btn.disabled = true;
 
             const botApiUrl = "https://kurahivka-rp-avtobazar-bot.onrender.com/api/contact"; 
@@ -215,19 +265,19 @@
                 const responseData = await response.json();
 
                 if (response.ok) {
-                    alert("✅ Продавець отримав твоє повідомлення в Discord!");
-                    btn.innerText = "Повідомлення відправлено!";
+                    showNotification("Продавець отримав твоє повідомлення в Discord!", "success");
+                    btn.innerHTML = "✅ ВІДПРАВЛЕНО!";
                     btn.style.background = "var(--neon-green)";
                     btn.style.color = "black";
+                    btn.style.boxShadow = "0 10px 30px rgba(0, 245, 212, 0.4)";
                 } else {
-                    alert(`❌ Помилка: ${responseData.message}`);
-                    btn.innerText = "💬 Написати продавцю";
+                    showNotification(`Помилка: ${responseData.message}`, "error");
+                    btn.innerHTML = originalText;
                     btn.disabled = false;
                 }
             } catch (e) {
-                alert("❌ Помилка з'єднання з ботом! Бот вимкнений або помилка мережі.");
-                console.error(e);
-                btn.innerText = "💬 Написати продавцю";
+                showNotification("Помилка з'єднання з ботом! Бот вимкнений або помилка мережі.", "error");
+                btn.innerHTML = originalText;
                 btn.disabled = false;
             }
         }
