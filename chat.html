@@ -4,32 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Повідомлення | Kurahivka</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <style>
         :root { --olx-dark: #002f34; --olx-light-bg: #f2f4f5; --olx-border: #d8dfe0; --olx-text: #002f34; --olx-gray: #406367; --olx-btn-hover: #00a098; --olx-accent: #23e5db; --olx-heart: #ff5a5f; }
+        
         body { background: var(--olx-light-bg); color: var(--olx-text); font-family: 'Roboto', sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         * { box-sizing: border-box; }
         a { text-decoration: none; color: inherit; }
 
         /* ЄДИНА ШАПКА */
-        header { background: var(--olx-dark); padding: 12px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1000; flex-shrink: 0; }
+        header { background: var(--olx-dark); padding: 12px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1000; flex-shrink: 0; transition: 0.3s; }
         .header-container { max-width: 1230px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; }
         .logo { font-size: 26px; font-weight: 900; color: var(--olx-accent); letter-spacing: -1px; cursor: pointer; transition: 0.2s; }
         .logo:hover { transform: scale(1.05); }
         .header-actions { display: flex; align-items: center; gap: 20px; color: white; font-weight: 700; font-size: 15px; }
         
-        .header-link { display: flex; align-items: center; gap: 8px; cursor: pointer; transition: 0.2s; padding: 5px; }
+        .header-link { display: flex; align-items: center; gap: 8px; cursor: pointer; position: relative; transition: 0.2s; padding: 5px; }
         .header-link:hover { color: var(--olx-accent); }
         
         /* ПРОФІЛЬ */
-        .profile-menu-container { position: relative; display: flex; align-items: center; cursor: pointer; padding: 5px 0; }
+        .profile-menu-container { position: relative; display: flex; align-items: center; cursor: pointer; padding: 15px 0; margin: -15px 0; }
         .header-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--olx-accent); transition: 0.2s; }
         .profile-menu-container:hover .header-avatar { transform: scale(1.1); box-shadow: 0 0 10px rgba(35, 229, 219, 0.5); }
-        .profile-dropdown { position: absolute; top: 100%; right: 0; margin-top: 10px; background: white; border: 1px solid var(--olx-border); border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: none; flex-direction: column; min-width: 200px; z-index: 1000; animation: dropdownFadeIn 0.3s ease forwards; overflow: hidden; }
+        .profile-dropdown { position: absolute; top: 100%; right: 0; background: white; border: 1px solid var(--olx-border); border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: none; flex-direction: column; min-width: 200px; z-index: 1000; animation: dropdownFadeIn 0.2s ease forwards; overflow: hidden; padding-top: 5px; margin-top: -5px; }
         .profile-menu-container:hover .profile-dropdown { display: flex; }
+        .profile-dropdown::before { content: ''; position: absolute; top: -15px; left: 0; right: 0; height: 15px; background: transparent; }
         .dropdown-item { padding: 15px; color: var(--olx-dark); text-decoration: none; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
         .dropdown-item:hover { background: var(--olx-light-bg); color: var(--olx-btn-hover); padding-left: 20px; }
 
@@ -37,33 +39,37 @@
         .chat-layout { display: flex; flex: 1; max-width: 1230px; width: 100%; margin: 20px auto; background: white; border: 1px solid var(--olx-border); border-radius: 8px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.05); animation: pageAppear 0.4s ease; }
         
         /* Ліва частина */
-        .sidebar { width: 350px; border-right: 1px solid var(--olx-border); display: flex; flex-direction: column; background: #fff; }
+        .sidebar { width: 350px; border-right: 1px solid var(--olx-border); display: flex; flex-direction: column; background: #fff; flex-shrink: 0; }
         .chat-roles-tabs { display: flex; background: #f2f4f5; border-bottom: 1px solid var(--olx-border); }
         .role-tab { flex: 1; text-align: center; padding: 18px; font-weight: bold; cursor: pointer; color: var(--olx-gray); border-bottom: 3px solid transparent; transition: 0.2s; }
         .role-tab:hover { color: var(--olx-text); }
         .role-tab.active { color: var(--olx-dark); border-bottom-color: var(--olx-dark); background: white; }
 
-        .chat-list { flex: 1; overflow-y: auto; }
+        .chat-list { flex: 1; overflow-y: auto; scroll-behavior: smooth; }
+        .chat-list::-webkit-scrollbar { width: 6px; }
+        .chat-list::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
         .chat-item { display: flex; padding: 15px 20px; border-bottom: 1px solid var(--olx-border); cursor: pointer; align-items: center; gap: 15px; transition: 0.2s; }
         .chat-item:hover, .chat-item.active { background: #f2f4f5; border-left: 4px solid var(--olx-btn-hover); padding-left: 16px; }
-        .chat-item img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 1px solid var(--olx-border); }
+        .chat-item img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 1px solid var(--olx-border); flex-shrink: 0; }
         .chat-item-info { flex: 1; overflow: hidden; }
         .chat-item-name { font-weight: bold; font-size: 15px; margin-bottom: 4px; color: var(--olx-dark); }
         .chat-item-title { font-size: 13px; color: var(--olx-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .unread-dot { width: 12px; height: 12px; background: var(--olx-heart); border-radius: 50%; box-shadow: 0 0 5px rgba(255,90,95,0.5); }
 
         /* Права частина */
-        .main-chat { flex: 1; display: flex; flex-direction: column; background: #fdfdfd; }
-        .chat-header { padding: 20px; border-bottom: 1px solid var(--olx-border); background: white; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); z-index: 10; }
+        .main-chat { flex: 1; display: flex; flex-direction: column; background: #fdfdfd; overflow: hidden; }
+        .chat-header { padding: 20px; border-bottom: 1px solid var(--olx-border); background: white; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); z-index: 10; flex-shrink: 0; }
         .chat-header img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
         .messages-area { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
+        .messages-area::-webkit-scrollbar { width: 6px; }
+        .messages-area::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
         
         .msg-bubble { max-width: 65%; padding: 14px 18px; border-radius: 12px; font-size: 15px; position: relative; line-height: 1.4; animation: slideIn 0.2s ease-out; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .msg-mine { background: #dcf8c6; align-self: flex-end; border-bottom-right-radius: 0; color: var(--olx-dark); }
         .msg-other { background: white; align-self: flex-start; border-bottom-left-radius: 0; border: 1px solid var(--olx-border); color: var(--olx-dark); }
         .msg-time { font-size: 11px; color: var(--olx-gray); margin-top: 6px; text-align: right; opacity: 0.8; }
 
-        .input-panel { padding: 20px; background: white; border-top: 1px solid var(--olx-border); display: flex; gap: 15px; align-items: center; }
+        .input-panel { padding: 20px; background: white; border-top: 1px solid var(--olx-border); display: flex; gap: 15px; align-items: center; flex-shrink: 0; }
         .input-panel input { flex: 1; padding: 16px 20px; border: 1px solid var(--olx-border); border-radius: 25px; outline: none; font-size: 15px; transition: 0.3s; background: var(--olx-light-bg); }
         .input-panel input:focus { border-color: var(--olx-btn-hover); background: white; box-shadow: 0 0 0 4px rgba(0, 160, 152, 0.1); }
         .send-btn { background: var(--olx-dark); color: white; border: none; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,47,52,0.2); }
@@ -79,7 +85,7 @@
         .modal-content { background: white; padding: 30px; border-radius: 8px; width: 100%; max-width: 450px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); animation: popIn 0.3s ease; }
         .filter-group { margin-bottom: 20px; }
         .filter-group label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 8px; color: var(--olx-dark); }
-        .filter-group input { width: 100%; padding: 14px; border: 1px solid var(--olx-border); border-radius: 4px; font-size: 15px; outline: none; }
+        .filter-group input { width: 100%; padding: 14px; border: 1px solid var(--olx-border); border-radius: 4px; font-size: 15px; outline: none; transition: 0.3s; }
         .action-btn { width: 100%; padding: 15px; font-size: 16px; font-weight: 700; border-radius: 4px; border: none; cursor: pointer; text-align: center; transition: 0.3s; margin-bottom:10px; }
         .btn-primary { background: var(--olx-dark); color: white; }
         .btn-secondary { background: transparent; border: 2px solid var(--olx-dark); color: var(--olx-dark); }
@@ -94,7 +100,7 @@
     </style>
 </head>
 <body>
-
+    
     <header>
         <div class="header-container">
             <a class="logo" href="index.html">kurahivka.olx</a>
@@ -121,13 +127,14 @@
                 <div class="role-tab active" id="tabRoleBuy" onclick="changeChatRole('buyer')">Я Купую</div>
                 <div class="role-tab" id="tabRoleSell" onclick="changeChatRole('seller')">Я Продаю</div>
             </div>
-            <div class="chat-list" id="chatsContainer"></div>
+            <div class="chat-list" id="chatsContainer">
+                <div style="padding: 20px; color: var(--olx-gray);">Завантаження...</div>
+            </div>
         </div>
-
         <div class="main-chat" id="chatWindow">
             <div class="no-chat-selected">
-                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:20px; opacity:0.5;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                Оберіть діалог зі списку зліва
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#d8dfe0" stroke-width="2" style="margin-bottom:20px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                Виберіть діалог зі списку зліва
             </div>
         </div>
     </div>
@@ -153,7 +160,10 @@
         let allChats = {};
 
         auth.onAuthStateChanged(user => {
-            if(user) {
+            if(!user) {
+                document.body.innerHTML = "<div style='text-align:center; padding:50px; font-size:20px; font-weight:bold;'>Потрібна авторизація! Перенаправлення...</div>";
+                setTimeout(() => window.location.href='index.html', 1500);
+            } else {
                 myId = user.providerData?.[0]?.uid || user.uid;
                 myName = user.displayName;
                 document.getElementById('profileMenu').style.display = 'flex';
@@ -164,8 +174,6 @@
                 });
 
                 loadChatsList();
-            } else {
-                window.location.href = 'index.html';
             }
         });
 
@@ -204,13 +212,10 @@
         function loadChatsList() {
             db.ref('chats').on('value', snap => {
                 allChats = snap.val() || {};
-                
-                // Якщо перейшли з посилання, автоматично визначаємо вкладку
                 if(activeChatId && allChats[activeChatId]) {
                     const c = allChats[activeChatId];
                     if(c.sellerId === myId && currentRole !== 'seller') changeChatRole('seller');
                 }
-
                 renderChatsList();
                 if(activeChatId) { openChatMessages(activeChatId); }
             });
@@ -238,11 +243,13 @@
                 const partnerAvatar = currentRole === 'buyer' ? (c.sellerAvatar || 'https://via.placeholder.com/50') : (c.buyerAvatar || 'https://via.placeholder.com/50');
                 const hasUnread = c.lastSenderId && c.lastSenderId !== myId;
 
+                const avatarHtml = partnerAvatar ? `<img src="${partnerAvatar}">` : `<div style="width:50px;height:50px;border-radius:50%;background:#e0e0e0;display:flex;justify-content:center;align-items:center;font-weight:bold;">${partnerName.charAt(0)}</div>`;
+
                 const item = document.createElement('div');
                 item.className = `chat-item ${activeChatId === id ? 'active' : ''}`;
                 item.onclick = () => selectChat(id);
                 item.innerHTML = `
-                    <img src="${partnerAvatar}">
+                    ${avatarHtml}
                     <div class="chat-item-info">
                         <div class="chat-item-name">${partnerName}</div>
                         <div class="chat-item-title">${c.carTitle || 'Товар'}</div>
@@ -255,11 +262,8 @@
         }
 
         function selectChat(id) {
-            activeChatId = id;
-            activeChatInfo = allChats[id];
-            renderChatsList();
-            buildChatWindowStructure();
-            openChatMessages(id);
+            activeChatId = id; activeChatInfo = allChats[id];
+            renderChatsList(); buildChatWindowStructure(); openChatMessages(id);
         }
 
         function buildChatWindowStructure() {
@@ -267,12 +271,15 @@
             const partnerName = currentRole === 'buyer' ? activeChatInfo.sellerName : activeChatInfo.buyerName;
             const partnerAvatar = currentRole === 'buyer' ? (activeChatInfo.sellerAvatar || 'https://via.placeholder.com/45') : (activeChatInfo.buyerAvatar || 'https://via.placeholder.com/45');
             const win = document.getElementById('chatWindow');
+            
+            const avatarHtml = partnerAvatar ? `<img src="${partnerAvatar}">` : `<div class="chat-header-avatar">${partnerName.charAt(0)}</div>`;
+            
             win.innerHTML = `
                 <div class="chat-header">
-                    <img src="${partnerAvatar}">
+                    ${avatarHtml}
                     <div>
                         <div style="font-size: 16px; font-weight: 900; color: var(--olx-dark);">${partnerName}</div>
-                        <div style="font-size: 12px; color: var(--olx-gray); font-weight: normal; margin-top: 3px;">Щодо: <b>${activeChatInfo.carTitle}</b></div>
+                        <div style="font-size: 12px; color: var(--olx-gray); margin-top: 3px;">Щодо: <b>${activeChatInfo.carTitle}</b></div>
                     </div>
                 </div>
                 <div class="messages-area" id="messagesArea"></div>
@@ -319,7 +326,6 @@
             await db.ref(`chats/${activeChatId}/messages`).push({ senderId: myId, text: text, timestamp: ts });
             await db.ref(`chats/${activeChatId}`).update({ lastUpdated: ts, lastSenderId: myId, lastSenderName: myName, lastMessageText: text });
 
-            // Бот-сповіщення
             const receiverId = (activeChatInfo.buyerId === myId) ? activeChatInfo.sellerId : activeChatInfo.buyerId;
             try {
                 fetch("https://kurahivka-rp-avtobazar-bot.onrender.com/api/contact", {
