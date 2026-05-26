@@ -13,13 +13,11 @@
     <style>
         :root { --olx-dark: #002f34; --olx-light-bg: #f2f4f5; --olx-border: #d8dfe0; --olx-text: #002f34; --olx-gray: #406367; --olx-btn-hover: #00a098; --olx-accent: #23e5db; --olx-heart: #ff5a5f; }
         
-        /* ПЛАВНИЙ СКРОЛЛ */
         html { scroll-behavior: smooth; }
         body { background-color: var(--olx-light-bg); color: var(--olx-text); font-family: 'Roboto', sans-serif; margin: 0; padding: 0; min-height: 100vh; overflow-y: auto; overflow-x: hidden; }
         * { box-sizing: border-box; }
         a { text-decoration: none; color: inherit; }
         
-        /* ЄДИНА ШАПКА */
         header { background: var(--olx-dark); padding: 12px 0; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: 0.3s; }
         .header-container { max-width: 1230px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; }
         .logo { font-size: 26px; font-weight: 900; color: var(--olx-accent); letter-spacing: -1px; cursor: pointer; transition: 0.2s; }
@@ -31,7 +29,6 @@
         .chat-badge { position: absolute; top: -5px; right: -8px; background: var(--olx-heart); color: white; font-size: 11px; font-weight: 900; padding: 2px 6px; border-radius: 10px; display: none; }
         .chat-badge.active { display: block; }
         
-        /* ВИПАДАЮЧЕ МЕНЮ ПРОФІЛЮ */
         .profile-menu-container { position: relative; display: flex; align-items: center; cursor: pointer; padding: 15px 0; margin: -15px 0; }
         .header-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--olx-accent); transition: 0.2s; }
         .profile-menu-container:hover .header-avatar { transform: scale(1.1); box-shadow: 0 0 10px rgba(35, 229, 219, 0.5); }
@@ -41,12 +38,10 @@
         .dropdown-item { padding: 15px; color: var(--olx-dark); text-decoration: none; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
         .dropdown-item:hover { background: var(--olx-light-bg); color: var(--olx-btn-hover); padding-left: 20px; }
 
-        /* КОНТЕНТ СТОРІНКИ АВТО */
         .container { max-width: 1230px; margin: 25px auto; padding: 0 15px; display: grid; grid-template-columns: 1.8fr 1fr; gap: 25px; animation: pageAppear 0.5s ease-out; }
         .olx-box { background: white; border-radius: 8px; padding: 30px; border: 1px solid var(--olx-border); margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
         .breadcrumbs { grid-column: 1/-1; font-size: 13px; color: var(--olx-gray); margin-bottom: -5px; }
         
-        /* СЛАЙДЕР ВІКНО */
         .gallery-box { padding: 0; overflow: hidden; }
         .slider-container { width: 100%; height: 500px; background: #0b1517; position: relative; display: flex; align-items: center; justify-content: center; cursor: zoom-in; overflow: hidden; }
         .slider-img { max-width: 100%; max-height: 100%; object-fit: contain; transition: 0.4s ease; }
@@ -59,7 +54,6 @@
         .thumbs-row img { width: 80px; height: 60px; object-fit: cover; border-radius: 6px; cursor: pointer; opacity: 0.5; transition: 0.3s; }
         .thumbs-row img.active, .thumbs-row img:hover { opacity: 1; border: 2px solid var(--olx-dark); transform: translateY(-2px); }
 
-        /* ІДЕАЛЬНИЙ ЛАЙТБОКС (Як на скріні 1) */
         .lightbox { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background-color: #0c1a1c; flex-direction: column; animation: fadeIn 0.3s ease; }
         .lightbox.active { display: flex; }
         .lb-header { padding: 20px 40px; display: flex; justify-content: space-between; align-items: flex-start; color: white; }
@@ -81,7 +75,6 @@
         .lb-thumbs img { width: 70px; height: 50px; object-fit: cover; opacity: 0.4; cursor: pointer; transition: 0.2s; border: 2px solid transparent; }
         .lb-thumbs img.active, .lb-thumbs img:hover { opacity: 1; border-color: #23e5db; }
 
-        /* ДЕТАЛІ АВТО */
         .item-title { font-size: 32px; font-weight: 700; margin: 0 0 15px 0; color: var(--olx-dark); line-height: 1.2; }
         .item-price { font-size: 38px; font-weight: 900; color: var(--olx-dark); margin-bottom: 25px; }
         .tags-container { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; }
@@ -90,7 +83,6 @@
         .section-title { font-size: 22px; font-weight: 700; margin: 0 0 20px 0; border-bottom: 2px solid var(--olx-light-bg); padding-bottom: 12px; color: var(--olx-dark); }
         .description-text { font-size: 16px; line-height: 1.7; color: #203538; white-space: pre-line; }
 
-        /* ПРАВА ПАНЕЛЬ */
         .action-btn { width: 100%; padding: 18px; font-size: 16px; font-weight: 700; border-radius: 6px; border: none; cursor: pointer; text-align: center; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; }
         .btn-primary { background: var(--olx-dark); color: white; box-shadow: 0 4px 15px rgba(0,47,52,0.2); margin-bottom: 15px; }
         .btn-primary:hover { background: #001f22; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,47,52,0.3); }
@@ -99,7 +91,6 @@
         .user-avatar { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; background: #e0e0e0; border: 2px solid var(--olx-border); }
         .user-name { font-weight: 700; font-size: 20px; color: var(--olx-dark); }
 
-        /* ГОРИЗОНТАЛЬНІ БЛОКИ ВНИЗУ (Схожі та Оголошення автора) */
         .bottom-section { grid-column: 1/-1; margin-top: 20px; }
         .bottom-section-title { font-size: 22px; font-weight: 700; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: flex-end; }
         .bottom-section-title a { font-size: 14px; font-weight: 500; color: var(--olx-gray); text-decoration: underline; cursor: pointer; }
@@ -116,7 +107,6 @@
         .h-price { font-size: 18px; font-weight: 700; color: var(--olx-dark); }
         .h-meta { font-size: 11px; color: var(--olx-gray); margin-top: 10px; }
 
-        /* АНІМАЦІЇ ТА СПОВІЩЕННЯ */
         @keyframes pageAppear { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
@@ -130,13 +120,14 @@
         .modal.active { display: flex; }
         .modal-content { background: white; padding: 30px; border-radius: 8px; width: 100%; max-width: 450px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); animation: popIn 0.3s ease; }
         .filter-group { margin-bottom: 20px; }
-        .filter-group label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 8px; }
-        .filter-group input { width: 100%; padding: 14px; border: 1px solid var(--olx-border); border-radius: 4px; font-size: 15px; outline: none; }
-
+        .filter-group label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 8px; color: var(--olx-dark); }
+        .filter-group input { width: 100%; padding: 14px; border: 1px solid var(--olx-border); border-radius: 4px; font-size: 15px; outline: none; transition: 0.3s; }
+        .action-btn { width: 100%; padding: 15px; font-size: 16px; font-weight: 700; border-radius: 4px; border: none; cursor: pointer; text-align: center; transition: 0.3s; margin-bottom:10px; }
+        .btn-primary { background: var(--olx-dark); color: white; }
+        .btn-secondary { background: transparent; border: 2px solid var(--olx-dark); color: var(--olx-dark); }
     </style>
 </head>
 <body>
-
     <div id="toastContainer"></div>
 
     <header>
@@ -189,7 +180,7 @@
             </div>
 
             <div class="olx-box">
-                <h2 class="section-title">Опис автомобіля</h2>
+                <h2 class="section-title">Характеристики</h2>
                 <div class="tags-container" id="tagsContainer"></div>
                 <div class="description-text" id="itemDescription">-</div>
             </div>
@@ -365,17 +356,32 @@
             document.getElementById('sellerTypeStr').innerText = sellerTypeStr;
             if(itemData.ownerAvatar) document.getElementById('sellerAvatar').src = itemData.ownerAvatar;
             
-            document.getElementById('itemDescription').innerText = itemData.description || `Продається ${itemData.name}. Відмінний стан, підходить для Kurahivka RP.\nКлас: ${itemData.carClass}. Максимальна швидкість: ${itemData.speed} км/год.`;
+            // Заглушка опису, без параметрів
+            document.getElementById('itemDescription').innerText = itemData.description || `Опис відсутній.`;
 
-            // Теги
-            document.getElementById('tagsContainer').innerHTML = `
-                <div class="tag-item">${sellerTypeStr}</div>
-                <div class="tag-item">Марка: <b>${itemData.brand || 'Не вказано'}</b></div>
-                <div class="tag-item">Стан: <b>${itemData.condition === 'new' ? 'З салону' : 'Вживане'}</b></div>
-                <div class="tag-item">Клас: <b>${(itemData.carClass || '').toUpperCase()}</b></div>
-                <div class="tag-item">Кузов: <b>${itemData.body || 'Не вказано'}</b></div>
-                <div class="tag-item">Швидкість: <b>${itemData.speed || 0} км/год</b></div>
-            `;
+            // ТЕГИ (Динамічно за категорією)
+            let tagsHtml = `<div class="tag-item">${sellerTypeStr}</div>`;
+            if (itemData.condition) {
+                tagsHtml += `<div class="tag-item">Стан: <b>${itemData.condition === 'new' ? 'Нове' : 'Вживане'}</b></div>`;
+            }
+            
+            if (itemData.category === 'cars' || !itemData.category) {
+                if(itemData.brand) tagsHtml += `<div class="tag-item">Марка: <b>${itemData.brand}</b></div>`;
+                if(itemData.carClass) tagsHtml += `<div class="tag-item">Клас: <b>${itemData.carClass.toUpperCase()}</b></div>`;
+                if(itemData.body) tagsHtml += `<div class="tag-item">Кузов: <b>${itemData.body}</b></div>`;
+                tagsHtml += `<div class="tag-item">Швидкість: <b>${itemData.speed || 0} км/год</b></div>`;
+                tagsHtml += `<div class="tag-item">Багажник: <b>${itemData.trunk || 0} кг</b></div>`;
+            } else if (itemData.category === 'realty') {
+                tagsHtml += `<div class="tag-item">Кімнати: <b>${itemData.rooms || 1}</b></div>`;
+                tagsHtml += `<div class="tag-item">Площа: <b>${itemData.area || 0} м²</b></div>`;
+            } else if (itemData.category === 'jobs') {
+                tagsHtml += `<div class="tag-item">Графік: <b>${itemData.schedule || 'Повний день'}</b></div>`;
+                tagsHtml += `<div class="tag-item">Досвід: <b>${itemData.experience || 'Не потрібен'}</b></div>`;
+            } else {
+                tagsHtml += `<div class="tag-item">Категорія: <b>Інше</b></div>`;
+            }
+            
+            document.getElementById('tagsContainer').innerHTML = tagsHtml;
 
             // Мініатюри на сторінці
             document.getElementById('thumbsRow').innerHTML = itemImages.map((img, i) => `<img src="${img}" class="${i===0?'active':''}" id="thumb-${i}" onclick="jumpToSlide(${i}, event)">`).join('');
