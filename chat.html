@@ -296,35 +296,50 @@
         }
 
         function openChatMessages(id) {
-            if(!document.getElementById('messagesArea')) buildChatWindowStructure();
+    if(!document.getElementById('messagesArea')) buildChatWindowStructure();
+    
+    db.ref(`chats/${id}/messages`).off();
+    db.ref(`chats/${id}/messages`).on('value', snap => {
+        const area = document.getElementById('messagesArea');
+        if(!area) return;
+        area.innerHTML = '';
+        
+        snap.forEach(child => {
+            const m = child.val();
+            const isMine = m.senderId === myId;
+            const timeStr = new Date(m.timestamp).toLocaleTimeString('uk-UA', {hour: '2-digit', minute:'2-digit'});
             
-            db.ref(`chats/${id}/messages`).off();
-            db.ref(`chats/${id}/messages`).on('value', snap => {
-                const area = document.getElementById('messagesArea');
-                if(!area) return;
-                area.innerHTML = '';
-                
-                snap.forEach(child => {
-                    const m = child.val();
-                    const isMine = m.senderId === myId;
-                    const timeStr = new Date(m.timestamp).toLocaleTimeString('uk-UA', {hour: '2-digit', minute:'2-digit'});
-                    
-                    area.innerHTML += `
-                        <div class="msg-bubble ${isMine ? 'msg-mine' : 'msg-other'}">
-                            <div>${m.text}</div>
-                            <div class="msg-time">${timeStr}</div>
-                        </div>
-                    `;
-                });
-                setTimeout(() => area.scrollTop = area.scrollHeight, 50);
-            });
+            area.innerHTML += `
+                <div class="msg-bubble ${isMine ? 'msg-mine' : 'msg-other'}">
+                    <div>${m.text}</div>
+                    <div class="msg-time">${timeStr}</div>
+                </div>
+            `;
+        });
+        
+        // -- ЛОГІКА ЗВУКУ --
+        if (isInitialized) {
+            // Отримуємо останнє повідомлення
+            const messagesArray = Object.values(snap.val() || {});
+            const lastMsg = messagesArray[messagesArray.length - 1];
+            
+            // Граємо звук тільки якщо це чуже повідомлення
+            if (lastMsg && lastMsg.senderId !== myId) {
+                recvSound.play().catch(e => console.log("Аудіо заблоковано"));
+            }
         }
-
+        isInitialized = true; // Тепер, коли ми перший раз прогрузили, вмикаємо звуки
+        
+        setTimeout(() => area.scrollTop = area.scrollHeight, 50);
+    });
+}
         async function sendMsg() {
             const input = document.getElementById('msgInput');
             const text = input.value.trim();
             if(!text) return; input.value = '';
             const ts = Date.now();
+
+            sendSound.play().catch(e => console.log("Браузер блокує звук до першого кліку"));
 
             await db.ref(`chats/${activeChatId}/messages`).push({ senderId: myId, text: text, timestamp: ts });
             await db.ref(`chats/${activeChatId}`).update({ lastUpdated: ts, lastSenderId: myId, lastSenderName: myName, lastMessageText: text });
