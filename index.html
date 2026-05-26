@@ -25,7 +25,6 @@
         a { text-decoration: none; color: inherit; }
         * { box-sizing: border-box; }
 
-        /* --- ЄДИНА ШАПКА ДЛЯ ВСІХ СТОРІНОК --- */
         header { background: var(--olx-dark); padding: 12px 0; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: 0.3s; }
         .header-container { max-width: 1230px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; }
         .logo { font-size: 26px; font-weight: 900; color: var(--olx-accent); letter-spacing: -1px; cursor: pointer; transition: 0.2s; }
@@ -37,23 +36,22 @@
         .chat-badge { position: absolute; top: -5px; right: -8px; background: var(--olx-heart); color: white; font-size: 11px; font-weight: 900; padding: 2px 6px; border-radius: 10px; min-width: 18px; text-align: center; display: none; box-shadow: 0 2px 4px rgba(0,0,0,0.2); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .chat-badge.active { display: block; }
         
-        /* ВИПАДАЮЧЕ МЕНЮ ПРОФІЛЮ (Пофікшено баг зі сліпою зоною) */
         .profile-menu-container { position: relative; display: flex; align-items: center; cursor: pointer; padding: 15px 0; margin: -15px 0; }
         .header-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--olx-accent); transition: 0.2s; }
         .profile-menu-container:hover .header-avatar { transform: scale(1.1); box-shadow: 0 0 10px rgba(35, 229, 219, 0.5); }
         .profile-dropdown { position: absolute; top: 100%; right: 0; background: white; border: 1px solid var(--olx-border); border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: none; flex-direction: column; min-width: 220px; z-index: 1000; animation: dropdownFadeIn 0.2s ease forwards; overflow: hidden; padding-top: 5px; margin-top: -5px; }
         .profile-menu-container:hover .profile-dropdown { display: flex; }
-        .profile-dropdown::before { content: ''; position: absolute; top: -15px; left: 0; right: 0; height: 15px; background: transparent; } /* Невидимий міст */
+        .profile-dropdown::before { content: ''; position: absolute; top: -15px; left: 0; right: 0; height: 15px; background: transparent; }
         .dropdown-item { padding: 15px; color: var(--olx-dark); text-decoration: none; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
         .dropdown-item:hover { background: var(--olx-light-bg); color: var(--olx-btn-hover); padding-left: 20px; }
 
         .add-btn { background: white; color: var(--olx-dark); font-weight: 700; font-size: 14px; padding: 10px 20px; border-radius: 4px; border: none; cursor: pointer; transition: 0.3s; }
         .add-btn:hover { background: var(--olx-accent); color: var(--olx-dark); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(35, 229, 219, 0.3); }
 
-        /* ОСНОВНИЙ КОНТЕНТ */
         .container { max-width: 1230px; margin: 0 auto; padding: 20px 15px; animation: pageAppear 0.5s ease-out; }
         
-        .categories-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0; }
+        /* Змінено на 4 колонки */
+        .categories-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 20px 0; }
         .cat-card { background: white; border: 1px solid var(--olx-border); padding: 20px; text-align: center; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
         .cat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); border-color: var(--olx-btn-hover); }
         .cat-card.active { background: var(--olx-dark); color: white; border-color: var(--olx-dark); transform: scale(1.02); }
@@ -70,7 +68,6 @@
         .tab:hover { color: var(--olx-text); }
         .tab.active { border-bottom-color: var(--olx-text); color: var(--olx-text); }
 
-        /* КАРТКИ ОГОЛОШЕНЬ */
         .item-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(100%, 1fr)); gap: 15px; }
         .item-card { background: white; border-radius: 8px; display: flex; height: 200px; overflow: hidden; cursor: pointer; border: 1px solid var(--olx-border); position: relative; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 0; animation: cardFadeIn 0.5s forwards; }
         .item-card:hover { transform: translateY(-4px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); border-color: var(--olx-btn-hover); z-index: 10; }
@@ -89,7 +86,6 @@
         .heart-icon { width: 26px; height: 26px; fill: none; stroke: var(--olx-text); stroke-width: 2; transition: 0.3s; }
         .heart-icon.liked { fill: var(--olx-heart); stroke: var(--olx-heart); transform: scale(1.15); }
 
-        /* МОДАЛКИ ТА АНІМАЦІЇ */
         @keyframes pageAppear { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes dropdownFadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes cardFadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
@@ -117,8 +113,7 @@
             .header-link span { display: none; }
             .item-card { flex-direction: column; height: auto; }
             .item-img-wrapper { width: 100%; height: 220px; }
-            .cat-card { padding: 15px 10px; font-size: 14px; }
-            .olx-box { padding: 20px; }
+            .categories-container { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
@@ -161,7 +156,7 @@
 
     <div class="container" id="mainPageContent">
         <div class="search-bar">
-            <input type="text" id="searchInput" class="search-input" placeholder="Шукайте авто, будинки та інше...">
+            <input type="text" id="searchInput" class="search-input" placeholder="Шукайте авто, будинки, роботу та інше...">
             <button class="search-btn" onclick="applyFilters()">Пошук</button>
         </div>
 
@@ -169,6 +164,7 @@
             <div class="cat-card active" id="cat-all" onclick="selectMainCategory('all')">🌐 Всі рубрики</div>
             <div class="cat-card" id="cat-cars" onclick="selectMainCategory('cars')">🚗 Автомобілі</div>
             <div class="cat-card" id="cat-realty" onclick="selectMainCategory('realty')">🏠 Нерухомість</div>
+            <div class="cat-card" id="cat-jobs" onclick="selectMainCategory('jobs')">💼 Робота</div>
         </div>
 
         <div class="filters-actions">
@@ -204,7 +200,7 @@
                     <h3>Крок 1: З чого почнемо?</h3>
                     <div class="filter-group">
                         <label>Введіть назву вашого товару чи послуги *</label>
-                        <input type="text" id="creationTitle" placeholder="Наприклад: Продам BMW X5 або Квартира в центрі">
+                        <input type="text" id="creationTitle" placeholder="Наприклад: Продам BMW X5, Квартира в центрі або Шукаю водія">
                     </div>
                     <button class="add-btn" style="background:var(--olx-dark); color:white; width:100%; padding:15px; font-size:16px;" onclick="processStep1()">Продовжити</button>
                     <button class="add-btn" style="background:transparent; color:var(--olx-gray); width:100%; margin-top:10px;" onclick="closeCreationPage()">Скасувати</button>
@@ -217,7 +213,10 @@
                     <div class="filter-group">
                         <label>Рубрика</label>
                         <select id="creationCategory" onchange="toggleFormFields(this.value)">
-                            <option value="cars">🚗 Автомобілі</option><option value="realty">🏠 Нерухомість</option><option value="other">📦 Інше</option>
+                            <option value="cars">🚗 Автомобілі</option>
+                            <option value="realty">🏠 Нерухомість</option>
+                            <option value="jobs">💼 Робота</option>
+                            <option value="other">📦 Інше</option>
                         </select>
                     </div>
 
@@ -236,18 +235,38 @@
                         <div class="filter-group"><label>Швидкість (км/год)</label><input type="number" id="cCarSpeed" value="180"></div>
                         <div class="filter-group"><label>Багажник (кг)</label><input type="number" id="cCarTrunk" value="50"></div>
                     </div>
+                    
                     <div id="formRealtyOptions" style="display:none; border-left:4px solid var(--olx-accent); padding-left:20px;">
                         <div class="filter-group"><label>Кімнати</label><input type="number" id="cRealRooms" value="1"></div>
                         <div class="filter-group"><label>Площа (м²)</label><input type="number" id="cRealArea" value="40"></div>
                     </div>
 
+                    <div id="formJobOptions" style="display:none; border-left:4px solid var(--olx-accent); padding-left:20px;">
+                        <div class="filter-group">
+                            <label>Графік роботи</label>
+                            <select id="cJobSchedule">
+                                <option value="Повний день">Повний день</option>
+                                <option value="Часткова зайнятість">Часткова зайнятість</option>
+                                <option value="Віддалена робота">Віддалена робота</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Досвід роботи</label>
+                            <select id="cJobExperience">
+                                <option value="Не потрібен">Не потрібен</option>
+                                <option value="До 1 року">До 1 року</option>
+                                <option value="Більше 1 року">Більше 1 року</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div style="display:flex; gap:15px;">
-                        <div class="filter-group" style="flex:1;"><label>Ціна ($)</label><input type="number" id="creationPrice"></div>
+                        <div class="filter-group" style="flex:1;"><label>Ціна / Зарплата ($)</label><input type="number" id="creationPrice"></div>
                         <div class="filter-group" style="flex:1;"><label>Стан</label><select id="creationCondition"><option value="used">Вживане</option><option value="new">Нове</option></select></div>
                     </div>
 
                     <div style="display:flex; gap:15px;">
-                        <div class="filter-group" style="flex:1;"><label>Продавець</label><select id="creationSellerType"><option value="private">Приватна особа</option><option value="business">Бізнес</option></select></div>
+                        <div class="filter-group" style="flex:1;"><label>Продавець / Роботодавець</label><select id="creationSellerType"><option value="private">Приватна особа</option><option value="business">Бізнес</option></select></div>
                         <div class="filter-group" style="flex:1;"><label>Телефон</label><input type="text" id="creationPhone" placeholder="+380..."></div>
                     </div>
 
@@ -402,21 +421,23 @@
 
         function renderItems(ids) {
             const grid = document.getElementById('itemsGrid');
-            const countEl = document.getElementById('countNum');
-            if (!grid) return; // Защита от ошибки
+            if (!grid) return;
     
             grid.innerHTML = '';
-            if (countEl) countEl.innerText = ids.length; // Безопасное обновление текста
 
             ids.forEach((id, index) => {
                 const item = itemsData[id];
-        // ... (весь остальной код отрисовки остается прежним)
                 const img = (item.images && item.images.length > 0) ? item.images[0] : 'https://via.placeholder.com/250';
                 const isLiked = !!userFavorites[id];
                 const delay = index * 0.05; 
                 
                 const dateStr = formatTime(item.createdAt) || "Kurahivka RP";
                 const avatarImg = item.ownerAvatar ? `<img src="${item.ownerAvatar}" style="width:20px;height:20px;border-radius:50%;object-fit:cover;">` : `<div style="width:20px;height:20px;border-radius:50%;background:#ccc;display:flex;justify-content:center;align-items:center;color:white;font-size:10px;font-weight:bold;">${item.ownerName.charAt(0)}</div>`;
+
+                let catName = item.category;
+                if(catName === 'cars') catName = 'автомобілі';
+                if(catName === 'realty') catName = 'нерухомість';
+                if(catName === 'jobs') catName = 'робота';
 
                 const card = document.createElement('div');
                 card.className = 'item-card';
@@ -430,7 +451,7 @@
                             <div class="item-price">${Number(item.price).toLocaleString()} $</div>
                         </div>
                         <div class="item-specs">
-                            <span>${(item.carClass || item.category).toUpperCase()}</span> • <span>${item.condition === 'new' ? 'Нове' : 'Вживане'}</span> • <span>${item.sellerType === 'business' ? '💼 Бізнес' : '👤 Приватна'}</span>
+                            <span>${(item.carClass || catName || 'Інше').toUpperCase()}</span> • <span>${item.condition === 'new' ? 'Нове' : 'Вживане'}</span> • <span>${item.sellerType === 'business' ? '💼 Бізнес' : '👤 Приватна'}</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:auto;">
                             <div style="font-size:12px; color:var(--olx-gray); display:flex; align-items:center; gap:6px;">${avatarImg} ${dateStr}</div>
@@ -472,12 +493,15 @@
             let guessed = 'other'; const low = title.toLowerCase();
             if(low.includes('авто') || low.includes('bmw') || low.includes('ваз')) guessed = 'cars';
             else if(low.includes('дім') || low.includes('квартира')) guessed = 'realty';
+            else if(low.includes('робота') || low.includes('работа') || low.includes('вакансія') || low.includes('потрібен')) guessed = 'jobs';
+            
             document.getElementById('creationCategory').value = guessed; toggleFormFields(guessed); goToStep(2);
         }
 
         function toggleFormFields(cat) {
             document.getElementById('formCarOptions').style.display = cat === 'cars' ? 'block' : 'none';
             document.getElementById('formRealtyOptions').style.display = cat === 'realty' ? 'block' : 'none';
+            document.getElementById('formJobOptions').style.display = cat === 'jobs' ? 'block' : 'none';
         }
 
         function addMorePhotoInputs() {
@@ -486,61 +510,62 @@
         }
 
         async function publishItem() {
-    const name = document.getElementById('creationTitle').value.trim();
-    const price = parseInt(document.getElementById('creationPrice').value);
-    const fileInputs = Array.from(document.querySelectorAll('.c-file-input'));
-    const files = fileInputs.map(i => i.files[0]).filter(f => f);
+            const name = document.getElementById('creationTitle').value.trim();
+            const price = parseInt(document.getElementById('creationPrice').value);
+            const fileInputs = Array.from(document.querySelectorAll('.c-file-input'));
+            const files = fileInputs.map(i => i.files[0]).filter(f => f);
 
-    if(!name || !price || files.length === 0) return notify('Заповніть назву, ціну та додайте хоча б 1 фото!', 'error');
+            if(!name || !price || files.length === 0) return notify('Заповніть назву, ціну та додайте хоча б 1 фото!', 'error');
 
-    const btn = document.getElementById('finalSubmitBtn');
-    btn.disabled = true; btn.innerText = 'Завантаження...';
+            const btn = document.getElementById('finalSubmitBtn');
+            btn.disabled = true; btn.innerText = 'Завантаження...';
 
-    try {
-        const uploadedUrls = [];
-        for(let f of files) { 
-            console.log("Завантажую файл:", f.name);
-            const url = await uploadToImgBB(f); 
-            uploadedUrls.push(url); 
+            try {
+                const uploadedUrls = [];
+                for(let f of files) { 
+                    const url = await uploadToImgBB(f); 
+                    uploadedUrls.push(url); 
+                }
+
+                const cat = document.getElementById('creationCategory').value;
+                const itemId = 'car_' + Date.now();
+                
+                const payload = {
+                    name,
+                    description: document.getElementById('creationDesc').value.trim(),
+                    price,
+                    category: cat,
+                    condition: document.getElementById('creationCondition').value,
+                    sellerType: document.getElementById('creationSellerType').value,
+                    phone: document.getElementById('creationPhone').value.trim(),
+                    images: uploadedUrls,
+                    ownerId: myId,
+                    ownerName: currentUser.displayName,
+                    ownerAvatar: document.getElementById('myHeaderAvatar').src,
+                    createdAt: Date.now()
+                };
+
+                if(cat === 'cars') {
+                    payload.brand = document.getElementById('cCarBrand').value || 'Не вказано';
+                    payload.speed = document.getElementById('cCarSpeed').value || 120;
+                    payload.trunk = document.getElementById('cCarTrunk').value || 40;
+                } else if(cat === 'realty') {
+                    payload.rooms = document.getElementById('cRealRooms').value || 1;
+                    payload.area = document.getElementById('cRealArea').value || 40;
+                } else if(cat === 'jobs') {
+                    payload.schedule = document.getElementById('cJobSchedule').value;
+                    payload.experience = document.getElementById('cJobExperience').value;
+                }
+
+                await db.ref('cars/' + itemId).set(payload); 
+                
+                notify('Оголошення успішно додано!', 'success');
+                closeCreationPage();
+            } catch(e) {
+                notify('Помилка: ' + e.message, 'error');
+            }
+            btn.disabled = false; btn.innerText = 'Опублікувати оголошення';
         }
-
-        const cat = document.getElementById('creationCategory').value;
-        const itemId = 'car_' + Date.now();
-        
-        const payload = {
-            name,
-            description: document.getElementById('creationDesc').value.trim(),
-            price,
-            category: cat,
-            condition: document.getElementById('creationCondition').value,
-            sellerType: document.getElementById('creationSellerType').value,
-            phone: document.getElementById('creationPhone').value.trim(),
-            images: uploadedUrls,
-            ownerId: myId,
-            ownerName: currentUser.displayName,
-            ownerAvatar: document.getElementById('myHeaderAvatar').src,
-            createdAt: Date.now()
-        };
-
-        if(cat === 'cars') {
-            payload.brand = document.getElementById('cCarBrand').value || 'Не вказано';
-            payload.speed = document.getElementById('cCarSpeed').value || 120;
-            payload.trunk = document.getElementById('cCarTrunk').value || 40;
-        }
-
-        console.log("Відправляю в Firebase:", payload);
-        
-        // Переконайся, що тут правильна гілка (cars або items)
-        await db.ref('cars/' + itemId).set(payload); 
-        
-        notify('Оголошення успішно додано!', 'success');
-        closeCreationPage();
-    } catch(e) {
-        console.error("ПОМИЛКА ПРИ ПУБЛІКАЦІЇ:", e); // ОСЬ ТУТ БУДЕ ПРИЧИНА
-        notify('Помилка: ' + e.message, 'error');
-    }
-    btn.disabled = false; btn.innerText = 'Опублікувати оголошення';
-}
     </script>
 </body>
 </html>
