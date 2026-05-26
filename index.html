@@ -506,7 +506,7 @@
 
                 if(cat === 'cars') { payload.brand = document.getElementById('cCarBrand').value; payload.speed = document.getElementById('cCarSpeed').value; payload.trunk = document.getElementById('cCarTrunk').value; }
                 
-                await db.ref('cars/car_' + Date.now()).set(payload); 
+                await db.ref('cars/' + itemId).set(payload);
                 notify('Оголошення успішно додано!', 'success');
                 closeCreationPage();
             } catch(e) { notify('Сталася помилка створення', 'error'); }
