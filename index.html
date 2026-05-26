@@ -13,112 +13,134 @@
     <style>
         :root {
             --neon-gold: #ffb703; --neon-red: #d90429; --neon-green: #00f5d4; --discord-color: #5865F2; 
-            --dark-bg: #0b0c10; --glass-bg: rgba(31, 33, 40, 0.6); --glass-border: rgba(255, 255, 255, 0.08);
+            --dark-bg: #0b0c10; --glass-bg: rgba(20, 22, 28, 0.75); --glass-border: rgba(255, 255, 255, 0.1);
         }
         body {
             background-color: var(--dark-bg);
             background-image: 
                 radial-gradient(circle at 50% 0%, rgba(255, 183, 3, 0.15) 0%, transparent 50%),
-                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
             background-size: 100% 100%, 40px 40px, 40px 40px;
             color: #ffffff; font-family: 'Montserrat', sans-serif; margin: 0; padding: 20px;
             min-height: 100vh; overflow-x: hidden;
         }
+
+        /* --- КРУТЫЕ УВЕДОМЛЕНИЯ (TOASTS) --- */
+        .toast-container { position: fixed; top: 30px; right: 30px; z-index: 9999; display: flex; flex-direction: column; gap: 15px; pointer-events: none; }
+        .toast {
+            background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border);
+            color: white; padding: 18px 25px; border-radius: 16px; font-weight: 700; font-family: 'Montserrat', sans-serif;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6); transform: translateX(120%); opacity: 0; 
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 15px; 
+            min-width: 320px; border-left: 6px solid transparent; pointer-events: auto;
+        }
+        .toast.show { transform: translateX(0); opacity: 1; }
+        .toast.error { border-left-color: var(--neon-red); box-shadow: 0 10px 30px rgba(217, 4, 41, 0.3); }
+        .toast.success { border-left-color: var(--neon-green); box-shadow: 0 10px 30px rgba(0, 245, 212, 0.3); }
+        .toast.warning { border-left-color: var(--neon-gold); box-shadow: 0 10px 30px rgba(255, 183, 3, 0.3); }
+        .toast-icon { font-size: 24px; text-shadow: 0 0 10px currentColor; }
+        .toast-text { font-size: 14px; line-height: 1.4; }
+
         #loginScreen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 90vh; text-align: center; animation: fadeIn 0.8s ease; }
-        #loginScreen h1 { font-size: 4em; margin-bottom: 10px; }
-        #loginScreen p { color: #888; font-size: 1.2em; letter-spacing: 2px; margin-bottom: 40px; text-transform: uppercase; }
-        #loginScreen .auth-btn { font-size: 1.2em; padding: 15px 30px; border-radius: 30px; }
+        #loginScreen h1 { font-size: 4.5em; margin-bottom: 10px; font-weight: 900; background: linear-gradient(90deg, #fff, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        #loginScreen p { color: #aaa; font-size: 1.2em; letter-spacing: 2px; margin-bottom: 40px; text-transform: uppercase; font-weight: bold; }
+        
         #mainContent { display: none; animation: fadeIn 0.5s ease; }
         
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .add-car-btn { background: linear-gradient(45deg, var(--neon-green), #00b4d8); color: black; border: none; padding: 10px 20px; border-radius: 20px; font-weight: 900; font-family: 'Montserrat'; cursor: pointer; transition: 0.3s; text-transform: uppercase; display: flex; align-items: center; gap: 8px;}
-        .add-car-btn:hover { box-shadow: 0 0 20px rgba(0, 245, 212, 0.4); transform: translateY(-2px); }
-        .user-info { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 20px; border: 1px solid var(--discord-color); }
-        .user-info img { width: 30px; height: 30px; border-radius: 50%; }
-        .user-info span { font-weight: bold; font-size: 14px; color: var(--discord-color); }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: var(--glass-bg); padding: 15px 25px; border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid var(--glass-border); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .add-car-btn { background: linear-gradient(45deg, var(--neon-green), #00b4d8); color: black; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 900; font-family: 'Montserrat'; cursor: pointer; transition: 0.3s; text-transform: uppercase; display: flex; align-items: center; gap: 8px;}
+        .add-car-btn:hover { box-shadow: 0 0 25px rgba(0, 245, 212, 0.5); transform: translateY(-2px); }
         
-        .auth-btn { background: var(--discord-color); color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; font-family: 'Montserrat'; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
-        .auth-btn:hover { background: #4752C4; box-shadow: 0 0 15px rgba(88, 101, 242, 0.4); transform: translateY(-2px); }
-        .auth-btn svg { width: 20px; fill: white; }
-        .auth-btn.logout { background: transparent; color: var(--neon-red); border: 1px solid var(--neon-red); padding: 8px 15px; font-size: 12px; }
-        .auth-btn.logout:hover { background: var(--neon-red); color: white; box-shadow: 0 0 15px rgba(217, 4, 41, 0.4); }
+        .user-info { display: flex; align-items: center; gap: 15px; background: rgba(0,0,0,0.4); padding: 8px 20px 8px 8px; border-radius: 50px; border: 1px solid rgba(88, 101, 242, 0.3); }
+        .user-info img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--discord-color); }
+        .user-info span { font-weight: bold; font-size: 14px; color: white; }
+        
+        .auth-btn { background: var(--discord-color); color: white; border: none; padding: 15px 35px; border-radius: 15px; cursor: pointer; font-weight: 900; font-size: 1.1em; font-family: 'Montserrat'; display: flex; align-items: center; justify-content: center; gap: 12px; transition: 0.3s; box-shadow: 0 10px 30px rgba(88, 101, 242, 0.2); }
+        .auth-btn:hover { background: #4752C4; box-shadow: 0 15px 40px rgba(88, 101, 242, 0.5); transform: translateY(-3px); }
+        .auth-btn svg { width: 24px; fill: white; }
+        .auth-btn.logout { background: transparent; color: var(--neon-red); border: 1px solid var(--neon-red); padding: 8px 15px; font-size: 12px; border-radius: 8px; box-shadow: none; }
+        .auth-btn.logout:hover { background: var(--neon-red); color: white; box-shadow: 0 0 20px rgba(217, 4, 41, 0.5); transform: none; }
 
-        header { text-align: center; margin-bottom: 40px; position: relative; }
-        h1 { font-weight: 900; font-size: 3.5em; margin: 0; text-transform: uppercase; letter-spacing: 3px; background: linear-gradient(90deg, var(--neon-gold), #ff5400); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0px 0px 30px rgba(255, 183, 3, 0.4); font-style: italic; }
-        .subtitle { color: #888; font-size: 1.2em; letter-spacing: 1px; margin-top: 10px; }
+        header { text-align: center; margin-bottom: 50px; position: relative; }
+        h1 { font-weight: 900; font-size: 4em; margin: 0; text-transform: uppercase; letter-spacing: 4px; background: linear-gradient(90deg, var(--neon-gold), #ff5400); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0px 0px 40px rgba(255, 183, 3, 0.3); font-style: italic; }
+        .subtitle { color: #888; font-size: 1.2em; letter-spacing: 2px; margin-top: 10px; font-weight: bold; }
 
         .controls-wrapper { max-width: 1200px; margin: 0 auto 40px auto; display: flex; flex-direction: column; align-items: center; gap: 20px; }
-        .tabs { display: flex; gap: 15px; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 50px; border: 1px solid var(--glass-border); backdrop-filter: blur(10px); }
-        .tab-btn { background: transparent; color: #aaa; border: none; padding: 12px 30px; border-radius: 40px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.4s; font-family: 'Montserrat', sans-serif; }
-        .tab-btn.active { background: var(--neon-gold); color: #000; box-shadow: 0 0 20px rgba(255, 183, 3, 0.5); }
-        .filter-toggle-btn { background: var(--glass-bg); color: white; padding: 12px 30px; border: 1px solid var(--glass-border); border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: bold; backdrop-filter: blur(10px); transition: 0.3s; }
-        
-        .filter-panel { display: none; background: var(--glass-bg); backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px; width: 100%; max-width: 800px; grid-template-columns: 1fr 1fr; gap: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); box-sizing: border-box; }
+        .tabs { display: flex; gap: 10px; background: rgba(0,0,0,0.4); padding: 8px; border-radius: 15px; border: 1px solid var(--glass-border); backdrop-filter: blur(10px); }
+        .tab-btn { background: transparent; color: #aaa; border: none; padding: 12px 30px; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.4s; font-family: 'Montserrat', sans-serif; }
+        .tab-btn.active { background: var(--neon-gold); color: #000; box-shadow: 0 0 20px rgba(255, 183, 3, 0.4); }
+        .filter-toggle-btn { background: var(--glass-bg); color: white; padding: 12px 30px; border: 1px solid var(--glass-border); border-radius: 12px; cursor: pointer; font-size: 15px; font-weight: bold; backdrop-filter: blur(10px); transition: 0.3s; }
+        .filter-toggle-btn:hover { border-color: var(--neon-gold); color: var(--neon-gold); box-shadow: 0 0 15px rgba(255, 183, 3, 0.2); }
+
+        .filter-panel { display: none; background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 35px; width: 100%; max-width: 800px; grid-template-columns: 1fr 1fr; gap: 25px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); box-sizing: border-box; }
         .filter-panel.active { display: grid; animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
         
-        .filter-group label { display: block; margin-bottom: 10px; color: #ccc; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;}
-        .filter-group select, .filter-group input { width: 100%; padding: 12px; background: rgba(0,0,0,0.4); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; font-family: 'Montserrat', sans-serif; box-sizing: border-box; transition: 0.3s; }
-        .filter-group select:focus, .filter-group input:focus { outline: none; border-color: var(--neon-gold); background: rgba(0,0,0,0.7);}
-        .price-inputs { display: flex; gap: 10px; }
+        .filter-group label { display: block; margin-bottom: 12px; color: #ccc; font-size: 12px; text-transform: uppercase; font-weight: 900; letter-spacing: 1px;}
+        .filter-group select, .filter-group input { width: 100%; padding: 14px; background: rgba(0,0,0,0.5); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: bold; box-sizing: border-box; transition: 0.3s; }
+        .filter-group select:focus, .filter-group input:focus { outline: none; border-color: var(--neon-gold); background: rgba(0,0,0,0.8); box-shadow: 0 0 15px rgba(255, 183, 3, 0.2); }
+        .price-inputs { display: flex; gap: 15px; }
         
-        .filter-actions { grid-column: span 2; display: flex; gap: 10px; margin-top: 10px; }
-        .apply-filters-btn { flex: 1; background: linear-gradient(45deg, #ff5400, var(--neon-gold)); color: black; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: 900; font-size: 16px; transition: 0.3s; text-transform: uppercase; }
-        .reset-filters-btn { background: transparent; color: white; border: 1px solid var(--neon-red); padding: 15px; border-radius: 10px; cursor: pointer; font-weight: 900; font-size: 16px; transition: 0.3s; text-transform: uppercase; }
+        .filter-actions { grid-column: span 2; display: flex; gap: 15px; margin-top: 15px; }
+        .apply-filters-btn { flex: 1; background: linear-gradient(45deg, #ff5400, var(--neon-gold)); color: black; border: none; padding: 16px; border-radius: 12px; cursor: pointer; font-weight: 900; font-size: 16px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .apply-filters-btn:hover { box-shadow: 0 0 30px rgba(255, 183, 3, 0.5); transform: translateY(-2px); }
+        .reset-filters-btn { background: transparent; color: white; border: 1px solid var(--neon-red); padding: 16px; border-radius: 12px; cursor: pointer; font-weight: 900; font-size: 16px; transition: 0.3s; text-transform: uppercase; }
+        .reset-filters-btn:hover { background: var(--neon-red); box-shadow: 0 0 20px rgba(217, 4, 41, 0.4); }
 
-        .car-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; max-width: 1300px; margin: 0 auto; }
-        .car-card { background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px; transition: all 0.4s ease; position: relative; overflow: hidden; display: flex; flex-direction: column; }
-        .car-card:hover { transform: translateY(-10px); border-color: var(--neon-gold); box-shadow: 0 15px 40px rgba(255, 183, 3, 0.15); }
-        .car-image-wrapper { position: relative; border-radius: 15px; overflow: hidden; margin-bottom: 15px; height: 220px; background: #111;}
+        .car-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 35px; max-width: 1300px; margin: 0 auto; }
+        .car-card { background: var(--glass-bg); backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+        .car-card:hover { transform: translateY(-12px); border-color: var(--neon-gold); box-shadow: 0 20px 50px rgba(255, 183, 3, 0.2); }
+        .car-image-wrapper { position: relative; border-radius: 15px; overflow: hidden; margin-bottom: 20px; height: 220px; background: #000; box-shadow: 0 5px 15px rgba(0,0,0,0.5);}
         
-        .car-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; filter: brightness(0.65); }
-        .car-card:hover img { transform: scale(1.05); filter: brightness(1); }
+        .car-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease, filter 0.6s ease; filter: brightness(0.7); }
+        .car-card:hover img { transform: scale(1.08); filter: brightness(1.1); }
 
-        .condition-badge { position: absolute; top: 15px; left: 15px; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(5px); z-index: 2;}
-        .badge-new { background: rgba(0, 245, 212, 0.2); color: var(--neon-green); border: 1px solid var(--neon-green); }
-        .badge-used { background: rgba(255, 183, 3, 0.2); color: var(--neon-gold); border: 1px solid var(--neon-gold); }
-        .class-badge { position: absolute; top: 15px; right: 15px; background: rgba(0, 0, 0, 0.7); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; border: 1px solid #444; color: #fff; z-index: 2;}
+        .condition-badge { position: absolute; top: 15px; left: 15px; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(10px); z-index: 2;}
+        .badge-new { background: rgba(0, 245, 212, 0.2); color: var(--neon-green); border: 1px solid var(--neon-green); box-shadow: 0 0 10px rgba(0, 245, 212, 0.3); }
+        .badge-used { background: rgba(255, 183, 3, 0.2); color: var(--neon-gold); border: 1px solid var(--neon-gold); box-shadow: 0 0 10px rgba(255, 183, 3, 0.3); }
+        .class-badge { position: absolute; top: 15px; right: 15px; background: rgba(0, 0, 0, 0.8); padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 900; border: 1px solid #555; color: #fff; z-index: 2;}
 
-        .car-card h3 { margin: 10px 0; font-size: 1.5em; font-weight: 900; letter-spacing: 1px; }
-        .car-stats { display: flex; justify-content: space-between; font-size: 0.9em; color: #aaa; margin-bottom: 20px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; }
-        .car-card .price { color: var(--neon-green); font-size: 1.6em; font-weight: 900; margin-bottom: 20px; text-shadow: 0 0 10px rgba(0, 245, 212, 0.3); text-align: center; }
+        .car-card h3 { margin: 0 0 15px 0; font-size: 1.5em; font-weight: 900; letter-spacing: 1px; line-height: 1.2; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .car-stats { display: flex; justify-content: space-between; font-size: 0.85em; color: #bbb; margin-bottom: 20px; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 12px; font-weight: bold; border: 1px solid rgba(255,255,255,0.05); }
+        .car-card .price { color: var(--neon-green); font-size: 1.8em; font-weight: 900; margin-bottom: 25px; text-shadow: 0 0 15px rgba(0, 245, 212, 0.4); text-align: center; }
 
-        .action-buttons { display: flex; gap: 10px; margin-top: auto; }
-        .buy-btn { flex: 1; background: transparent; color: white; border: 2px solid var(--neon-gold); padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 900; font-size: 14px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
-        .buy-btn:hover:not(:disabled) { background: var(--neon-gold); color: black; box-shadow: 0 0 20px rgba(255, 183, 3, 0.4); }
-        .delete-btn { background: transparent; color: var(--neon-red); border: 2px solid var(--neon-red); padding: 12px; border-radius: 12px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .delete-btn:hover { background: var(--neon-red); color: white; }
+        .action-buttons { display: flex; gap: 12px; margin-top: auto; }
+        .buy-btn { flex: 1; background: transparent; color: white; border: 2px solid var(--neon-gold); padding: 14px; border-radius: 12px; cursor: pointer; font-weight: 900; font-size: 14px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .buy-btn:hover { background: var(--neon-gold); color: black; box-shadow: 0 0 25px rgba(255, 183, 3, 0.5); transform: scale(1.02); }
+        .delete-btn { background: transparent; color: var(--neon-red); border: 2px solid var(--neon-red); padding: 14px; border-radius: 12px; cursor: pointer; font-weight: bold; transition: 0.3s; display: flex; justify-content: center; align-items: center; }
+        .delete-btn:hover { background: var(--neon-red); color: white; box-shadow: 0 0 20px rgba(217, 4, 41, 0.5); transform: scale(1.05); }
         
-        .owner-tag { font-size: 11px; color: #666; text-align: center; margin-top: 10px; font-style: italic; }
+        .owner-tag { font-size: 12px; color: #888; text-align: center; margin-top: 15px; font-weight: bold; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); }
 
         .hidden { display: none !important; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .fade-in { animation: fadeIn 0.5s ease forwards; }
+        .fade-in { animation: fadeIn 0.6s ease forwards; }
 
-        /* Модальні вікна */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 1000; justify-content: center; align-items: center; overflow-y: auto;}
-        .modal.active { display: flex; }
-        .modal-content { background: var(--glass-bg); border: 1px solid var(--neon-gold); padding: 30px; border-radius: 20px; text-align: center; width: 90%; max-width: 450px; box-shadow: 0 0 40px rgba(255, 183, 3, 0.2); margin: 20px auto;}
-        .modal-content h3 { margin-top: 0; color: var(--neon-gold); font-weight: 900; }
-        .modal-content input, .modal-content select { width: 100%; padding: 12px; margin: 8px 0; background: rgba(0,0,0,0.5); border: 1px solid #555; color: white; border-radius: 8px; box-sizing: border-box; font-family: 'Montserrat', sans-serif; font-size: 14px; }
-        .modal-content input:focus, .modal-content select:focus { outline: none; border-color: var(--neon-gold); }
-        .modal-content button { width: 100%; padding: 15px; margin-top: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Montserrat', sans-serif; transition: 0.3s; text-transform: uppercase; }
-        .confirm-btn { background: var(--neon-gold); color: black; }
-        .confirm-btn:hover { background: #e0a000; }
-        .cancel-btn { background: transparent; border: 1px solid #555; color: white; }
-        .cancel-btn:hover { border-color: var(--neon-red); color: var(--neon-red); }
+        /* Модальні вікна (Додавання авто та Підтвердження) */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); z-index: 1000; justify-content: center; align-items: center; overflow-y: auto;}
+        .modal.active { display: flex; animation: fadeIn 0.3s ease; }
+        .modal-content { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 40px; border-radius: 24px; text-align: center; width: 90%; max-width: 500px; box-shadow: 0 20px 60px rgba(0,0,0,0.8); margin: 20px auto; position: relative;}
+        .modal-content::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: linear-gradient(90deg, var(--neon-gold), var(--neon-red)); border-radius: 24px 24px 0 0; }
+        .modal-content h3 { margin-top: 0; margin-bottom: 25px; color: white; font-weight: 900; font-size: 1.8em; letter-spacing: 1px; }
+        .modal-content input, .modal-content select { width: 100%; padding: 15px; margin: 8px 0; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 12px; box-sizing: border-box; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: bold; transition: 0.3s; }
+        .modal-content input:focus, .modal-content select:focus { outline: none; border-color: var(--neon-gold); background: rgba(0,0,0,0.9); box-shadow: 0 0 15px rgba(255, 183, 3, 0.2); }
+        .modal-content button { width: 100%; padding: 16px; margin-top: 15px; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; font-family: 'Montserrat', sans-serif; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; font-size: 15px; }
+        .confirm-btn { background: linear-gradient(45deg, var(--neon-gold), #ff8c00); color: black; box-shadow: 0 10px 20px rgba(255, 183, 3, 0.3); }
+        .confirm-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(255, 183, 3, 0.5); }
+        .cancel-btn { background: transparent; border: 2px solid #555; color: white; }
+        .cancel-btn:hover { border-color: var(--neon-red); color: var(--neon-red); background: rgba(217, 4, 41, 0.1); }
 
-        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background: var(--glass-bg); backdrop-filter: blur(15px); color: white; padding: 20px; border-radius: 12px; font-weight: bold; font-family: 'Montserrat', sans-serif; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 10px; border-left: 5px solid transparent; }
-        .toast.show { transform: translateX(0); }
-        .toast.error { border-left-color: var(--neon-red); }
-        .toast.success { border-left-color: var(--neon-green); }
-        .toast.warning { border-left-color: var(--neon-gold); }
+        .img-hint { font-size: 12px; color: #aaa; text-align: left; margin: 15px 0 25px 5px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; border-left: 3px solid var(--neon-gold); }
+        .img-hint a { color: var(--neon-gold); text-decoration: none; font-weight: 900; }
+        .img-hint a:hover { text-decoration: underline; text-shadow: 0 0 10px var(--neon-gold); }
         
-        .img-hint { font-size: 11px; color: #888; text-align: left; margin: 15px 0 20px 5px; }
-        .img-hint a { color: var(--neon-gold); text-decoration: none; font-weight: bold; }
-        .img-hint a:hover { text-decoration: underline; }
+        /* Стиль для кастомного Confirm */
+        #confirmMessage { font-size: 1.2em; margin-bottom: 30px; font-weight: bold; line-height: 1.5; color: #ddd; }
+        .confirm-actions { display: flex; gap: 15px; }
+        .confirm-actions .confirm-btn { background: var(--neon-red); color: white; box-shadow: 0 10px 20px rgba(217, 4, 41, 0.3); margin-top: 0; }
+        .confirm-actions .confirm-btn:hover { box-shadow: 0 15px 30px rgba(217, 4, 41, 0.5); }
+        .confirm-actions .cancel-btn { margin-top: 0; }
     </style>
 </head>
 <body>
@@ -210,7 +232,7 @@
             <div id="photoInputsContainer">
                 <input type="text" class="car-photo-input" placeholder="Головне фото (з'явиться в каталозі)">
             </div>
-            <button type="button" id="addPhotoBtn" onclick="addPhotoField()" style="background: rgba(0,0,0,0.5); border: 1px dashed var(--neon-gold); color: var(--neon-gold); font-size: 12px; padding: 10px; margin-top: 10px;">➕ ДОДАТИ ЩЕ ФОТО (1/10)</button>
+            <button type="button" id="addPhotoBtn" onclick="addPhotoField()" style="background: rgba(0,0,0,0.4); border: 1px dashed var(--neon-gold); color: var(--neon-gold); font-size: 13px; padding: 12px; margin-top: 10px; box-shadow: none;">➕ ДОДАТИ ЩЕ ФОТО (1/10)</button>
 
             <div class="img-hint">
                 💡 Немає посилання? Завантаж фото на <a href="https://imgbb.com/" target="_blank">imgbb.com</a> та встав сюди.
@@ -249,16 +271,63 @@
         </div>
     </div>
 
+    <div id="customConfirmModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <h3 style="color: var(--neon-red);">УВАГА!</h3>
+            <div id="confirmMessage">Точно видалити це авто з базару?</div>
+            <div class="confirm-actions">
+                <button class="confirm-btn" id="confirmYesBtn">ТАК, ВИДАЛИТИ</button>
+                <button class="cancel-btn" id="confirmNoBtn">СКАСУВАТИ</button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Премиальная система уведомлений (Toasts)
         function showNotification(message, type = 'error') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            const icon = type === 'error' ? '❌ ' : type === 'warning' ? '⚠️ ' : '✅ ';
-            toast.innerText = icon + message;
+            
+            let icon = '❌';
+            if (type === 'success') icon = '✅';
+            if (type === 'warning') icon = '⚠️';
+            if (type === 'info') icon = '💡';
+
+            toast.innerHTML = `
+                <div class="toast-icon">${icon}</div>
+                <div class="toast-text">${message}</div>
+            `;
             container.appendChild(toast);
-            setTimeout(() => toast.classList.add('show'), 10);
-            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 4000);
+            
+            // Анимация появления
+            requestAnimationFrame(() => {
+                setTimeout(() => toast.classList.add('show'), 10);
+            });
+
+            // Автоматическое удаление
+            setTimeout(() => { 
+                toast.classList.remove('show'); 
+                setTimeout(() => toast.remove(), 500); 
+            }, 4500);
+        }
+
+        // Кастомная замена стандартного confirm()
+        function showCustomConfirm(message, onConfirm) {
+            const modal = document.getElementById('customConfirmModal');
+            document.getElementById('confirmMessage').innerText = message;
+            modal.classList.add('active');
+
+            const yesBtn = document.getElementById('confirmYesBtn');
+            const noBtn = document.getElementById('confirmNoBtn');
+
+            yesBtn.onclick = function() {
+                modal.classList.remove('active');
+                onConfirm();
+            };
+            noBtn.onclick = function() {
+                modal.classList.remove('active');
+            };
         }
 
         const firebaseConfig = {
@@ -290,6 +359,7 @@
                 document.getElementById('mainContent').style.display = 'block';
                 document.getElementById('userAvatar').src = user.photoURL || 'https://cdn.discordapp.com/embed/avatars/0.png';
                 document.getElementById('userName').innerText = user.displayName;
+                showNotification(`Ласкаво просимо, ${user.displayName}!`, 'info');
             } else {
                 currentUser = null;
                 document.getElementById('loginScreen').style.display = 'flex';
@@ -299,9 +369,10 @@
         });
 
         function signInWithDiscord() {
-            auth.signInWithPopup(provider).then(() => { showNotification('Успішний вхід!', 'success'); }).catch((e) => { showNotification('Помилка: ' + e.message, 'error'); });
+            auth.signInWithPopup(provider).then(() => { showNotification('Успішний вхід через Discord!', 'success'); }).catch((e) => { showNotification('Помилка: ' + e.message, 'error'); });
         }
-        function signOut() { auth.signOut(); }
+        function signOut() { auth.signOut(); showNotification('Ви вийшли з аккаунту', 'info'); }
+        
         function checkCooldown() {
             const lastAction = localStorage.getItem('lastActionTime');
             if (lastAction) {
@@ -336,10 +407,11 @@
                 
                 // Перевірка прав на видалення
                 const canDelete = currentUser && (currentUser.providerData && currentUser.providerData[0] && currentUser.providerData[0].uid === carData.ownerId || currentUser.uid === carData.ownerId || currentUser.uid === ADMIN_UID);
-                let deleteBtnHtml = canDelete ? `<button class="delete-btn" onclick="event.stopPropagation(); deleteCar('${carId}')">🗑️</button>` : '';
+                
+                // Используем нашу новую функцию showCustomConfirm вместо стандартного confirm
+                let deleteBtnHtml = canDelete ? `<button class="delete-btn" onclick="event.stopPropagation(); showCustomConfirm('Ви впевнені, що хочете назавжди видалити це оголошення?', function() { deleteCar('${carId}') })">🗑️</button>` : '';
 
                 const detailUrl = `car.html?id=${carId}`;
-
                 const mainImage = (carData.images && carData.images.length > 0) ? carData.images[0] : (carData.image || 'https://via.placeholder.com/600x400?text=Немає+фото');
 
                 card.innerHTML = `
@@ -352,7 +424,7 @@
                     <div class="car-stats"><span>Багажник: ${carData.trunk} кг</span><span>Швидк: ${carData.speed} км/год</span></div>
                     <p class="price">$${Number(carData.price).toLocaleString()}</p>
                     <div class="action-buttons">
-                        <button class="buy-btn" onclick="window.location.href='${detailUrl}'">Детальніше / Купити</button>
+                        <button class="buy-btn" onclick="window.location.href='${detailUrl}'">Купити авто</button>
                         ${deleteBtnHtml}
                     </div>
                     <div class="owner-tag">Продавець: ${carData.ownerName}</div>
@@ -363,24 +435,15 @@
         }
 
         function openAddCarModal() { document.getElementById('addCarModal').classList.add('active'); }
-        
-        function closeAddCarModal() { 
-            document.getElementById('addCarModal').classList.remove('active'); 
-            resetPhotoFields(); 
-        }
+        function closeAddCarModal() { document.getElementById('addCarModal').classList.remove('active'); resetPhotoFields(); }
 
         function submitNewCar() {
             if (!checkCooldown()) return;
             
             const name = document.getElementById('newCarName').value.trim();
-            
             const photoInputs = document.querySelectorAll('.car-photo-input');
             const images = [];
-            photoInputs.forEach(input => {
-                if (input.value.trim() !== '') {
-                    images.push(input.value.trim());
-                }
-            });
+            photoInputs.forEach(input => { if (input.value.trim() !== '') images.push(input.value.trim()); });
 
             const price = parseInt(document.getElementById('newCarPrice').value);
             const speed = parseInt(document.getElementById('newCarSpeed').value);
@@ -391,13 +454,12 @@
             const carClass = document.getElementById('newCarClass').value;
 
             if(!name || images.length === 0 || !price || !speed || !trunk) {
-                showNotification('Заповни всі поля та додай хоча б 1 фото!', 'error'); return;
+                showNotification('Заповни всі поля та додай хоча б 1 фото!', 'warning'); return;
             }
 
-            // ЖЕЛЕЗОБЕТОННАЯ ЛОГИКА ПОЛУЧЕНИЯ DISCORD ID
+            // Ищем Discord ID
             let discordId = null;
             if (currentUser.providerData && currentUser.providerData.length > 0) {
-                // Оскільки вхід тільки через Discord, просто беремо перший доступний ID провайдера
                 discordId = currentUser.providerData[0].uid;
             }
             
@@ -409,13 +471,9 @@
             const newCarId = 'car_' + Date.now();
 
             database.ref('cars/' + newCarId).set({
-                name: name, 
-                images: images, 
-                price: price, speed: speed, trunk: trunk,
+                name: name, images: images, price: price, speed: speed, trunk: trunk,
                 condition: condition, brand: brand, body: body, carClass: carClass,
-                ownerId: discordId, // ЗДЕСЬ ТЕПЕРЬ ВСЕГДА БУДУТ ЦИФРЫ
-                ownerName: currentUser.displayName,
-                reserved: false
+                ownerId: discordId, ownerName: currentUser.displayName, reserved: false
             }).then(() => {
                 setCooldown(); closeAddCarModal();
                 showNotification('Машина успішно виставлена на продаж!', 'success');
@@ -423,11 +481,9 @@
         }
 
         function deleteCar(carId) {
-            if(confirm('Точно видалити це авто з базару?')) {
-                database.ref('cars/' + carId).remove()
-                    .then(() => showNotification('Авто видалено!', 'success'))
-                    .catch(e => showNotification('Помилка!', 'error'));
-            }
+            database.ref('cars/' + carId).remove()
+                .then(() => showNotification('Оголошення успішно видалено!', 'success'))
+                .catch(e => showNotification('Помилка видалення!', 'error'));
         }
 
         let currentTabCondition = 'all';
@@ -466,6 +522,7 @@
             document.getElementById('filterPriceMin').value = ''; 
             document.getElementById('filterPriceMax').value = '';
             applyFilters();
+            showNotification('Фільтри скинуто', 'info');
         }
 
         let photoCount = 1;
@@ -473,29 +530,22 @@
 
         function addPhotoField() {
             if (photoCount >= MAX_PHOTOS) return;
-
             const inputs = document.querySelectorAll('.car-photo-input');
             const lastInput = inputs[inputs.length - 1];
             
             if (lastInput.value.trim() === '') {
-                showNotification('Спочатку встав посилання в попереднє поле для фото!', 'warning');
-                return;
+                showNotification('Спочатку встав посилання в попереднє поле для фото!', 'warning'); return;
             }
 
             const container = document.getElementById('photoInputsContainer');
             const input = document.createElement('input');
-            input.type = 'text';
-            input.className = 'car-photo-input';
-            input.placeholder = `Додаткове фото ${photoCount + 1}`;
+            input.type = 'text'; input.className = 'car-photo-input'; input.placeholder = `Додаткове фото ${photoCount + 1}`;
             container.appendChild(input);
 
             photoCount++;
             const btn = document.getElementById('addPhotoBtn');
             btn.innerText = `➕ ДОДАТИ ЩЕ ФОТО (${photoCount}/${MAX_PHOTOS})`;
-
-            if (photoCount >= MAX_PHOTOS) {
-                btn.style.display = 'none';
-            }
+            if (photoCount >= MAX_PHOTOS) btn.style.display = 'none';
         }
 
         function resetPhotoFields() {
